@@ -1,4 +1,4 @@
-# Dự án: App lịch thi đấu câu lạc bộ cầu lông
+# Dự án: ANH EM IT, app lịch thi đấu câu lạc bộ cầu lông
 
 **Đọc hết file này trước khi làm bất cứ việc gì trong dự án.** File này cho biết dự án đang ở đâu, đã chốt những gì và cần lưu ý gì. Mọi session và agent đều dựa vào nó, nên nó phải luôn đúng với hiện trạng.
 
@@ -17,10 +17,10 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 ## Trạng thái hiện tại
 
-- **Giai đoạn:** brainstorming xong; spec đã viết, **chờ người dùng duyệt**.
+- **Giai đoạn:** spec đã viết và đã soi bằng `grilling`; **chờ người dùng duyệt**.
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
 - **Đang làm:** người dùng thiết kế giao diện bằng Stitch theo `docs/design/stitch-prompts.md`.
-- **Tiếp theo:** người dùng duyệt spec → đề nghị `grilling` soi spec → nhận thiết kế từ Stitch, ghi vào spec (dùng `frontend-design` để rà soát) → `writing-plans`.
+- **Tiếp theo:** người dùng duyệt spec → nhận thiết kế từ Stitch, ghi vào spec (dùng `frontend-design` để rà soát) → `writing-plans`.
 
 ## Tài liệu
 
@@ -62,6 +62,8 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 
 ## Lưu ý
 
+- Người dùng đã có tài khoản GitHub nhưng chưa đưa code lên. Khi tới bước cần GitHub (đẩy code, repo sao lưu riêng tư, GitHub Secrets cho sao lưu ở spec 6.5), nhắc và hướng dẫn người dùng từng bước.
+- Không có tính năng đánh thay: kết quả luôn tính cho người có tên trong lịch (spec 4.6).
 - Công thức chia ELO trong đội (spec 4.9, bước 4) được suy ra từ ví dụ của người dùng và đã được người dùng xác nhận. Đừng "đơn giản hóa" nó: các ví dụ kiểm chứng phải khớp đến 0,1.
 - Thứ tự số trận trong lịch không phải thứ tự ra sân; chỉ dùng để sắp thứ tự tính ELO.
 - Sơ đồ nằm trong file dữ liệu ở mã nguồn, không ở database. Người dùng gửi sơ đồ mới thì cập nhật file đó và Phụ lục A của spec.

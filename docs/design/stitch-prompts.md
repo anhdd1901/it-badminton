@@ -18,7 +18,7 @@ Nguồn quy tắc: `docs/superpowers/specs/2026-10-10-badminton-club-app-design.
 ## Prompt 0: Shared context
 
 ```
-Design a mobile-first web app (also installable to the phone home screen) for a small badminton club in Vietnam. All UI text is Vietnamese. About 10 members use it every week.
+Design a mobile-first web app called "ANH EM IT" (also installable to the phone home screen) for a small badminton club in Vietnam. All UI text is Vietnamese. About 10 members use it every week.
 
 What the app does:
 - Every Saturday the club plays one session of doubles. From Monday to 12:00 Saturday, members check in ("Điểm danh") for that Saturday.
@@ -51,7 +51,7 @@ There are two members both named "Minh" in some lists; the second is "Minh" (@mi
 
 ```
 Screen: login.
-- App name "Cầu lông Thứ 7" with a simple badminton-themed mark.
+- App name "ANH EM IT" (the club's name; keep exactly this uppercase spelling) with a simple badminton-themed mark.
 - Fields: "Tên đăng nhập", "Mật khẩu" (with show/hide toggle). Button "Đăng nhập".
 - Small note under the form: "Tài khoản do admin cấp. Quên mật khẩu? Liên hệ admin."
 - Error state example below the form: "Sai tên đăng nhập hoặc mật khẩu".

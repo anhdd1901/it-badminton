@@ -1,12 +1,12 @@
-# Thiết kế: App lịch thi đấu câu lạc bộ cầu lông
+# Thiết kế: ANH EM IT, app lịch thi đấu câu lạc bộ cầu lông
 
 - **Ngày:** 2026-10-10
-- **Trạng thái:** chờ người dùng duyệt
+- **Trạng thái:** chờ người dùng duyệt; đã soi bằng `grilling` (2026-10-10)
 - **Thuật ngữ:** xem `GLOSSARY.md`
 
 ## 1. Mục tiêu
 
-Một web app cho câu lạc bộ cầu lông (hiện 10 mem) thay việc xếp lịch và tính điểm bằng tay:
+**ANH EM IT** là web app cho câu lạc bộ cầu lông (hiện 10 mem), thay việc xếp lịch và tính điểm bằng tay:
 
 - Mem điểm danh cho buổi thứ 7 hằng tuần.
 - App tự xếp lịch đánh đôi theo sơ đồ cố định và hạt giống, chống việc điểm danh lại để đổi lịch.
@@ -18,7 +18,7 @@ Thành công khi: câu lạc bộ dùng app cho cả một mùa mà không cần
 
 **Trong phạm vi:** đăng nhập; quản lý mem và phân quyền; điểm danh; xếp lịch; nhập kết quả; bảng xếp hạng mùa; ELO; thống kê mem và cặp; xem lịch sử; avatar; dùng được như app trên màn hình chính điện thoại.
 
-**Ngoài phạm vi:** tự đăng ký tài khoản; thông báo đẩy; chạy khi mất mạng; nhiều câu lạc bộ; màn hình quản lý sơ đồ; bảng vinh danh riêng; ngôn ngữ khác tiếng Việt; buổi đấu ngoài thứ 7.
+**Ngoài phạm vi:** tự đăng ký tài khoản; thông báo đẩy; chạy khi mất mạng; nhiều câu lạc bộ; màn hình quản lý sơ đồ; bảng vinh danh riêng; ngôn ngữ khác tiếng Việt; buổi đấu ngoài thứ 7; ghi nhận người đánh thay; trận ngoài lịch chính thức; nhập dữ liệu từ trước khi dùng app (app bắt đầu từ ngày đưa vào dùng; mùa đầu tiên có thể không đủ tháng và vẫn tính bình thường); lịch sử các lần sửa kết quả.
 
 ## 3. Thời gian
 
@@ -38,6 +38,7 @@ Thành công khi: câu lạc bộ dùng app cho cả một mùa mà không cần
   - trước 12:00 thứ 7 mà lịch chính thức của buổi có ít nhất một kết quả. Xóa hết kết quả trước 12:00 thì buổi mở lại.
 - Không điểm danh được cho buổi đã qua hay buổi của tuần sau.
 - Mỗi lượt điểm danh lưu: mem, người thực hiện, thời điểm.
+- Ngưng hoạt động một mem đang có tên điểm danh: nếu buổi đang mở, tự xóa tên mem đó khỏi điểm danh và lịch cập nhật theo 4.4; nếu buổi đã khóa, giữ nguyên.
 
 ### 4.2 Hạt giống
 
@@ -87,7 +88,10 @@ Mỗi khi danh sách điểm danh của buổi đang mở thay đổi:
 - Mỗi trận một ván. Nhập một tỷ số cho hai cặp; không có hòa.
 - Tỷ số hợp lệ (thắng–thua): 21–0 … 21–19; 22–20 … 29–27 (hơn đúng 2); 30–28; 30–29. Mọi tỷ số khác bị từ chối kèm lý do.
 - Thứ tự nhập tự do, không cần theo số trận.
-- **Ai được nhập, sửa, xóa:** buổi của tuần hiện tại: admin và subadmin. Buổi đã qua: chỉ admin.
+- **Ai được nhập, sửa, xóa:** buổi của tuần hiện tại: admin và subadmin, chỉ **từ 00:00 thứ 7**. Buổi đã qua: chỉ admin.
+- **Đánh thay:** việc một người vào đánh thay chỉ diễn ra ngoài sân; app không ghi nhận. Kết quả luôn tính cho người có tên trong lịch (thắng, cầu, số trận và ELO); người đánh thay không được gì.
+- Chỉ các trận trong lịch chính thức được ghi nhận; trận đánh thêm ngoài lịch không nhập vào app.
+- Mỗi kết quả chỉ lưu người nhập hoặc sửa gần nhất và thời điểm đó; không lưu lịch sử các lần sửa.
 - Trận chưa có kết quả không tính cho ai.
 - Nhập trùng: nếu trận đã có kết quả trong lúc người khác đang nhập, lần lưu sau bị từ chối với thông báo "Trận này vừa được nhập a–b, hãy tải lại". Sửa cũng kiểm tra phiên bản để không ghi đè lẫn nhau.
 
@@ -116,7 +120,7 @@ Mỗi khi danh sách điểm danh của buổi đang mở thay đổi:
 
 **Khởi tạo và điều chỉnh**
 
-- Admin nhập ELO ban đầu khi tạo mem (form gợi ý sẵn 1000).
+- Admin nhập ELO ban đầu khi tạo mem (form gợi ý sẵn 1000). Khi đưa app vào dùng, admin nhập ELO hiện có của từng người làm ELO ban đầu; không nhập lịch sử trận cũ.
 - Chỉ admin sửa trực tiếp ELO hiện tại của một mem. Mỗi lần sửa lưu thành **mốc điều chỉnh**: mem, giá trị mới, người sửa, thời điểm bấm lưu.
 - Mem được kích hoạt lại giữ nguyên ELO.
 
@@ -184,8 +188,11 @@ Chỉ tính thắng/thua, không tính cách biệt tỷ số.
   - mem tự đổi mật khẩu: mọi phiên khác phiên hiện tại;
   - admin đặt lại mật khẩu: mọi phiên của mem đó.
 - Phiên bị vô hiệu không bị đẩy ra real-time: request tiếp theo trả 401, giao diện xóa trạng thái và về màn đăng nhập.
-- **Chống dò mật khẩu:** sai 5 lần liên tiếp với một username thì username đó tạm khóa đăng nhập 15 phút.
-- **Admin đầu tiên** được tạo bằng một lệnh khởi tạo chạy một lần. Không có màn tự đăng ký.
+- **Chống dò mật khẩu:** sai 5 lần liên tiếp với một username thì username đó tạm khóa đăng nhập 15 phút. Chấp nhận rủi ro người khác cố tình nhập sai để khóa một username, vì app dùng nội bộ, username không công khai và khóa chỉ 15 phút.
+- **Lệnh quản trị** (chạy trên máy có quyền truy cập database, không có giao diện):
+  - `pnpm admin:create`: tạo admin đầu tiên, chạy một lần.
+  - `pnpm admin:reset-password <username>`: đặt lại mật khẩu, dùng khi admin quên mật khẩu của chính mình.
+- Không có màn tự đăng ký.
 
 ### 5.3 Vai trò và quyền
 
@@ -207,6 +214,7 @@ Mọi vai trò đều là mem thi đấu. Luôn có đúng một admin.
 | Chuyển quyền admin | | | ✅ |
 
 - **Admin không bị ngưng hoạt động.**
+- Ngưng hoạt động một subadmin thì người đó mất vai trò subadmin; kích hoạt lại thì là mem thường.
 - **Chuyển quyền admin:** chỉ cho mem đang hoạt động (mem thường hoặc subadmin); admin phải nhập lại mật khẩu. Sau đó người nhận là admin (mất vai trò subadmin nếu có), người chuyển thành mem thường.
 - Mọi kiểm tra quyền thực hiện ở server; giao diện chỉ ẩn những nút không có quyền.
 
@@ -244,7 +252,8 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Test đầu cuối | Playwright | 1.64.x | các luồng chính trên trình duyệt |
 | PostgreSQL cho dev và test | Docker (`postgres:17`) | | database local và database test tách riêng |
 | Lint, format | ESLint (cấu hình của Next.js) + Prettier | 10.x / 3.x | |
-| Hosting | Vercel (gói Hobby) | | deploy từ git |
+| Hosting | Vercel (gói Hobby), tên miền miễn phí `*.vercel.app` (ví dụ `anh-em-it.vercel.app` nếu còn trống) | | deploy từ git |
+| Sao lưu | GitHub Actions + `pg_dump` | | sao lưu tự động hằng tuần (6.5) |
 
 **Không dùng:** thư viện auth bên ngoài (NextAuth/Auth.js…), vì đăng nhập username/mật khẩu với phiên ở server đơn giản hơn tự viết; thư viện quản lý state hay React Query, vì dữ liệu đọc qua Server Components; service worker.
 
@@ -256,6 +265,8 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | `DATABASE_URL_TEST` | database dành riêng cho test tích hợp |
 | `BLOB_READ_WRITE_TOKEN` | quyền ghi Vercel Blob |
 
+GitHub Secrets cho sao lưu: xem 6.5.
+
 ### 6.3 Tổ chức mã nguồn
 
 Ba lớp:
@@ -265,6 +276,30 @@ Ba lớp:
 3. **Giao diện**.
 
 Mọi số liệu tổng hợp (bảng xếp hạng, ELO, hạt giống hiện tại, thống kê, trạng thái khóa, kết thúc mùa) đều tính ra từ dữ liệu gốc, không lưu riêng.
+
+### 6.4 Quản lý dữ liệu và state
+
+Không dùng thư viện quản lý server state (React Query, SWR) hay client state (Zustand, Redux). Dùng cơ chế có sẵn của Next.js App Router và React 19:
+
+- **Đọc dữ liệu:** Server Component đọc database trên server. Trạng thái đang tải dùng `loading.tsx` / `<Suspense>`; lỗi trang dùng `error.tsx`.
+- **Ghi dữ liệu:** Server Action (điểm danh, lưu tỷ số, quản lý mem…). Ghi xong gọi `revalidatePath` để trang lấy dữ liệu mới. Lỗi nghiệp vụ trả về form qua `useActionState`.
+- **Phản hồi tức thì:** `useOptimistic` cho thao tác cần cảm giác nhanh (điểm danh, lưu tỷ số).
+- **Trạng thái giao diện cục bộ** (popup, ô đang nhập): `useState` trong thành phần đó.
+- **Trạng thái nên chia sẻ được hoặc giữ khi quay lại** (tháng đang xem, tab Mùa/ELO, bộ lọc thống kê): đặt trên URL (`searchParams`), Server Component đọc trực tiếp.
+- **Người đang đăng nhập:** server đọc từ cookie phiên, truyền xuống qua props.
+- **Phiên bị vô hiệu:** server phát hiện khi xử lý request, Server Component chuyển về màn đăng nhập, Server Action trả lỗi 401 để giao diện chuyển về màn đăng nhập.
+
+Chỉ cân nhắc thêm thư viện khi phát sinh yêu cầu mới: cập nhật gần real-time hoặc dùng khi mất mạng (TanStack Query); trạng thái dùng chung giữa nhiều màn (Zustand); bộ lọc URL phức tạp (nuqs).
+
+### 6.5 Sao lưu
+
+Neon gói miễn phí lưu dữ liệu bền nhưng chỉ khôi phục được về trạng thái trong 6 giờ gần nhất; không có database miễn phí nào thay được việc sao lưu. Sao lưu ở đây để chống lỗi của người hoặc của code (xóa nhầm, bug ghi sai).
+
+- Mã nguồn dự án nằm trên GitHub.
+- Một workflow GitHub Actions chạy mỗi **chủ nhật 23:00** giờ Việt Nam: `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
+- Chuỗi kết nối database và quyền ghi vào repo sao lưu lưu trong GitHub Secrets.
+- Khôi phục: `pnpm db:restore <file>`.
+- Không cần thao tác định kỳ. Các bước cần người dùng làm trên GitHub (tạo repo, thêm secrets) sẽ được hướng dẫn khi tới bước đó.
 
 ## 7. Dữ liệu
 
@@ -278,18 +313,18 @@ Mọi số liệu tổng hợp (bảng xếp hạng, ELO, hạt giống hiện t
 | `draft_schedules` | buổi, khóa danh sách, mã sơ đồ, gán vị trí (mem → vị trí, hạt giống), thời điểm tạo | (buổi, khóa) duy nhất |
 | `official_schedules` | buổi, mã sơ đồ, gán vị trí, thời điểm chốt | mỗi buổi tối đa một |
 | `scheduled_matches` | lịch chính thức, số trận, 2 mem cặp A, 2 mem cặp B | (lịch, số trận) duy nhất |
-| `match_results` | trận, điểm cặp A, điểm cặp B, người nhập, thời điểm, phiên bản | mỗi trận tối đa một |
+| `match_results` | trận, điểm cặp A, điểm cặp B, người nhập hoặc sửa gần nhất, thời điểm, phiên bản | mỗi trận tối đa một |
 | `elo_adjustments` | mem, giá trị mới, người sửa, thời điểm | |
 
 Sơ đồ không nằm trong database mà ở file dữ liệu trong mã nguồn (4.3).
 
 ## 8. Màn hình
 
-Tiếng Việt; thiết kế cho điện thoại trước. Điện thoại: thanh điều hướng ở đáy; máy tính: menu bên. Màu sắc, font và bố cục chi tiết sẽ làm bằng `frontend-design` trước khi lập kế hoạch.
+Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn đăng nhập, icon màn hình chính và tiêu đề tab: **ANH EM IT**. Điện thoại: thanh điều hướng ở đáy; máy tính: menu bên. Màu sắc, font và bố cục chi tiết sẽ làm bằng `frontend-design` trước khi lập kế hoạch.
 
 | Màn | Nội dung |
 |---|---|
-| **Đăng nhập** | username, mật khẩu |
+| **Đăng nhập** | tên app "ANH EM IT", username, mật khẩu |
 | **Buổi tuần này** (trang chủ) | ngày, trạng thái (đang mở / đã khóa / đã đóng lúc 12:00); "đã điểm danh / tổng mem đang hoạt động", bấm vào mở popup danh sách (avatar + tên; admin và subadmin điểm danh hoặc hủy hộ tại đây); nút điểm danh hoặc hủy; lịch các trận (số trận, hai cặp, tỷ số, ô trống nếu chưa nhập); admin và subadmin nhập hoặc sửa tỷ số ngay tại trận, có nút "Xóa hết kết quả buổi này". Dưới 5 người: "Chưa đủ người để xếp lịch (cần ít nhất 5, hiện có N)". Không có sơ đồ: thông báo ở 4.4. |
 | **Bảng xếp hạng** | chọn tháng (mặc định tháng hiện tại); nhãn "Đang diễn ra" / "Đã kết thúc"; các cột ở 4.7 |
 | **ELO** | 4.9 |
