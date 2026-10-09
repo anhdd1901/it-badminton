@@ -1,8 +1,10 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, lte, sql } from "drizzle-orm";
 import { attendeeKey, generateSchedule } from "@/domain/schedule";
+import { checkInClosesAt, matchDayOfWeek } from "@/domain/time";
 import type { LocalDate, Rng } from "@/domain/types";
 import { loadCurrentSeeds } from "../data/loaders";
 import type { Db, Tx } from "../db/client";
+import { lockMatchDay } from "../db/lock";
 import {
   attendances,
   draftSchedules,
@@ -14,10 +16,66 @@ import {
 
 export type DraftRow = typeof draftSchedules.$inferSelect;
 
-/** Placeholder: Task 6 finalizes match days whose check-in has closed. */
+/** Copies a draft into the official schedule of the match day; returns the official schedule id. */
+export async function promoteDraft(
+  tx: Tx,
+  matchDayId: string,
+  draft: DraftRow,
+  now: Date,
+): Promise<string> {
+  const [official] = await tx
+    .insert(officialSchedules)
+    .values({
+      matchDayId,
+      attendeeKey: draft.attendeeKey,
+      diagramId: draft.diagramId,
+      assignments: draft.assignments,
+      createdAt: now,
+    })
+    .returning({ id: officialSchedules.id });
+  if (draft.matches.length > 0) {
+    await tx.insert(scheduledMatches).values(
+      draft.matches.map((m) => ({
+        officialScheduleId: official.id,
+        number: m.number,
+        a1: m.teamA[0],
+        a2: m.teamA[1],
+        b1: m.teamB[0],
+        b2: m.teamB[1],
+      })),
+    );
+  }
+  return official.id;
+}
+
+/** Finalizes every match day whose check-in has closed (12:00 Saturday), lazily on first access. */
 export async function finalizeDue(db: Db, now: Date): Promise<void> {
-  void db;
-  void now;
+  const candidates = await db
+    .select({ id: matchDays.id, day: matchDays.day })
+    .from(matchDays)
+    .where(and(isNull(matchDays.finalizedAt), lte(matchDays.day, matchDayOfWeek(now))));
+  for (const c of candidates) {
+    const closesAt = checkInClosesAt(c.day);
+    if (closesAt.getTime() > now.getTime()) continue;
+    await db.transaction(async (tx) => {
+      await lockMatchDay(tx, c.day);
+      const [row] = await tx
+        .select({ finalizedAt: matchDays.finalizedAt })
+        .from(matchDays)
+        .where(eq(matchDays.id, c.id));
+      if (!row || row.finalizedAt) return;
+      const [official] = await tx
+        .select({ id: officialSchedules.id })
+        .from(officialSchedules)
+        .where(eq(officialSchedules.matchDayId, c.id));
+      if (!official) {
+        const draft = await findDraft(tx, c.id, attendeeKey(await currentAttendeeIds(tx, c.id)));
+        if (draft) await promoteDraft(tx, c.id, draft, closesAt);
+      }
+      await tx.delete(draftSchedules).where(eq(draftSchedules.matchDayId, c.id));
+      await tx.update(matchDays).set({ finalizedAt: closesAt }).where(eq(matchDays.id, c.id));
+    });
+  }
 }
 
 /** Call after lockMatchDay, inside the caller's transaction. */
