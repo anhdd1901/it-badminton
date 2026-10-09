@@ -212,10 +212,51 @@ Mọi vai trò đều là mem thi đấu. Luôn có đúng một admin.
 
 ## 6. Kiến trúc và công nghệ
 
-- **Next.js (App Router, TypeScript)** cho cả giao diện và server; deploy lên **Vercel**.
-- **PostgreSQL trên Neon** (gói miễn phí), truy cập qua **Drizzle ORM**.
-- **Tailwind CSS** cho giao diện; web app manifest để thêm vào màn hình chính.
-- **Vercel Blob** lưu avatar.
+### 6.1 Thư viện và công cụ
+
+Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham khảo. Phiên bản chính xác được khóa trong `package.json` và `pnpm-lock.yaml` khi khởi tạo dự án; ưu tiên tổ hợp mà Next.js chính thức hỗ trợ.
+
+| Hạng mục | Lựa chọn | Phiên bản | Dùng để |
+|---|---|---|---|
+| Runtime | Node.js | 22 LTS | chạy local và trên Vercel |
+| Quản lý gói | pnpm | 12 | cài thư viện, chạy script |
+| Ngôn ngữ | TypeScript, chế độ `strict` | bản Next.js hỗ trợ | toàn bộ mã nguồn |
+| Framework | Next.js (App Router, Server Components, Server Actions) | 16.x | giao diện + server trong một dự án |
+| UI | React | 19.x | |
+| CSS | Tailwind CSS | 4.x | giao diện responsive |
+| Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, chọn tháng, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế |
+| Icon | lucide-react | 1.x | |
+| Font | `next/font` | có sẵn trong Next.js | tự host font, không tải từ Google lúc chạy |
+| Database | PostgreSQL | 17 (local), Neon (production) | |
+| Driver | `postgres` (postgres.js) | 3.x | kết nối PostgreSQL, dùng chung cho local và Neon |
+| ORM và migration | Drizzle ORM + drizzle-kit | 0.45.x / 0.31.x | định nghĩa bảng, truy vấn có kiểu, sinh migration |
+| Kiểm tra dữ liệu | Zod | 4.x | kiểm tra input của mọi server action và form |
+| Băm mật khẩu | `@node-rs/argon2` | 2.x | argon2id |
+| Phiên đăng nhập | `node:crypto` | có sẵn | sinh token ngẫu nhiên, băm SHA-256 để lưu |
+| Thời gian | date-fns + `@date-fns/tz` | 4.x / 1.x | tính tuần, 12:00 thứ 7, tháng theo giờ Việt Nam |
+| Ngẫu nhiên | tự viết (`crypto` khi chạy thật, bộ sinh có seed khi test) | | xáo vị trí khi tạo lịch |
+| Ảnh | sharp | 0.35.x | cắt vuông, thu nhỏ avatar 256×256 |
+| Lưu file | `@vercel/blob` | 2.x | lưu avatar |
+| PWA | `app/manifest.ts` của Next.js | có sẵn | thêm vào màn hình chính; không dùng service worker |
+| Script | tsx | 4.x | chạy lệnh khởi tạo admin, seed dữ liệu |
+| Test đơn vị và tích hợp | Vitest | 5.x | lõi quy tắc; lớp nghiệp vụ với PostgreSQL thật |
+| Test giao diện thành phần | @testing-library/react | 16.x | chỉ cho thành phần có logic (ô nhập tỷ số, bộ lọc) |
+| Test đầu cuối | Playwright | 1.64.x | các luồng chính trên trình duyệt |
+| PostgreSQL cho dev và test | Docker (`postgres:17`) | | database local và database test tách riêng |
+| Lint, format | ESLint (cấu hình của Next.js) + Prettier | 10.x / 3.x | |
+| Hosting | Vercel (gói Hobby) | | deploy từ git |
+
+**Không dùng:** thư viện auth bên ngoài (NextAuth/Auth.js…), vì đăng nhập username/mật khẩu với phiên ở server đơn giản hơn tự viết; thư viện quản lý state hay React Query, vì dữ liệu đọc qua Server Components; service worker.
+
+### 6.2 Biến môi trường
+
+| Biến | Dùng để |
+|---|---|
+| `DATABASE_URL` | chuỗi kết nối PostgreSQL (Neon ở production, Docker ở local) |
+| `DATABASE_URL_TEST` | database dành riêng cho test tích hợp |
+| `BLOB_READ_WRITE_TOKEN` | quyền ghi Vercel Blob |
+
+### 6.3 Tổ chức mã nguồn
 
 Ba lớp:
 

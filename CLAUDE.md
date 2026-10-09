@@ -19,7 +19,8 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 - **Giai đoạn:** brainstorming xong; spec đã viết, **chờ người dùng duyệt**.
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
-- **Tiếp theo:** người dùng duyệt spec → đề nghị `grilling` soi spec → `frontend-design` chốt giao diện, ghi vào spec → `writing-plans`.
+- **Đang làm:** người dùng thiết kế giao diện bằng Stitch theo `docs/design/stitch-prompts.md`.
+- **Tiếp theo:** người dùng duyệt spec → đề nghị `grilling` soi spec → nhận thiết kế từ Stitch, ghi vào spec (dùng `frontend-design` để rà soát) → `writing-plans`.
 
 ## Tài liệu
 
@@ -28,7 +29,7 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 ## Công nghệ
 
-Next.js (App Router, TypeScript) + PostgreSQL trên Neon qua Drizzle ORM, Tailwind CSS, Vercel Blob cho avatar; deploy lên Vercel. Test: Vitest (đơn vị, tích hợp với PostgreSQL thật), Playwright (đầu cuối). Chi tiết: spec mục 6 và 10.
+Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4, shadcn/ui, lucide-react. PostgreSQL (Neon ở production, Docker `postgres:17` ở local) qua postgres.js + Drizzle. Zod, argon2, date-fns + `@date-fns/tz`, sharp + Vercel Blob. Test: Vitest, Testing Library, Playwright. Deploy lên Vercel. Không dùng thư viện auth ngoài. Bảng đầy đủ và biến môi trường: spec mục 6.
 
 ## Lệnh
 
@@ -40,6 +41,7 @@ Chưa có. Khi có, ghi lệnh cài đặt, chạy, test, lint.
 CLAUDE.md               file này
 GLOSSARY.md             thuật ngữ nghiệp vụ
 docs/superpowers/specs/ spec
+docs/design/            prompt thiết kế giao diện cho Stitch
 docs/superpowers/plans/ kế hoạch triển khai (chưa có)
 docs/adr/               quyết định kiến trúc (chưa có)
 ```
