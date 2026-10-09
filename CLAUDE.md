@@ -17,12 +17,12 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 ## Trạng thái hiện tại
 
-- **Giai đoạn:** spec đã viết và đã soi bằng `grilling`; **chờ người dùng duyệt**.
+- **Giai đoạn:** spec đã duyệt. **Kế hoạch 1 xong** (khởi tạo dự án + toàn bộ quy tắc nghiệp vụ trong `src/domain/`, 79 test).
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
 - **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
-- **Tiếp theo:** người dùng duyệt kế hoạch 1 và chọn cách thực hiện.
+- **Tiếp theo:** viết kế hoạch 2 (database, đăng nhập, lớp nghiệp vụ).
 
 ## Tài liệu
 
@@ -35,13 +35,20 @@ Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4
 
 ## Lệnh
 
-Chưa có. Khi có, ghi lệnh cài đặt, chạy, test, lint.
+- `pnpm install`: cài thư viện
+- `pnpm dev`: chạy app ở máy
+- `pnpm test` / `pnpm test:watch`: chạy test (Vitest, cố định `TZ=America/Los_Angeles` để lộ lỗi múi giờ)
+- `pnpm typecheck`: kiểm tra kiểu TypeScript (Vitest không kiểm tra kiểu, nên luôn chạy lệnh này)
+- `pnpm lint`, `pnpm build`
 
 ## Cấu trúc thư mục
 
 ```
 CLAUDE.md               file này
 GLOSSARY.md             thuật ngữ nghiệp vụ
+AGENTS.md               quy tắc của Next.js 16 cho agent (do `next dev` tạo lại)
+src/domain/             quy tắc nghiệp vụ thuần (không import Next, DB, React)
+src/app/                giao diện Next.js (App Router)
 docs/superpowers/specs/ spec
 docs/design/            prompt Stitch (không dùng nữa, để tham khảo)
 src/fonts/              font tự host (Be Vietnam Pro)
@@ -64,6 +71,10 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - **Phiên đăng nhập:** không hết hạn; vô hiệu ở server khi ngưng mem hoặc đổi mật khẩu; giao diện tự đăng xuất khi gặp 401. (5.2)
 
 ## Lưu ý
+
+- **Next.js 16 khác kiến thức cũ:** trước khi viết code Next, đọc hướng dẫn trong `node_modules/next/dist/docs/` (xem `AGENTS.md`).
+- **Ranh giới `src/domain/`:** hàm nhận `now: Date`, không gọi `new Date()`; chỉ import `date-fns`, `@date-fns/tz` và file trong `src/domain/`. ELO lưu bằng số nguyên phần mười. Domain tin dữ liệu vào: lớp nghiệp vụ (kế hoạch 2) phải kiểm tra `LocalDate`/`SeasonId` bằng Zod, chỉ đưa mem đang hoạt động vào xếp hạt giống, và truyền cho `seasonEndsAt` đúng một mốc thời gian cho mỗi trận có kết quả của thứ 7 cuối mùa.
+- **sharp đang bị tắt build** (`pnpm-workspace.yaml`, `allowBuilds`): bật lại khi làm phần thu nhỏ avatar.
 
 - Người dùng đã có tài khoản GitHub nhưng chưa đưa code lên. Khi tới bước cần GitHub (đẩy code, repo sao lưu riêng tư, GitHub Secrets cho sao lưu ở spec 6.5), nhắc và hướng dẫn người dùng từng bước.
 - Không có tính năng đánh thay: kết quả luôn tính cho người có tên trong lịch (spec 4.6).
