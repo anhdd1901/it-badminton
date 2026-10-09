@@ -19,3 +19,9 @@ describe("eloMatchDeltas", () => {
     expect(d.a1 + d.a2 + d.b1 + d.b2).toBe(0);
   });
 });
+
+describe("eloMatchDeltas clamp", () => {
+  const r = { a1: 5000, a2: 30000, b1: 10000, b2: 10000 };
+  it("A thắng", () => expect(eloMatchDeltas(r, "A")).toEqual({ a1: 8, a2: 0, b1: -4, b2: -4 }));
+  it("B thắng", () => expect(eloMatchDeltas(r, "B")).toEqual({ a1: -32, a2: -600, b1: 316, b2: 316 }));
+});

@@ -1,5 +1,5 @@
 import { podiumCounts, type Podium } from "./season";
-import { memberTotals, pairTotals, rankTotals, type Ranked, type ResultMatch } from "./standings";
+import { memberTotals, pairMembers, pairTotals, rankTotals, type Ranked, type ResultMatch } from "./standings";
 import { seasonOf } from "./time";
 import type { MemberId, SeasonId } from "./types";
 
@@ -35,5 +35,5 @@ export function memberStats(
 
 export function pairStats(matches: readonly ResultMatch[], filter: StatsFilter): Ranked<string>[] {
   return rankTotals(pairTotals(matchesInRange(matches, filter)))
-    .filter(r => filter.memberId === undefined || r.key.split("|").includes(filter.memberId));
+    .filter(r => filter.memberId === undefined || pairMembers(r.key).includes(filter.memberId));
 }

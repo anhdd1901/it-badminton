@@ -24,6 +24,14 @@ export function noDiagramMessage(seed1: number, seed2: number): string {
 }
 
 export function generateSchedule(attendees: readonly Attendee[], rng: Rng): ScheduleResult {
+  const seenSeed = new Map<MemberId, Seed>();
+  for (const a of attendees) {
+    const prev = seenSeed.get(a.id);
+    if (prev !== undefined && prev !== a.seed) {
+      throw new Error(`Mem ${a.id} xuất hiện nhiều lần với hạt giống khác nhau`);
+    }
+    seenSeed.set(a.id, a.seed);
+  }
   const unique = [...new Map(attendees.map((a) => [a.id, a])).values()];
   if (unique.length < 5) return { ok: false, error: "NOT_ENOUGH", count: unique.length };
 

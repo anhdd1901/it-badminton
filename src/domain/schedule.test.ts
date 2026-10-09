@@ -28,4 +28,11 @@ describe("schedule", () => {
     const r = generateSchedule(five, seededRng(7));
     expect(r.ok && r.schedule.diagramId).toBe("5");
   });
+  it("cùng id khác hạt giống thì ném lỗi; cùng id cùng hạt giống thì bỏ trùng", () => {
+    const base = ["a","b","c","d","e"].map((id) => ({ id, seed: 1 as const }));
+    expect(() => generateSchedule([...base, { id: "a", seed: 2 }], seededRng(1)))
+      .toThrow("Mem a xuất hiện nhiều lần với hạt giống khác nhau");
+    const r = generateSchedule([...base, { id: "a", seed: 1 }], seededRng(1));
+    expect(r.ok && r.schedule.assignments).toHaveLength(5);
+  });
 });

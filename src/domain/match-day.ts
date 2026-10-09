@@ -5,9 +5,10 @@ import {
   matchDayStart,
   weekStart,
 } from "./time";
-import type { LocalDate } from "./types";
+import type { LocalDate, Role } from "./types";
 
-export type Role = "admin" | "subadmin" | "member";
+export type { Role };
+
 export type MatchDayStatus = "open" | "locked" | "closed";
 
 // closed: now ≥ 12:00 thứ 7. locked: trước đó và lịch chính thức có ≥ 1 kết quả. open: còn lại.

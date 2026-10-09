@@ -7,6 +7,9 @@ export type LastDayResults = { officialMatchCount: number; resultEnteredAts: rea
 /**
  * When a season ends: noon of its last Saturday, or earlier when every official
  * match of that day has its result entered (then the latest entry time).
+ *
+ * Contract: `lastDay.resultEnteredAts` must hold exactly one timestamp per official
+ * match of the season's last Saturday that has a result, and no timestamps from other days.
  */
 export function seasonEndsAt(season: SeasonId, lastDay: LastDayResults): Date {
   const noon = checkInClosesAt(lastMatchDayOfSeason(season));

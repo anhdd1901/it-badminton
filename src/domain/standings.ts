@@ -30,9 +30,17 @@ export function memberTotals(matches: readonly ResultMatch[]): Map<MemberId, Tot
   return map;
 }
 
+const PAIR_SEPARATOR = "|";
+
 /** Order-independent key for a pair: sorted member ids joined by "|". */
 export function pairKey(pair: Pair): string {
-  return [...pair].sort().join("|");
+  return [...pair].sort().join(PAIR_SEPARATOR);
+}
+
+/** Inverse of `pairKey`: the two member ids (sorted) behind a key. */
+export function pairMembers(key: string): Pair {
+  const [first, second] = key.split(PAIR_SEPARATOR);
+  return [first, second];
 }
 
 /** Per-pair totals across all matches, keyed by `pairKey`. */

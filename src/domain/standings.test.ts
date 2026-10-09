@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { memberTotals, pairKey, rankTotals, type ResultMatch, type Totals } from "./standings";
+import { memberTotals, pairKey, pairMembers, rankTotals, type ResultMatch, type Totals } from "./standings";
 
 const m = (a: readonly [string, string], b: readonly [string, string], sa: number, sb: number, n = 1): ResultMatch =>
   ({ matchDay: "2026-10-17", number: n, teamA: a, teamB: b, scoreA: sa, scoreB: sb });
@@ -10,6 +10,7 @@ describe("standings", () => {
     expect(t.get("a")).toEqual({ wins:1, pointsFor:21, pointsAgainst:17, played:1 });
     expect(t.get("d")).toEqual({ wins:0, pointsFor:17, pointsAgainst:21, played:1 });
   });
+  it("pairMembers là nghịch đảo của pairKey", () => expect(pairMembers(pairKey(["b","a"]))).toEqual(["a","b"]));
   it("pairKey không phụ thuộc thứ tự", () => expect(pairKey(["b","a"])).toBe(pairKey(["a","b"])));
   it("thứ tự ưu tiên và ít trận xếp trên", () => {
     const rows = new Map<string, Totals>([
