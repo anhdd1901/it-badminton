@@ -21,7 +21,8 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
-- **Tiếp theo:** `writing-plans`.
+- **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
+- **Tiếp theo:** người dùng duyệt kế hoạch 1 và chọn cách thực hiện.
 
 ## Tài liệu
 
@@ -44,7 +45,7 @@ GLOSSARY.md             thuật ngữ nghiệp vụ
 docs/superpowers/specs/ spec
 docs/design/            prompt Stitch (không dùng nữa, để tham khảo)
 src/fonts/              font tự host (Be Vietnam Pro)
-docs/superpowers/plans/ kế hoạch triển khai (chưa có)
+docs/superpowers/plans/ kế hoạch triển khai
 docs/adr/               quyết định kiến trúc (chưa có)
 ```
 
