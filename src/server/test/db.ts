@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs";
-import { hash } from "@node-rs/argon2";
 import { sql } from "drizzle-orm";
 import { afterAll, beforeEach } from "vitest";
 import type { Role } from "@/domain/types";
+import { hashPassword } from "../auth/password";
 import { createDb, type Db } from "../db/client";
 import { members } from "../db/schema";
 
@@ -60,7 +60,7 @@ export async function makeMember(
   memberCounter += 1;
   const username = o.username ?? `mem${memberCounter}`;
   const role = o.role ?? "member";
-  passwordHash ??= hash(TEST_PASSWORD);
+  passwordHash ??= hashPassword(TEST_PASSWORD);
   const [row] = await db
     .insert(members)
     .values({
