@@ -22,7 +22,9 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
 - **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
-- **Tiếp theo:** viết kế hoạch 2 (database, đăng nhập, lớp nghiệp vụ).
+- **Kế hoạch 2** (database, đăng nhập, lớp nghiệp vụ): đã viết, chờ người dùng duyệt — `docs/superpowers/plans/2026-10-10-plan-2-data-auth-services.md`.
+- **Cách làm đã thống nhất:** kế hoạch 2–4 làm tiếp trên nhánh `worktree-plan-1-foundation-domain` (worktree `.claude/worktrees/plan-1-foundation-domain`), mỗi kế hoạch: viết → người dùng duyệt → thực hiện bằng subagent-driven-development.
+- **Môi trường:** PostgreSQL chạy bằng Docker; người dùng cần bật Docker và thêm tài khoản vào nhóm `docker` (cần sudo).
 
 ## Tài liệu
 
