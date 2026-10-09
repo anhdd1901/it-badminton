@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { hashPassword } from "../auth/password";
 import { revokeSessions } from "../auth/sessions";
 import type { Db } from "../db/client";
-import { members } from "../db/schema";
+import { loginAttempts, members } from "../db/schema";
 import { AppError, MESSAGES } from "../errors";
 import { parseDisplayName, parseEloInput, parsePassword, parseUsername } from "../validation";
 import { isUniqueViolation, type NewMember, usernameExists } from "./profile";
@@ -39,13 +39,15 @@ export async function createFirstAdmin(db: Db, input: NewMember, now: Date): Pro
 
 export async function resetPasswordByUsername(db: Db, username: string, newPassword: string): Promise<void> {
   const passwordHash = await hashPassword(parsePassword(newPassword));
+  const normalized = username.trim().toLowerCase();
   await db.transaction(async (tx) => {
     const rows = await tx
       .update(members)
       .set({ passwordHash })
-      .where(eq(members.username, username.trim().toLowerCase()))
+      .where(eq(members.username, normalized))
       .returning({ id: members.id });
     if (rows.length === 0) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
     await revokeSessions(tx, rows[0].id);
+    await tx.delete(loginAttempts).where(eq(loginAttempts.username, normalized));
   });
 }

@@ -30,6 +30,8 @@ export const MESSAGES = {
   memberNotFound: "Không tìm thấy mem",
   usernameTaken: "Tên đăng nhập đã có người dùng",
   wrongPassword: "Mật khẩu không đúng",
+  scheduleChanged: "Lịch thi đấu vừa thay đổi, hãy tải lại",
+  adminChanged: "Quyền admin vừa thay đổi, hãy tải lại",
 } as const;
 
 /** Score of pair A first. */

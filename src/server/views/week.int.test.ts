@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seededRng } from "@/domain/rng";
+import { attendeeKey } from "@/domain/schedule";
 import type { Actor } from "../actor";
 import { setAttendance } from "../match-days/attendance";
 import { enterResult } from "../match-days/results";
@@ -43,16 +44,19 @@ describe("getWeekView", () => {
     await attend(ms);
     const v = await getWeekView(t.db, as(ms[1]), WED);
     expect(v.schedule?.source).toBe("draft");
+    const key = attendeeKey(ms.map((m) => m.id));
+    expect(v.schedule?.key).toBe(key);
     expect(v.schedule?.matches).toHaveLength(6);
     for (const m of v.schedule?.matches ?? []) {
       for (const p of [...m.teamA, ...m.teamB]) expect(p.displayName).toMatch(/^Ten \d$/);
     }
     expect(v.notice).toBeNull();
     const sat = vn("2026-10-17T09:00");
-    await enterResult(t.db, as(ms[0]), { day: "2026-10-17", matchNumber: 1, scoreA: 21, scoreB: 15 }, sat);
+    await enterResult(t.db, as(ms[0]), { day: "2026-10-17", scheduleKey: key, matchNumber: 1, scoreA: 21, scoreB: 15 }, sat);
     const w = await getWeekView(t.db, as(ms[0]), sat);
     expect(w.status).toBe("locked");
     expect(w.schedule?.source).toBe("official");
+    expect(w.schedule?.key).toBe(key);
     expect(w.schedule?.matches[0].result).toEqual({ scoreA: 21, scoreB: 15, version: 1 });
     expect(w.schedule?.matches[1].result).toBeNull();
     expect(w.can).toEqual({ changeOwnAttendance: false, manageAttendance: false, editResults: true });

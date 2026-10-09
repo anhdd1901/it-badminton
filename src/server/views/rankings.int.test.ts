@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seededRng } from "@/domain/rng";
+import { attendeeKey } from "@/domain/schedule";
 import { seasonStandings } from "@/domain/stats";
 import type { Actor } from "../actor";
 import { loadResultMatches } from "../data/loaders";
@@ -24,7 +25,7 @@ describe("rankings views", () => {
       for (const m of ms) {
         await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), { rng: seededRng(1) });
       }
-      await enterResult(t.db, as(ms[0]), { day, matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
+      await enterResult(t.db, as(ms[0]), { day, scheduleKey: attendeeKey(ms.map((m) => m.id)), matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
     }
     return { ms, idle };
   }

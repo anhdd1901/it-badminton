@@ -41,4 +41,12 @@ describe("admin bootstrap", () => {
     await makeMember(t.db, { username: "a.b" });
     await expect(resetPasswordByUsername(t.db, "a.b", "ngan")).rejects.toMatchObject({ code: "VALIDATION" });
   });
+
+  it("đặt lại mật khẩu bằng lệnh gỡ khóa đăng nhập", async () => {
+    await makeMember(t.db, { username: "minh.nt" });
+    for (let i = 0; i < 5; i++) await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
+    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({ ok: false, message: MESSAGES.loginLocked });
+    await resetPasswordByUsername(t.db, "Minh.NT", "matkhaumoi99");
+    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi99" }, now)).ok).toBe(true);
+  });
 });

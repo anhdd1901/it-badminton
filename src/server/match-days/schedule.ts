@@ -10,6 +10,7 @@ import {
   draftSchedules,
   matchDays,
   matchResults,
+  members,
   officialSchedules,
   scheduledMatches,
 } from "../db/schema";
@@ -69,7 +70,7 @@ export async function finalizeDue(db: Db, now: Date): Promise<void> {
         .from(officialSchedules)
         .where(eq(officialSchedules.matchDayId, c.id));
       if (!official) {
-        const draft = await findDraft(tx, c.id, attendeeKey(await currentAttendeeIds(tx, c.id)));
+        const draft = await findDraft(tx, c.id, attendeeKey(await activeAttendeeIds(tx, c.id)));
         if (draft) await promoteDraft(tx, c.id, draft, closesAt);
       }
       await tx.delete(draftSchedules).where(eq(draftSchedules.matchDayId, c.id));
@@ -99,6 +100,21 @@ export async function currentAttendeeIds(tx: Db | Tx, matchDayId: string): Promi
   return rows.map((r) => r.memberId);
 }
 
+/** Attendees who are still active: the players of the draft for the current list. */
+export async function activeAttendeeIds(tx: Db | Tx, matchDayId: string): Promise<string[]> {
+  const rows = await tx
+    .select({ memberId: attendances.memberId })
+    .from(attendances)
+    .innerJoin(members, eq(attendances.memberId, members.id))
+    .where(and(eq(attendances.matchDayId, matchDayId), eq(members.active, true)));
+  return rows.map((r) => r.memberId);
+}
+
+/** A day counts as closed once finalized, even for a request whose `now` was taken before 12:00. */
+export function isClosed(day: LocalDate, finalizedAt: Date | null, now: Date): boolean {
+  return finalizedAt !== null || now.getTime() >= checkInClosesAt(day).getTime();
+}
+
 export async function officialResultCount(tx: Db | Tx, matchDayId: string): Promise<number> {
   const [row] = await tx
     .select({ n: sql<number>`count(*)::int` })
@@ -121,17 +137,19 @@ export async function findDraft(
   return row ?? null;
 }
 
-/** With ≥ 5 attendees and no draft for this exact list yet, generates and stores one. */
+/**
+ * With ≥ 5 active attendees and no draft for this exact list yet, generates and stores one.
+ * Inactive attendees are left out before the key is computed, so a draft's key always matches its players.
+ */
 export async function refreshDraft(tx: Tx, matchDayId: string, rng: Rng): Promise<void> {
-  const ids = await currentAttendeeIds(tx, matchDayId);
-  if (ids.length < 5) return;
-  const key = attendeeKey(ids);
-  if (await findDraft(tx, matchDayId, key)) return;
   const seeds = await loadCurrentSeeds(tx);
-  const attendees = ids.flatMap((id) => {
+  const attendees = (await currentAttendeeIds(tx, matchDayId)).flatMap((id) => {
     const seed = seeds.get(id);
-    return seed === undefined ? [] : [{ id, seed }]; // inactive attendee: skipped defensively
+    return seed === undefined ? [] : [{ id, seed }];
   });
+  if (attendees.length < 5) return;
+  const key = attendeeKey(attendees.map((a) => a.id));
+  if (await findDraft(tx, matchDayId, key)) return;
   const result = generateSchedule(attendees, rng);
   if (!result.ok) return;
   const { diagramId, assignments, matches } = result.schedule;

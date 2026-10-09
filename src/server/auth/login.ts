@@ -10,6 +10,8 @@ export type LoginResult = { ok: true; token: string; actor: Actor } | { ok: fals
 
 const MAX_FAILURES = 5;
 const LOCK_MS = 15 * 60_000;
+/** Same format as parseUsername: anything else cannot be a member, so it is not counted. */
+const USERNAME_FORMAT = /^[a-z0-9._]{3,30}$/;
 
 export async function login(
   db: Db,
@@ -17,6 +19,7 @@ export async function login(
   now: Date,
 ): Promise<LoginResult> {
   const username = input.username.trim().toLowerCase();
+  if (!USERNAME_FORMAT.test(username)) return { ok: false, message: MESSAGES.badLogin };
 
   // Reserve the attempt atomically (row lock) before the slow password check,
   // so parallel guesses cannot all read the same failed count.

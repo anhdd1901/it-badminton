@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
-import { authSessions, members } from "../db/schema";
+import { authSessions, loginAttempts, members } from "../db/schema";
 import { MESSAGES, resultConflict } from "../errors";
 import { makeMember, TEST_PASSWORD, useTestDb, vn } from "../test/db";
 import { login } from "./login";
@@ -69,4 +69,12 @@ describe("auth", () => {
     expect(rows[0].tokenHash).toMatch(/^[0-9a-f]{64}$/);
   });
   it("resultConflict", () => expect(resultConflict(21, 17)).toBe("Trận này vừa được nhập 21–17, hãy tải lại"));
+  it("username sai định dạng: báo sai, không ghi bảng login_attempts", async () => {
+    for (const username of ["ab", "đức", "x y", "a".repeat(31)])
+      expect(await login(t.db, { username, password: "sai-mat-khau" }, vn("2026-10-14T10:00"))).toEqual({
+        ok: false,
+        message: MESSAGES.badLogin,
+      });
+    expect(await t.db.select().from(loginAttempts)).toHaveLength(0);
+  });
 });

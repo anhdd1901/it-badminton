@@ -11,8 +11,12 @@ import { lockMatchDay } from "../db/lock";
 import { attendances, eloAdjustments, matchDays, members } from "../db/schema";
 import { AppError, MESSAGES } from "../errors";
 import { finalizeDue, officialResultCount, refreshDraft } from "../match-days/schedule";
-import { parseEloInput } from "../validation";
+import { parseEloInput, parseMemberId } from "../validation";
+import { isUniqueViolation } from "./profile";
 
+const SINGLE_ADMIN_INDEX = "members_single_admin";
+
+/** `memberId` must already be parsed with parseMemberId. */
 async function loadMember(db: Db, memberId: string) {
   const [row] = await db
     .select({ id: members.id, role: members.role, active: members.active, passwordHash: members.passwordHash })
@@ -25,12 +29,13 @@ async function loadMember(db: Db, memberId: string) {
 export async function setActive(
   db: Db,
   actor: Actor,
-  memberId: string,
+  rawMemberId: string,
   active: boolean,
   now: Date,
   opts: { rng?: Rng } = {},
 ): Promise<void> {
   requireRole(actor, "admin");
+  const memberId = parseMemberId(rawMemberId);
   const target = await loadMember(db, memberId);
   if (active) {
     await db.update(members).set({ active: true }).where(eq(members.id, memberId));
@@ -48,8 +53,11 @@ export async function setActive(
       .where(eq(members.id, memberId));
     await revokeSessions(tx, memberId);
 
-    const [matchDay] = await tx.select({ id: matchDays.id }).from(matchDays).where(eq(matchDays.day, day));
-    if (!matchDay) return;
+    const [matchDay] = await tx
+      .select({ id: matchDays.id, finalizedAt: matchDays.finalizedAt })
+      .from(matchDays)
+      .where(eq(matchDays.day, day));
+    if (!matchDay || matchDay.finalizedAt !== null) return;
     const [attendance] = await tx
       .select({ memberId: attendances.memberId })
       .from(attendances)
@@ -65,14 +73,14 @@ export async function setActive(
 
 export async function setSubadmin(db: Db, actor: Actor, memberId: string, isSubadmin: boolean): Promise<void> {
   requireRole(actor, "admin");
-  const target = await loadMember(db, memberId);
+  const target = await loadMember(db, parseMemberId(memberId));
   if (!target.active || target.role === "admin") {
     throw new AppError("VALIDATION", "Chỉ đặt subadmin cho mem đang hoạt động, không phải admin");
   }
   await db
     .update(members)
     .set({ role: isSubadmin ? "subadmin" : "member" })
-    .where(eq(members.id, memberId));
+    .where(eq(members.id, target.id));
 }
 
 export async function transferAdmin(
@@ -81,18 +89,31 @@ export async function transferAdmin(
   input: { memberId: string; password: string },
 ): Promise<void> {
   requireRole(actor, "admin");
+  const targetId = parseMemberId(input.memberId);
   const self = await loadMember(db, actor.memberId);
   if (!(await verifyPassword(self.passwordHash, input.password))) {
     throw new AppError("VALIDATION", MESSAGES.wrongPassword);
   }
-  const target = await loadMember(db, input.memberId);
+  const target = await loadMember(db, targetId);
   if (!target.active || target.id === actor.memberId) {
     throw new AppError("VALIDATION", "Chỉ chuyển quyền cho mem khác đang hoạt động");
   }
-  await db.transaction(async (tx) => {
-    await tx.update(members).set({ role: "member" }).where(eq(members.id, actor.memberId));
-    await tx.update(members).set({ role: "admin" }).where(eq(members.id, target.id));
-  });
+  try {
+    await db.transaction(async (tx) => {
+      // Serialises concurrent transfers by the same admin: the loser sees it is no longer admin.
+      const [me] = await tx
+        .select({ role: members.role })
+        .from(members)
+        .where(eq(members.id, actor.memberId))
+        .for("update");
+      if (me?.role !== "admin") throw new AppError("FORBIDDEN", MESSAGES.forbidden);
+      await tx.update(members).set({ role: "member" }).where(eq(members.id, actor.memberId));
+      await tx.update(members).set({ role: "admin" }).where(eq(members.id, target.id));
+    });
+  } catch (e) {
+    if (isUniqueViolation(e, SINGLE_ADMIN_INDEX)) throw new AppError("CONFLICT", MESSAGES.adminChanged);
+    throw e;
+  }
 }
 
 export async function adjustElo(
@@ -102,7 +123,8 @@ export async function adjustElo(
   now: Date,
 ): Promise<void> {
   requireRole(actor, "admin");
+  const memberId = parseMemberId(input.memberId);
   const eloTenths = parseEloInput(input.elo);
-  await loadMember(db, input.memberId);
-  await db.insert(eloAdjustments).values({ memberId: input.memberId, eloTenths, adjustedBy: actor.memberId, at: now });
+  await loadMember(db, memberId);
+  await db.insert(eloAdjustments).values({ memberId, eloTenths, adjustedBy: actor.memberId, at: now });
 }

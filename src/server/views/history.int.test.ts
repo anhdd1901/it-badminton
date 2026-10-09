@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seededRng } from "@/domain/rng";
+import { attendeeKey } from "@/domain/schedule";
 import type { Actor } from "../actor";
 import { setAttendance } from "../match-days/attendance";
 import { enterResult } from "../match-days/results";
@@ -22,7 +23,7 @@ describe("history views", () => {
       for (const m of ms) {
         await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), { rng: seededRng(1) });
       }
-      await enterResult(t.db, as(ms[0]), { day, matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
+      await enterResult(t.db, as(ms[0]), { day, scheduleKey: attendeeKey(ms.map((m) => m.id)), matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
     }
     return ms;
   }
@@ -35,9 +36,10 @@ describe("history views", () => {
   });
 
   it("getMatchDayDetail: chi tiết, null, VALIDATION", async () => {
-    await setup();
+    const ms = await setup();
     const d = await getMatchDayDetail(t.db, "2026-10-03", NOW);
     expect(d?.participants).toHaveLength(6);
+    expect(d?.key).toBe(attendeeKey(ms.map((m) => m.id)));
     expect(d?.matches).toHaveLength(6);
     expect(d?.matches[0].result).toEqual({ scoreA: 21, scoreB: 15, version: 1 });
     expect(d?.matches[1].result).toBeNull();

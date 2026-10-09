@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { LocalDate, SeasonId } from "@/domain/types";
-import { AppError } from "./errors";
+import { AppError, MESSAGES } from "./errors";
 
 function parse<T>(schema: z.ZodType<T>, raw: unknown, message: string): T {
   const r = schema.safeParse(raw);
@@ -31,6 +31,7 @@ const eloSchema = z
   .transform((s) => Math.round(Number(s) * 10))
   .pipe(z.number().int().gt(0).max(50000));
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const memberIdSchema = z.uuid();
 const seasonSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 
 export const parseUsername = (raw: string): string => parse(usernameSchema, raw, USERNAME_MESSAGE);
@@ -50,3 +51,10 @@ export function parseLocalDate(raw: string): LocalDate {
 }
 
 export const parseSeasonId = (raw: string): SeasonId => parse(seasonSchema, raw, SEASON_MESSAGE);
+
+/** A malformed id can never name a member: NOT_FOUND, like an unknown one. */
+export function parseMemberId(raw: string): string {
+  const r = memberIdSchema.safeParse(raw);
+  if (!r.success) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
+  return r.data;
+}

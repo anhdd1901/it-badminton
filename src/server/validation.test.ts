@@ -3,6 +3,7 @@ import {
   parseDisplayName,
   parseEloInput,
   parseLocalDate,
+  parseMemberId,
   parsePassword,
   parseSeasonId,
   parseUsername,
@@ -28,6 +29,12 @@ describe("validation", () => {
   it("tháng", () => {
     expect(parseSeasonId("2026-10")).toBe("2026-10");
     expect(() => parseSeasonId("2026-13")).toThrow("Tháng không hợp lệ");
+  });
+  it("mã mem", () => {
+    const id = "3f2b8c1e-9a4d-4e7b-8c2a-1d5e6f7a8b9c";
+    expect(parseMemberId(id)).toBe(id);
+    for (const bad of ["not-a-uuid", "", "3f2b8c1e-9a4d-4e7b-8c2a"])
+      expect(() => parseMemberId(bad)).toThrow(expect.objectContaining({ code: "NOT_FOUND", message: "Không tìm thấy mem" }));
   });
   it("tên hiển thị và mật khẩu", () => {
     expect(parseDisplayName("  Đức  ")).toBe("Đức");

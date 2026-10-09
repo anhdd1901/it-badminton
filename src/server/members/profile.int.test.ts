@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import type { Role } from "@/domain/types";
 import type { Actor } from "../actor";
+import { login } from "../auth/login";
 import { createSession, resolveSession } from "../auth/sessions";
 import { members } from "../db/schema";
 import { MESSAGES } from "../errors";
@@ -100,5 +101,23 @@ describe("member profile", () => {
     expect(await resolveSession(t.db, s2.token, vn("2026-10-14T10:01"))).toBeNull();
     await resetPassword(t.db, admin, m.id, "matkhaumoi2");
     expect(await resolveSession(t.db, s1.token, vn("2026-10-14T10:02"))).toBeNull();
+  });
+
+  it("admin đặt lại mật khẩu gỡ khóa đăng nhập", async () => {
+    const m = await makeMember(t.db, { username: "minh.nt" });
+    const admin = actorOf(await makeMember(t.db, { role: "admin" }));
+    const now = vn("2026-10-14T10:00");
+    for (let i = 0; i < 5; i++) await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
+    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({ ok: false, message: MESSAGES.loginLocked });
+    await resetPassword(t.db, admin, m.id, "matkhaumoi2");
+    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi2" }, now)).ok).toBe(true);
+  });
+
+  it("mã mem sai định dạng: NOT_FOUND", async () => {
+    const admin = actorOf(await makeMember(t.db, { role: "admin" }));
+    const notFound = { code: "NOT_FOUND", message: MESSAGES.memberNotFound };
+    await expect(updateDisplayName(t.db, admin, "not-a-uuid", "X")).rejects.toMatchObject(notFound);
+    await expect(changeUsername(t.db, admin, "not-a-uuid", "moi.ten")).rejects.toMatchObject(notFound);
+    await expect(resetPassword(t.db, admin, "not-a-uuid", "matkhaumoi2")).rejects.toMatchObject(notFound);
   });
 });

@@ -30,7 +30,8 @@ export type WeekView = {
   attendees: { member: PlayerRef; recordedBySelf: boolean }[];
   activeMemberCount: number;
   actorAttending: boolean;
-  schedule: { source: "draft" | "official"; matches: WeekMatch[] } | null;
+  /** `key`: attendee key of the schedule; result writes send it back as `scheduleKey`. */
+  schedule: { source: "draft" | "official"; key: string; matches: WeekMatch[] } | null;
   notice:
     | { kind: "NOT_ENOUGH"; count: number }
     | { kind: "NO_DIAGRAM"; seed1: number; seed2: number }
@@ -100,6 +101,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
 
   // Schedule: official if any, else the draft matching the current list.
   let source: "draft" | "official" | null = null;
+  let key = "";
   let seedOf = new Map<string, 1 | 2>();
   let rawMatches: RawMatch[] = [];
   const [official] = await db
@@ -108,6 +110,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     .where(eq(officialSchedules.matchDayId, dayRow.id));
   if (official) {
     source = "official";
+    key = official.attendeeKey;
     seedOf = new Map(official.assignments.map((a) => [a.memberId, a.seed]));
     const rows = await db
       .select({
@@ -134,9 +137,12 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
           : { scoreA: r.scoreA, scoreB: r.scoreB, version: r.version },
     }));
   } else {
-    const draft = ids.length >= 5 ? await findDraft(db, dayRow.id, attendeeKey(ids)) : null;
+    // Drafts cover active attendees only (see refreshDraft).
+    const activeIds = ids.filter((id) => currentSeeds.has(id));
+    const draft = activeIds.length >= 5 ? await findDraft(db, dayRow.id, attendeeKey(activeIds)) : null;
     if (draft) {
       source = "draft";
+      key = draft.attendeeKey;
       seedOf = new Map(draft.assignments.map((a) => [a.memberId, a.seed]));
       rawMatches = draft.matches.map((m) => ({ number: m.number, teamA: m.teamA, teamB: m.teamB, result: null }));
     }
@@ -162,6 +168,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     };
     schedule = {
       source,
+      key,
       matches: rawMatches.map((m) => ({
         number: m.number,
         teamA: [ref(m.teamA[0]), ref(m.teamA[1])],

@@ -52,11 +52,11 @@ export async function getMatchDayDetail(
   db: Db,
   day: string,
   now: Date,
-): Promise<{ day: LocalDate; participants: MemberRef[]; matches: WeekMatch[] } | null> {
+): Promise<{ day: LocalDate; key: string; participants: MemberRef[]; matches: WeekMatch[] } | null> {
   const localDay = parseLocalDate(day);
   await finalizeDue(db, now);
   const [official] = await db
-    .select({ id: officialSchedules.id, assignments: officialSchedules.assignments })
+    .select({ id: officialSchedules.id, key: officialSchedules.attendeeKey, assignments: officialSchedules.assignments })
     .from(officialSchedules)
     .innerJoin(matchDays, eq(officialSchedules.matchDayId, matchDays.id))
     .where(eq(matchDays.day, localDay));
@@ -88,6 +88,7 @@ export async function getMatchDayDetail(
   };
   return {
     day: localDay,
+    key: official.key,
     participants: official.assignments.flatMap((a) => {
       const m = refs.get(a.memberId);
       return m ? [m] : [];
