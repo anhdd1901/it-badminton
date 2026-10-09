@@ -17,14 +17,14 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 ## Trạng thái hiện tại
 
-- **Giai đoạn:** spec đã duyệt. **Kế hoạch 1 xong** (khởi tạo dự án + toàn bộ quy tắc nghiệp vụ trong `src/domain/`, 79 test).
+- **Giai đoạn:** **Kế hoạch 1 xong** (quy tắc nghiệp vụ `src/domain/`). **Kế hoạch 2 xong** (PostgreSQL + lớp nghiệp vụ `src/server/`; 89 test đơn vị, 74 test tích hợp).
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
 - **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
-- **Kế hoạch 2** (database, đăng nhập, lớp nghiệp vụ): đã viết, chờ người dùng duyệt — `docs/superpowers/plans/2026-10-10-plan-2-data-auth-services.md`.
+- **Tiếp theo:** viết kế hoạch 3 (giao diện: Server Action, cookie phiên, các màn hình, avatar).
 - **Cách làm đã thống nhất:** kế hoạch 2–4 làm tiếp trên nhánh `worktree-plan-1-foundation-domain` (worktree `.claude/worktrees/plan-1-foundation-domain`), mỗi kế hoạch: viết → người dùng duyệt → thực hiện bằng subagent-driven-development.
-- **Môi trường:** PostgreSQL chạy bằng Docker; người dùng cần bật Docker và thêm tài khoản vào nhóm `docker` (cần sudo).
+- **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev` và `anh_em_it_test`. Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
 
 ## Tài liệu
 
@@ -42,6 +42,9 @@ Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4
 - `pnpm test` / `pnpm test:watch`: chạy test (Vitest, cố định `TZ=America/Los_Angeles` để lộ lỗi múi giờ)
 - `pnpm typecheck`: kiểm tra kiểu TypeScript (Vitest không kiểm tra kiểu, nên luôn chạy lệnh này)
 - `pnpm lint`, `pnpm build`
+- `pnpm db:up`: bật PostgreSQL (Docker) · `pnpm db:generate`: sinh migration từ `src/server/db/schema.ts` · `pnpm db:migrate`: chạy migration lên database dev
+- `pnpm test:int`: test tích hợp với PostgreSQL thật (`*.int.test.ts`, database test, chạy tuần tự)
+- `pnpm admin:create`: tạo admin đầu tiên · `pnpm admin:reset-password <username>`: đặt lại mật khẩu (cũng mở khóa đăng nhập)
 
 ## Cấu trúc thư mục
 
@@ -50,7 +53,10 @@ CLAUDE.md               file này
 GLOSSARY.md             thuật ngữ nghiệp vụ
 AGENTS.md               quy tắc của Next.js 16 cho agent (do `next dev` tạo lại)
 src/domain/             quy tắc nghiệp vụ thuần (không import Next, DB, React)
+src/server/              lớp nghiệp vụ: db/ (schema, client, lock), auth/, members/, match-days/, data/ (loaders), views/ (dữ liệu cho màn hình)
 src/app/                giao diện Next.js (App Router)
+scripts/                lệnh quản trị (tsx)
+drizzle/                migration
 docs/superpowers/specs/ spec
 docs/design/            prompt Stitch (không dùng nữa, để tham khảo)
 src/fonts/              font tự host (Be Vietnam Pro)
@@ -76,6 +82,8 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 
 - **Next.js 16 khác kiến thức cũ:** trước khi viết code Next, đọc hướng dẫn trong `node_modules/next/dist/docs/` (xem `AGENTS.md`).
 - **Ranh giới `src/domain/`:** hàm nhận `now: Date`, không gọi `new Date()`; chỉ import `date-fns`, `@date-fns/tz` và file trong `src/domain/`. ELO lưu bằng số nguyên phần mười. Domain tin dữ liệu vào: lớp nghiệp vụ (kế hoạch 2) phải kiểm tra `LocalDate`/`SeasonId` bằng Zod, chỉ đưa mem đang hoạt động vào xếp hạt giống, và truyền cho `seasonEndsAt` đúng một mốc thời gian cho mỗi trận có kết quả của thứ 7 cuối mùa.
+- **Lớp nghiệp vụ `src/server/`:** hàm nhận `db`, `Actor`, `now`; tự kiểm quyền; lỗi là `AppError` (code + thông báo tiếng Việt trong `errors.ts`, `HTTP_STATUS` để ánh xạ). Mọi thao tác ghi trên một buổi khóa advisory theo ngày (`lockMatchDay`) và gọi `finalizeDue` trước. Khóa lịch (`scheduleKey`) = danh sách mem *đang hoạt động* đã điểm danh; giao diện phải gửi lại `scheduleKey` lấy từ `getWeekView`/`getMatchDayDetail` khi nhập/sửa/xóa kết quả. Id từ client đi qua `parseMemberId`.
+- **Cho kế hoạch 3 (từ review):** cần thêm dữ liệu cho màn Cá nhân, danh sách mem cho admin, chọn mem kèm username, danh sách tháng có dữ liệu; dịch vụ avatar; client `db` dùng chung (cache trên `globalThis`); ẩn "đặt lại mật khẩu" cho chính admin (sẽ tự đăng xuất).
 - **sharp đang bị tắt build** (`pnpm-workspace.yaml`, `allowBuilds`): bật lại khi làm phần thu nhỏ avatar.
 
 - Người dùng đã có tài khoản GitHub nhưng chưa đưa code lên. Khi tới bước cần GitHub (đẩy code, repo sao lưu riêng tư, GitHub Secrets cho sao lưu ở spec 6.5), nhắc và hướng dẫn người dùng từng bước.
