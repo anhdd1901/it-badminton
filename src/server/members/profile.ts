@@ -11,14 +11,14 @@ export type NewMember = { username: string; displayName: string; password: strin
 
 const UNIQUE_VIOLATION = "23505";
 
-function isUniqueViolation(e: unknown): boolean {
+export function isUniqueViolation(e: unknown): boolean {
   for (let cur = e; typeof cur === "object" && cur !== null; cur = (cur as { cause?: unknown }).cause) {
     if ((cur as { code?: unknown }).code === UNIQUE_VIOLATION) return true;
   }
   return false;
 }
 
-async function usernameExists(db: Db, username: string): Promise<boolean> {
+export async function usernameExists(db: Db, username: string): Promise<boolean> {
   const rows = await db.select({ id: members.id }).from(members).where(eq(members.username, username)).limit(1);
   return rows.length > 0;
 }

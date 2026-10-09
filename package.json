@@ -13,7 +13,9 @@
     "test:int": "vitest run --config vitest.integration.mts",
     "db:up": "docker compose up -d db",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "admin:create": "tsx scripts/admin-create.ts",
+    "admin:reset-password": "tsx scripts/admin-reset-password.ts"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
