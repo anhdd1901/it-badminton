@@ -19,8 +19,9 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 - **Giai đoạn:** spec đã viết và đã soi bằng `grilling`; **chờ người dùng duyệt**.
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
-- **Đang làm:** người dùng thiết kế giao diện bằng Stitch theo `docs/design/stitch-prompts.md`.
-- **Tiếp theo:** người dùng duyệt spec → nhận thiết kế từ Stitch, ghi vào spec (dùng `frontend-design` để rà soát) → `writing-plans`.
+- **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
+- **Đang chờ:** người dùng chép file font Be Vietnam Pro vào `src/fonts/be-vietnam-pro/`.
+- **Tiếp theo:** `writing-plans`.
 
 ## Tài liệu
 
@@ -41,7 +42,8 @@ Chưa có. Khi có, ghi lệnh cài đặt, chạy, test, lint.
 CLAUDE.md               file này
 GLOSSARY.md             thuật ngữ nghiệp vụ
 docs/superpowers/specs/ spec
-docs/design/            prompt thiết kế giao diện cho Stitch
+docs/design/            prompt Stitch (không dùng nữa, để tham khảo)
+src/fonts/              font tự host (Be Vietnam Pro)
 docs/superpowers/plans/ kế hoạch triển khai (chưa có)
 docs/adr/               quyết định kiến trúc (chưa có)
 ```

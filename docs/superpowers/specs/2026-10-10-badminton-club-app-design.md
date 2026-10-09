@@ -234,7 +234,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | CSS | Tailwind CSS | 4.x | giao diện responsive |
 | Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, chọn tháng, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế |
 | Icon | lucide-react | 1.x | |
-| Font | `next/font` | có sẵn trong Next.js | tự host font, không tải từ Google lúc chạy |
+| Font | Be Vietnam Pro qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/be-vietnam-pro/` (8.1) |
 | Database | PostgreSQL | 17 (local), Neon (production) | |
 | Driver | `postgres` (postgres.js) | 3.x | kết nối PostgreSQL, dùng chung cho local và Neon |
 | ORM và migration | Drizzle ORM + drizzle-kit | 0.45.x / 0.31.x | định nghĩa bảng, truy vấn có kiểu, sinh migration |
@@ -320,7 +320,39 @@ Sơ đồ không nằm trong database mà ở file dữ liệu trong mã nguồn
 
 ## 8. Màn hình
 
-Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn đăng nhập, icon màn hình chính và tiêu đề tab: **ANH EM IT**. Điện thoại: thanh điều hướng ở đáy; máy tính: menu bên. Màu sắc, font và bố cục chi tiết sẽ làm bằng `frontend-design` trước khi lập kế hoạch.
+Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn đăng nhập, icon màn hình chính và tiêu đề tab: **ANH EM IT**.
+
+Điều hướng: điện thoại có thanh 5 tab ở đáy (Tuần này, Xếp hạng, Thống kê, Lịch sử, Tôi); máy tính dùng menu bên với cùng 5 mục. Bảng ELO nằm trong tab Xếp hạng (chuyển "Mùa | ELO"); Quản lý mem nằm trong tab Tôi, chỉ admin thấy.
+
+### 8.1 Phong cách giao diện
+
+Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám đậm, một màu nhấn cam duy nhất, danh sách trận gọn. Chỉ mượn bố cục và cách phối màu; không dùng logo, tên hay hình ảnh của LiveScore.
+
+**Theme sáng và tối:** có cả hai. Mặc định theo cài đặt của thiết bị; mem đổi được ở màn "Tôi" (Theo thiết bị / Sáng / Tối), lựa chọn lưu trên thiết bị đó. Mọi màu định nghĩa thành biến CSS dùng chung; thành phần không viết màu cứng.
+
+| Biến | Vai trò | Tối | Sáng |
+|---|---|---|---|
+| `--bg` | nền trang | `#111111` | `#F4F4F5` |
+| `--surface` | thẻ trận, thẻ nội dung | `#1C1C1C` | `#FFFFFF` |
+| `--surface-2` | nền phụ: ô nhập, tab chưa chọn, hàng xen kẽ | `#222222` | `#EDEDED` |
+| `--border` | viền mảnh, đường chia | `#333333` | `#E0E0E0` |
+| `--text` | chữ chính | `#FDFDFD` | `#111111` |
+| `--text-2` | chữ phụ (giờ, nhãn, username) | `#AAAAAA` | `#5C5C5C` |
+| `--accent` | nền nút chính, tab đang chọn, trạng thái nổi bật | `#FF6B00` | `#FF6B00` |
+| `--on-accent` | chữ trên nền `--accent` | `#111111` | `#111111` |
+| `--accent-text` | chữ hoặc icon màu cam trên nền trang | `#FF6B00` | cam đậm (khởi điểm `#B34800`), chỉnh cho đạt tương phản |
+| `--seed-1` | Hạt giống 1 | `#6EA0FF` | `#1F5BD0` |
+| `--seed-2` | Hạt giống 2 | `#4CC98A` | `#13804B` |
+| `--win` | tên và điểm cặp thắng (chữ đậm) | `#FDFDFD` | `#111111` |
+| `--loss` | tên và điểm cặp thua | `#8A8A8A` | `#6B6B6B` |
+| `--danger` | lỗi, nút xóa | `#FF5C5C` | `#C62828` |
+
+- **Tương phản:** mọi cặp chữ/nền phải đạt tối thiểu 4,5:1, kiểm tra bằng test tự động trên bảng màu. Chữ trắng trên nền cam không đạt, nên nút cam luôn dùng `--on-accent`.
+- **Font:** Be Vietnam Pro (có bộ chữ tiếng Việt), tự host bằng `next/font/local` từ `src/fonts/be-vietnam-pro/`. Số (tỷ số, ELO, điểm) dùng chữ số đều độ rộng (`tabular-nums`) để cột thẳng hàng.
+- **Dòng trận:** mỗi trận là một thẻ gọn trên `--surface`: số trận nhỏ bên trái; hai cặp xếp chồng, mỗi cặp một dòng gồm avatar và tên kèm chấm màu hạt giống; tỷ số canh phải, cùng dòng với cặp tương ứng. Cặp thắng dùng `--win` đậm, cặp thua dùng `--loss`. Chưa có tỷ số thì hiện "–".
+- **Nút:** nút chính nền `--accent`, chữ `--on-accent`, bo tròn hoàn toàn; nút phụ nền `--surface-2`. Nhóm lựa chọn (tab, chọn tháng) dạng viên thuốc như thanh chọn môn thể thao của LiveScore: mục đang chọn nổi bật, các mục khác nền `--surface-2`.
+- **Avatar chữ cái:** màu nền cố định theo mem, chọn từ một dải màu đã kiểm tương phản với chữ trắng trong cả hai theme.
+- Chạm tối thiểu 44px; viền focus nhìn rõ trong cả hai theme.
 
 | Màn | Nội dung |
 |---|---|
@@ -330,7 +362,7 @@ Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn �
 | **ELO** | 4.9 |
 | **Thống kê** | tab Theo mem / Theo cặp; bộ lọc 4.10 |
 | **Lịch sử** | danh sách buổi theo tháng; chi tiết buổi: người tham gia, lịch, kết quả; admin sửa kết quả tại đây |
-| **Cá nhân** | đổi tên hiển thị, avatar, mật khẩu; đăng xuất |
+| **Cá nhân** | đổi tên hiển thị, avatar, mật khẩu; chọn giao diện (Theo thiết bị / Sáng / Tối); đăng xuất |
 | **Quản lý mem** (admin) | danh sách (lọc đang hoạt động / đã ngưng); thêm; sửa; ngưng / kích hoạt; đặt lại mật khẩu; sửa ELO; đặt / gỡ subadmin; chuyển quyền admin |
 
 ## 9. Xử lý lỗi
