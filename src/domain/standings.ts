@@ -77,7 +77,7 @@ function compareText(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-function sameStanding<K>(a: Ranked<K>, b: Ranked<K>): boolean {
+function sameStanding(a: { totals: Totals; diff: number }, b: { totals: Totals; diff: number }): boolean {
   return a.totals.wins === b.totals.wins &&
     a.diff === b.diff &&
     a.totals.pointsFor === b.totals.pointsFor &&
