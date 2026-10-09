@@ -29,6 +29,19 @@ describe("auth", () => {
       true,
     );
   });
+  it("khóa không bị vượt qua khi đăng nhập song song", async () => {
+    await makeMember(t.db, { username: "minh.nt" });
+    const now = vn("2026-10-14T10:00");
+    const bad = { username: "minh.nt", password: "sai-mat-khau" };
+    const results = await Promise.all(Array.from({ length: 10 }, () => login(t.db, bad, now)));
+    const messages = results.map((r) => (r.ok ? "ok" : r.message));
+    expect(messages.filter((m) => m === MESSAGES.badLogin).length).toBeLessThanOrEqual(5);
+    expect(messages.filter((m) => m === MESSAGES.loginLocked).length).toBeGreaterThanOrEqual(5);
+    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({
+      ok: false,
+      message: MESSAGES.loginLocked,
+    });
+  });
   it("mem đã ngưng không đăng nhập được và phiên cũ vô hiệu", async () => {
     const m = await makeMember(t.db, { username: "a.b" });
     const r = await login(t.db, { username: "a.b", password: TEST_PASSWORD }, vn("2026-10-14T10:00"));

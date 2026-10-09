@@ -18,8 +18,21 @@ export async function login(
 ): Promise<LoginResult> {
   const username = input.username.trim().toLowerCase();
 
-  const [attempt] = await db.select().from(loginAttempts).where(eq(loginAttempts.username, username));
-  if (attempt?.lockedUntil && attempt.lockedUntil > now) return { ok: false, message: MESSAGES.loginLocked };
+  // Reserve the attempt atomically (row lock) before the slow password check,
+  // so parallel guesses cannot all read the same failed count.
+  const reservation = await db.transaction(async (tx) => {
+    await tx.insert(loginAttempts).values({ username }).onConflictDoNothing();
+    const [row] = await tx.select().from(loginAttempts).where(eq(loginAttempts.username, username)).for("update");
+    if (row.lockedUntil && row.lockedUntil > now) return "locked" as const;
+    const failed = row.failedCount + 1;
+    const locksNow = failed >= MAX_FAILURES;
+    await tx
+      .update(loginAttempts)
+      .set({ failedCount: locksNow ? 0 : failed, lockedUntil: locksNow ? new Date(now.getTime() + LOCK_MS) : null })
+      .where(eq(loginAttempts.username, username));
+    return locksNow ? ("locksNow" as const) : ("counted" as const);
+  });
+  if (reservation === "locked") return { ok: false, message: MESSAGES.loginLocked };
 
   const [member] = await db.select().from(members).where(eq(members.username, username));
   if (member?.active && (await verifyPassword(member.passwordHash, input.password))) {
@@ -27,17 +40,5 @@ export async function login(
     const { token, sessionId } = await createSession(db, member.id, now);
     return { ok: true, token, actor: { memberId: member.id, role: member.role, sessionId } };
   }
-
-  const failed = (attempt?.failedCount ?? 0) + 1;
-  const locked = failed >= MAX_FAILURES;
-  const values = {
-    username,
-    failedCount: locked ? 0 : failed,
-    lockedUntil: locked ? new Date(now.getTime() + LOCK_MS) : null,
-  };
-  await db
-    .insert(loginAttempts)
-    .values(values)
-    .onConflictDoUpdate({ target: loginAttempts.username, set: values });
-  return { ok: false, message: locked ? MESSAGES.loginLocked : MESSAGES.badLogin };
+  return { ok: false, message: reservation === "locksNow" ? MESSAGES.loginLocked : MESSAGES.badLogin };
 }
