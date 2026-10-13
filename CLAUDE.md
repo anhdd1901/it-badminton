@@ -17,6 +17,7 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 ## Trạng thái hiện tại
 
+- **Đang làm ở:** worktree `.claude/worktrees/plan-1-foundation-domain`, nhánh `worktree-plan-1-foundation-domain` (kế hoạch 1 và 2 đã xong, chưa merge). **Trạng thái dưới đây đã cũ; đọc CLAUDE.md trong worktree để biết hiện trạng.**
 - **Giai đoạn:** spec đã viết và đã soi bằng `grilling`; **chờ người dùng duyệt**.
 - **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
