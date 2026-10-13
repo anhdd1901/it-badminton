@@ -4,11 +4,16 @@
 
 Quy trình làm việc chung nằm ở `~/.claude/CLAUDE.md` (brainstorming → spec → writing-plans → thực hiện theo tdd → review → finishing). File này chỉ ghi những gì riêng của dự án.
 
+Quy tắc Next.js 16 cho agent (cũng dùng cho Codex, Cursor…): @AGENTS.md
+
 ## Cập nhật file này
 
 - **Khi nào:** ngay khi chốt một quyết định; thêm hoặc đổi công nghệ, lệnh, cấu trúc thư mục; bắt đầu hoặc xong một giai đoạn; phát hiện điều bất ngờ mà người sau dễ vấp.
 - **Cách ghi:** ghi hiện trạng, không ghi nhật ký. Thông tin cũ thì sửa hoặc xóa, không để song song với thông tin mới. Chi tiết nằm trong spec, kế hoạch hoặc ADR; ở đây chỉ tóm tắt và dẫn link. Quyết định nghiệp vụ thay đổi thì sửa spec trước, rồi sửa tóm tắt ở đây.
 - **Subagent không sửa file này.** Nếu phát hiện điều cần cập nhật, ghi vào báo cáo trả về; agent điều phối sẽ cập nhật.
+- **Trước khi kết thúc session:** cập nhật "Trạng thái hiện tại" (nhất là "Tiếp theo") rồi commit.
+- **Worktree:** nhánh chính chỉ cần dòng "Đang làm ở" trỏ tới worktree; trạng thái đầy đủ nằm ở CLAUDE.md trong worktree. Merge xong thì xóa dòng đó.
+- **Khi mở session mới:** đọc file này → `git log -10`, `git worktree list` → nếu đang dở kế hoạch, đọc ledger `.superpowers/sdd/<kế hoạch>/progress.md` trong worktree. CLAUDE.md lệch với git thì tin git và sửa file này.
 - Giữ file ngắn gọn, dưới khoảng 150 dòng.
 
 ## Tổng quan
@@ -18,10 +23,10 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 ## Trạng thái hiện tại
 
 - **Giai đoạn:** **Kế hoạch 1 xong** (quy tắc nghiệp vụ `src/domain/`). **Kế hoạch 2 xong** (PostgreSQL + lớp nghiệp vụ `src/server/`; 89 test đơn vị, 74 test tích hợp).
-- **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
+- **Đang làm ở:** worktree `.claude/worktrees/plan-1-foundation-domain`, nhánh `worktree-plan-1-foundation-domain` (chưa merge vào `master`).
 - **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
-- **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
+- **Kế hoạch:** chia 4 kế hoạch trong `docs/superpowers/plans/`: 1 Nền móng và lõi quy tắc (xong) · 2 Database, đăng nhập, lớp nghiệp vụ (xong) · 3 Giao diện (chưa viết) · 4 Vận hành (chưa viết).
 - **Tiếp theo:** viết kế hoạch 3 (giao diện: Server Action, cookie phiên, các màn hình, avatar).
 - **Cách làm đã thống nhất:** kế hoạch 2–4 làm tiếp trên nhánh `worktree-plan-1-foundation-domain` (worktree `.claude/worktrees/plan-1-foundation-domain`), mỗi kế hoạch: viết → người dùng duyệt → thực hiện bằng subagent-driven-development.
 - **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev` và `anh_em_it_test`. Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
@@ -85,9 +90,19 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - **Lớp nghiệp vụ `src/server/`:** hàm nhận `db`, `Actor`, `now`; tự kiểm quyền; lỗi là `AppError` (code + thông báo tiếng Việt trong `errors.ts`, `HTTP_STATUS` để ánh xạ). Mọi thao tác ghi trên một buổi khóa advisory theo ngày (`lockMatchDay`) và gọi `finalizeDue` trước. Khóa lịch (`scheduleKey`) = danh sách mem *đang hoạt động* đã điểm danh; giao diện phải gửi lại `scheduleKey` lấy từ `getWeekView`/`getMatchDayDetail` khi nhập/sửa/xóa kết quả. Id từ client đi qua `parseMemberId`.
 - **Cho kế hoạch 3 (từ review):** cần thêm dữ liệu cho màn Cá nhân, danh sách mem cho admin, chọn mem kèm username, danh sách tháng có dữ liệu; dịch vụ avatar; client `db` dùng chung (cache trên `globalThis`); ẩn "đặt lại mật khẩu" cho chính admin (sẽ tự đăng xuất).
 - **sharp đang bị tắt build** (`pnpm-workspace.yaml`, `allowBuilds`): bật lại khi làm phần thu nhỏ avatar.
-
 - Người dùng đã có tài khoản GitHub nhưng chưa đưa code lên. Khi tới bước cần GitHub (đẩy code, repo sao lưu riêng tư, GitHub Secrets cho sao lưu ở spec 6.5), nhắc và hướng dẫn người dùng từng bước.
 - Không có tính năng đánh thay: kết quả luôn tính cho người có tên trong lịch (spec 4.6).
 - Công thức chia ELO trong đội (spec 4.9, bước 4) được suy ra từ ví dụ của người dùng và đã được người dùng xác nhận. Đừng "đơn giản hóa" nó: các ví dụ kiểm chứng phải khớp đến 0,1.
 - Thứ tự số trận trong lịch không phải thứ tự ra sân; chỉ dùng để sắp thứ tự tính ELO.
 - Sơ đồ nằm trong file dữ liệu ở mã nguồn, không ở database. Người dùng gửi sơ đồ mới thì cập nhật file đó và Phụ lục A của spec.
+
+## Việc tồn đọng
+
+Rút từ ledger kế hoạch 1–2 (lỗi nhỏ reviewer để lại). Xử lý xong thì xóa dòng.
+
+- **Kế hoạch 3 nên làm:** `src/app/layout.tsx` còn title "Create Next App", `lang="en"`, README mặc định; tên mem thiếu hiển thị chuỗi rỗng (`views/`); thông báo tuần đếm cả mem đã ngưng có điểm danh.
+- **Bảo mật:** `scripts/cli.ts` in nguyên lỗi lạ (có thể lộ hash mật khẩu trong tham số SQL); đăng nhập với username không tồn tại bỏ qua argon2 (lộ qua thời gian phản hồi); bảng `login_attempts` không bao giờ dọn.
+- **Đồng thời (hiếm):** `setActive`/`transferAdmin` đọc mem đích ngoài transaction; ngưng mem có điểm danh vào sáng thứ 7 đã khóa rồi xóa hết kết quả → `NO_DIAGRAM` tới lần điểm danh sau; dữ liệu màn hình không đọc trong một snapshot.
+- **Test còn thiếu:** biên ngày qua tháng 12→1 và tháng 2, `parseYmd` không kiểm tra; chỉ trận 1 của sơ đồ 10-4-6 được ghim; `canChangeAttendance` ngoài tuần và sau 12:00; podium hạng 2–4; các nhánh lỗi `deleteResult`/`updateResult`, `finalizeDue` chạy đồng thời; rollback khi bị từ chối.
+- **Vệ sinh:** chưa có lệnh format (prettier có nhưng không chạy); output `test:int` có NOTICE `__drizzle_migrations`; `endedSeasons` tải dữ liệu hai lần.
+
