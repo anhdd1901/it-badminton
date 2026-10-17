@@ -44,3 +44,6 @@ next-env.d.ts
 # local tooling
 .claude/worktrees/
 .superpowers/
+
+# graphify
+graphify-out/

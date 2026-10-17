@@ -31,6 +31,7 @@ Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4
 - `pnpm lint`, `pnpm build`
 - `pnpm db:up`: bật PostgreSQL (Docker) · `pnpm db:generate`: sinh migration từ `src/server/db/schema.ts` · `pnpm db:migrate`: chạy migration lên database dev
 - `pnpm test:int`: test tích hợp với PostgreSQL thật (`*.int.test.ts`, database test, chạy tuần tự)
+- `graphify query "..."` / `graphify path A B` / `graphify explain X`: tra đồ thị code · `graphify update .`: dựng lại đồ thị (chỉ code, không tốn token) · `/graphify .` trong Claude Code: dựng lần đầu
 - `pnpm admin:create`: tạo admin đầu tiên · `pnpm admin:reset-password <username>`: đặt lại mật khẩu (cũng mở khóa đăng nhập)
 
 ## Cấu trúc thư mục
@@ -50,6 +51,8 @@ src/fonts/              font tự host (Be Vietnam Pro)
 docs/superpowers/plans/ kế hoạch triển khai (tiến độ = các bước [x])
 docs/backlog.md         việc tồn đọng
 docs/adr/               quyết định kiến trúc (chưa có)
+graphify-out/           đồ thị code của graphify (không commit)
+.claude/skills/graphify/ skill /graphify (cài bằng `graphify install --project`)
 ```
 
 ## Tóm tắt quy tắc then chốt
@@ -81,3 +84,12 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - Công thức chia ELO trong đội (spec 4.9, bước 4) được suy ra từ ví dụ của người dùng và đã được người dùng xác nhận. Đừng "đơn giản hóa" nó: các ví dụ kiểm chứng phải khớp đến 0,1.
 - Thứ tự số trận trong lịch không phải thứ tự ra sân; chỉ dùng để sắp thứ tự tính ELO.
 - Sơ đồ nằm trong file dữ liệu ở mã nguồn, không ở database. Người dùng gửi sơ đồ mới thì cập nhật file đó và Phụ lục A của spec.
+
+## graphify
+
+Đồ thị code nằm ở `graphify-out/` (không commit, mỗi worktree tự dựng). Đồ thị chỉ gồm code; `docs/` và `GLOSSARY.md` bị loại qua `.graphifyignore`, nên quy tắc nghiệp vụ vẫn đọc trong spec. Đồ thị được suy ra từ code: khi nó khác code thì code đúng.
+
+- Khi đã có `graphify-out/graph.json`: chạy `graphify query "<câu hỏi>"` trước lần grep, tìm kiếm hay đọc file nguồn đầu tiên cho một câu hỏi về code, và ghi quy tắc này vào mọi prompt subagent có tìm hiểu code. Chỉ đọc file gốc ở những dòng đồ thị hoặc lần đọc trước đã chỉ ra. Quan hệ giữa hai thứ: `graphify path "<A>" "<B>"`; một khái niệm: `graphify explain "<X>"`.
+- `graphify-out/GRAPH_REPORT.md` chỉ đọc khi cần nhìn tổng thể kiến trúc hoặc khi query/path/explain không đủ.
+- Sau khi sửa code (trước commit của mỗi task) và sau `git pull`/đổi nhánh: chạy `graphify update .`. Không dùng `graphify hook install`: git hook của graphify tự bỏ qua worktree, mà dự án làm việc trong worktree.
+- Chạy lại `graphify claude install` sẽ ghi đè mục này bằng bản tiếng Anh mặc định; sau đó viết lại theo bản này.
