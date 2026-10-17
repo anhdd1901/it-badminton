@@ -1,29 +1,14 @@
 # Dự án: ANH EM IT, app lịch thi đấu câu lạc bộ cầu lông
 
-**Đọc hết file này trước khi làm bất cứ việc gì trong dự án.** File này cho biết dự án đang ở đâu, đã chốt những gì và cần lưu ý gì. Mọi session và agent đều dựa vào nó, nên nó phải luôn đúng với hiện trạng.
+**Đọc hết file này trước khi làm bất cứ việc gì trong dự án.** File này chỉ chứa thông tin tĩnh. Trạng thái và tiến độ không ghi ở đây: xem git, các file kế hoạch (`- [x]`) và context claude-mem, theo mục *Ghi nhớ giữa các session* trong `~/.claude/CLAUDE.md`.
 
-Quy trình làm việc chung nằm ở `~/.claude/CLAUDE.md` (brainstorming → spec → writing-plans → thực hiện theo tdd → review → finishing). File này chỉ ghi những gì riêng của dự án.
+**Bản này trên `master` đã cũ.** Code và CLAUDE.md đầy đủ nằm ở nhánh `worktree-plan-1-foundation-domain` (worktree `.claude/worktrees/plan-1-foundation-domain`, chưa merge). Làm việc ở đó.
 
-## Cập nhật file này
-
-- **Khi nào:** ngay khi chốt một quyết định; thêm hoặc đổi công nghệ, lệnh, cấu trúc thư mục; bắt đầu hoặc xong một giai đoạn; phát hiện điều bất ngờ mà người sau dễ vấp.
-- **Cách ghi:** ghi hiện trạng, không ghi nhật ký. Thông tin cũ thì sửa hoặc xóa, không để song song với thông tin mới. Chi tiết nằm trong spec, kế hoạch hoặc ADR; ở đây chỉ tóm tắt và dẫn link. Quyết định nghiệp vụ thay đổi thì sửa spec trước, rồi sửa tóm tắt ở đây.
-- **Subagent không sửa file này.** Nếu phát hiện điều cần cập nhật, ghi vào báo cáo trả về; agent điều phối sẽ cập nhật.
-- Giữ file ngắn gọn, dưới khoảng 150 dòng.
+Quy trình làm việc chung nằm ở `~/.claude/CLAUDE.md`. File này chỉ ghi những gì riêng của dự án.
 
 ## Tổng quan
 
 Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh cho buổi thứ 7 hằng tuần, app tự xếp lịch đánh đôi theo sơ đồ và hạt giống, admin nhập tỷ số, app tính bảng xếp hạng mùa (mỗi tháng), ELO và thống kê. Dùng trên trình duyệt điện thoại và máy tính.
-
-## Trạng thái hiện tại
-
-- **Đang làm ở:** worktree `.claude/worktrees/plan-1-foundation-domain`, nhánh `worktree-plan-1-foundation-domain` (kế hoạch 1 và 2 đã xong, chưa merge). **Trạng thái dưới đây đã cũ; đọc CLAUDE.md trong worktree để biết hiện trạng.**
-- **Giai đoạn:** spec đã viết và đã soi bằng `grilling`; **chờ người dùng duyệt**.
-- **Đã xong:** chốt toàn bộ yêu cầu, gồm cách tính ELO và 16 sơ đồ trận đấu; viết spec và `GLOSSARY.md`.
-- **Giao diện:** đã chốt phong cách lấy cảm hứng từ livescore.com, bảng màu hai theme sáng/tối và font Be Vietnam Pro (spec 8.1). Không dùng Stitch nữa; `docs/design/` chỉ còn để tham khảo.
-- **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` đã có ở `src/fonts/be-vietnam-pro/`.
-- **Kế hoạch:** chia 4 kế hoạch: 1 Nền móng và lõi quy tắc (đã viết: `docs/superpowers/plans/2026-10-10-plan-1-foundation-domain.md`) · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành.
-- **Tiếp theo:** người dùng duyệt kế hoạch 1 và chọn cách thực hiện.
 
 ## Tài liệu
 
