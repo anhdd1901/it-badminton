@@ -112,7 +112,7 @@ Bảng (`schema.ts`, tên cột snake_case trong DB, camelCase trong TS; id là 
 | `match_results` | scheduled_match_id (khóa chính, cascade), score_a int, score_b int, entered_by → members, entered_at timestamptz, version int mặc định 1 | |
 | `elo_adjustments` | id, member_id → members, elo_tenths int, adjusted_by → members, at timestamptz | |
 
-- [ ] **Step 1: Hạ tầng**
+- [x] **Step 1: Hạ tầng**
 
 `pnpm add drizzle-orm postgres zod @node-rs/argon2` và `pnpm add -D drizzle-kit tsx`. `docker-compose.yml`: service `db`, image `postgres:17`, cổng `5433:5432`, `POSTGRES_PASSWORD=postgres`, mount `docker/init.sql` vào `/docker-entrypoint-initdb.d/` để tạo hai database `anh_em_it_dev` và `anh_em_it_test`, volume có tên. `.env.example`:
 
@@ -123,7 +123,7 @@ DATABASE_URL_TEST=postgres://postgres:postgres@localhost:5433/anh_em_it_test
 
 Script `package.json`: `db:up` (`docker compose up -d db`), `db:generate` (`drizzle-kit generate`), `db:migrate` (`drizzle-kit migrate`), `test:int` (`vitest run --config vitest.integration.mts`). Script và config đọc `.env` bằng `process.loadEnvFile(".env")` khi file tồn tại. Chép `.env.example` thành `.env` ở máy (đã bị `.gitignore`).
 
-- [ ] **Step 2: Viết test thất bại** (`schema.int.test.ts`)
+- [x] **Step 2: Viết test thất bại** (`schema.int.test.ts`)
 
 ```ts
 const t = useTestDb();
@@ -143,10 +143,10 @@ it("username không trùng", async () => {
 it("vn() hiểu là giờ Việt Nam", () => expect(vn("2026-10-17T12:00").toISOString()).toBe("2026-10-17T05:00:00.000Z"));
 ```
 
-- [ ] **Step 3: Chạy để thấy thất bại** · `pnpm db:up && pnpm test:int` · FAIL (module chưa có).
-- [ ] **Step 4: Viết schema, client, lock, harness.** `vitest.integration.mts`: `include: ["src/server/**/*.int.test.ts"]`, `fileParallelism: false`, `globalSetup: "src/server/test/global-setup.ts"` (chạy migration của `drizzle/` lên `DATABASE_URL_TEST` bằng `drizzle-orm/postgres-js/migrator`), cùng alias `@` và `TZ` như `vitest.config.mts`. `vitest.config.mts` thêm `exclude: ["src/server/**/*.int.test.ts"]` (test unit trong `src/server/` vẫn chạy bằng `pnpm test`). Sinh migration: `pnpm db:generate`.
-- [ ] **Step 5: Chạy để thấy pass** · `pnpm test:int` PASS; `pnpm db:migrate` chạy được trên database dev.
-- [ ] **Step 6: Commit** · `git commit -m "feat: add database schema and integration test harness"`
+- [x] **Step 3: Chạy để thấy thất bại** · `pnpm db:up && pnpm test:int` · FAIL (module chưa có).
+- [x] **Step 4: Viết schema, client, lock, harness.** `vitest.integration.mts`: `include: ["src/server/**/*.int.test.ts"]`, `fileParallelism: false`, `globalSetup: "src/server/test/global-setup.ts"` (chạy migration của `drizzle/` lên `DATABASE_URL_TEST` bằng `drizzle-orm/postgres-js/migrator`), cùng alias `@` và `TZ` như `vitest.config.mts`. `vitest.config.mts` thêm `exclude: ["src/server/**/*.int.test.ts"]` (test unit trong `src/server/` vẫn chạy bằng `pnpm test`). Sinh migration: `pnpm db:generate`.
+- [x] **Step 5: Chạy để thấy pass** · `pnpm test:int` PASS; `pnpm db:migrate` chạy được trên database dev.
+- [x] **Step 6: Commit** · `git commit -m "feat: add database schema and integration test harness"`
 
 ---
 
@@ -197,7 +197,7 @@ export function login(db: Db, input: { username: string; password: string }, now
 
 Luật `login` (spec 5.2): chuẩn hóa username (trim, chữ thường). Nếu `locked_until > now` → `MESSAGES.loginLocked`. Đúng mật khẩu và mem đang hoạt động → xóa dòng `login_attempts`, tạo phiên. Sai (kể cả username không tồn tại hoặc mem đã ngưng) → tăng `failed_count`; đạt 5 thì đặt `locked_until = now + 15 phút`, `failed_count = 0` và trả `MESSAGES.loginLocked`; chưa đạt thì `MESSAGES.badLogin`.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const t = useTestDb();
@@ -241,10 +241,10 @@ it("token không lưu dạng rõ", async () => {
 it("resultConflict", () => expect(resultConflict(21, 17)).toBe("Trận này vừa được nhập 21–17, hãy tải lại"));
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · `pnpm test:int src/server/auth` · FAIL.
-- [ ] **Step 3: Viết các file** theo Interfaces.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add password hashing, sessions and login lockout"`
+- [x] **Step 2: Chạy để thấy thất bại** · `pnpm test:int src/server/auth` · FAIL.
+- [x] **Step 3: Viết các file** theo Interfaces.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add password hashing, sessions and login lockout"`
 
 ---
 
@@ -280,7 +280,7 @@ export function changeOwnPassword(db: Db, actor: Actor, current: string, next: s
 
 Username trùng (kể cả khác hoa thường) → `AppError("CONFLICT", MESSAGES.usernameTaken)`. Mem không tồn tại → `NOT_FOUND MESSAGES.memberNotFound`.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 // validation.test.ts
@@ -336,10 +336,10 @@ it("đổi mật khẩu của mình thu hồi phiên khác; admin đặt lại t
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết hai file** theo Interfaces (Zod cho phần kiểm tra định dạng; thông báo đúng như trên).
-- [ ] **Step 4: Chạy để thấy pass** · `pnpm test && pnpm test:int` PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add input validation and member profile services"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết hai file** theo Interfaces (Zod cho phần kiểm tra định dạng; thông báo đúng như trên).
+- [x] **Step 4: Chạy để thấy pass** · `pnpm test && pnpm test:int` PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add input validation and member profile services"`
 
 ---
 
@@ -362,7 +362,7 @@ export function loadCurrentSeeds(db: Db | Tx): Promise<Map<string, Seed>>; // co
 
 `ResultMatch.teamA = [a1, a2]`, `teamB = [b1, b2]`, `matchDay` = `match_days.day` dạng `"YYYY-MM-DD"` (đọc cột `date` dạng chuỗi, không qua `Date`).
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 Test chèn trực tiếp qua Drizzle một buổi `2026-10-10` với lịch chính thức 2 trận (một có kết quả 21–15, một chưa) và một mốc điều chỉnh, rồi kiểm:
 
@@ -384,8 +384,8 @@ it("hạt giống chỉ xét mem đang hoạt động", async () => {
 
 (`a,b,c,d,e` tạo bằng `makeMember`; `inactive` tạo với `active: false`.)
 
-- [ ] **Step 2–4:** chạy thấy FAIL → viết `loaders.ts` → chạy thấy PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add loaders feeding domain rules"`
+- [x] **Step 2–4:** chạy thấy FAIL → viết `loaders.ts` → chạy thấy PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add loaders feeding domain rules"`
 
 ---
 
@@ -414,7 +414,7 @@ export function setAttendance(db: Db, actor: Actor, input: { memberId: string; a
 
 Luật `setAttendance` (spec 4.1, 4.4): gọi `finalizeDue(db, now)` (Task 6 — trong task này gọi qua import, Task 6 thêm thân hàm; tạm để `finalizeDue` là hàm rỗng export từ `schedule.ts`); actor là chính mem đó, hoặc admin/subadmin, ngược lại FORBIDDEN; mem đích phải đang hoạt động, ngược lại `VALIDATION MESSAGES.inactiveMember`; ngày = `matchDayOfWeek(now)`; trong giao dịch: `lockMatchDay`, `getOrCreateMatchDay`, nếu `!canChangeAttendance(day, now, officialResultCount)` → `LOCKED MESSAGES.matchDayLocked`; thêm (ghi `recorded_by = actor.memberId`, `recorded_at = now`) hoặc xóa dòng điểm danh (thêm khi đã có, xóa khi không có: không lỗi); rồi `refreshDraft`.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const t = useTestDb();
@@ -465,8 +465,8 @@ it("hai người điểm danh cùng lúc lúc đủ 5 chỉ tạo một lịch n
 });
 ```
 
-- [ ] **Step 2–4:** FAIL → viết hai file → PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add attendance with draft schedules"`
+- [x] **Step 2–4:** FAIL → viết hai file → PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add attendance with draft schedules"`
 
 ---
 
@@ -500,7 +500,7 @@ Luật (spec 4.5, 4.6): mọi hàm gọi `finalizeDue` trước, `parseLocalDate
 - `updateResult`: như trên nhưng trận phải có kết quả; `version` khác `expectedVersion` → `CONFLICT resultConflict(cũ)`; lưu và tăng `version`.
 - `deleteResult` / `deleteAllResults`: xóa; nếu `now < checkInClosesAt(day)` và lịch chính thức không còn kết quả nào → xóa lịch chính thức (nháp vẫn còn, buổi mở lại).
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 Helper trong test: `setup()` tạo 6 mem, admin là `ms[0]`, subadmin là `ms[1]`, cả 6 điểm danh lúc `vn("2026-10-12T08:00")` với `seededRng(1)`; trả `{ ms, admin, sub, mem }`.
 
@@ -569,8 +569,8 @@ it("xóa hết sau 12:00 không xóa lịch chính thức", async () => {
 });
 ```
 
-- [ ] **Step 2–4:** FAIL → viết → PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add schedule finalization and match results"`
+- [x] **Step 2–4:** FAIL → viết → PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add schedule finalization and match results"`
 
 ---
 
@@ -597,7 +597,7 @@ Luật (spec 5.3, 4.1, 4.9), mọi hàm chỉ admin:
 - `transferAdmin`: `verifyPassword` của actor, sai → `VALIDATION MESSAGES.wrongPassword`; mục tiêu đang hoạt động và khác actor (`VALIDATION "Chỉ chuyển quyền cho mem khác đang hoạt động"`); trong giao dịch: actor → member trước, rồi mục tiêu → admin (để không vi phạm index một admin).
 - `adjustElo`: `parseEloInput`; chèn `elo_adjustments` với `at = now`, `adjusted_by = actor.memberId`.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 it("ngưng mem: thu hồi phiên, mất subadmin, rời điểm danh tuần này", async () => {
@@ -634,8 +634,8 @@ it("mốc điều chỉnh ELO", async () => {
 });
 ```
 
-- [ ] **Step 2–4:** FAIL → viết → PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add member administration services"`
+- [x] **Step 2–4:** FAIL → viết → PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add member administration services"`
 
 ---
 
@@ -669,9 +669,9 @@ export function getWeekView(db: Db, actor: Actor, now: Date): Promise<WeekView>;
 - `notice`: dưới 5 → `NOT_ENOUGH`; từ 5 mà không có lịch → `NO_DIAGRAM` với số Hạt giống 1/2 hiện tại trong danh sách; còn lại `null`.
 - `can.manageAttendance` = admin/subadmin và `canChangeAttendance`; `can.changeOwnAttendance` = `canChangeAttendance`; `can.editResults` = `canEditResults(day, now, role)`.
 
-- [ ] **Step 1: Viết test thất bại** — kiểm: 3 người → `notice NOT_ENOUGH count 3`, `schedule null`; 6 người → `schedule.source "draft"`, 6 trận, mỗi trận đủ 4 `PlayerRef` có tên; sau khi nhập trận 1 → `status "locked"`, `source "official"`, `matches[0].result` = `{ scoreA: 21, scoreB: 15, version: 1 }`; `activeMemberCount` không tính mem đã ngưng; `actorAttending` đúng; 7 người đều Hạt giống 2 (đặt 4 người ELO cao nhất ngưng hoạt động… hoặc tạo 7 mem cùng ELO với 4 mem có ELO cao hơn không điểm danh) → `NO_DIAGRAM { seed1: 0, seed2: 7 }`.
-- [ ] **Step 2–4:** FAIL → viết → PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add this-week view data"`
+- [x] **Step 1: Viết test thất bại** — kiểm: 3 người → `notice NOT_ENOUGH count 3`, `schedule null`; 6 người → `schedule.source "draft"`, 6 trận, mỗi trận đủ 4 `PlayerRef` có tên; sau khi nhập trận 1 → `status "locked"`, `source "official"`, `matches[0].result` = `{ scoreA: 21, scoreB: 15, version: 1 }`; `activeMemberCount` không tính mem đã ngưng; `actorAttending` đúng; 7 người đều Hạt giống 2 (đặt 4 người ELO cao nhất ngưng hoạt động… hoặc tạo 7 mem cùng ELO với 4 mem có ELO cao hơn không điểm danh) → `NO_DIAGRAM { seed1: 0, seed2: 7 }`.
+- [x] **Step 2–4:** FAIL → viết → PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add this-week view data"`
 
 ---
 
@@ -705,9 +705,9 @@ export function getMatchDayDetail(db: Db, day: string, now: Date): Promise<{ day
 
 Mọi hàm gọi `finalizeDue(db, now)` trước. `season`/`day` đi qua `parseSeasonId`/`parseLocalDate`.
 
-- [ ] **Step 1: Viết test thất bại** — dựng 2 buổi (`2026-09-26`, `2026-10-03`) bằng `setAttendance` + `enterResult` với 6 mem và `seededRng`; kiểm: `getSeasonView("2026-09")` có `ended: true` lúc `vn("2026-10-01T08:00")`, `getSeasonView("2026-10")` có `ended: false` lúc `vn("2026-10-04T08:00")`; hạng 1 khớp `seasonStandings` gọi trực tiếp trên `loadResultMatches`; `getEloView` không có mem đã ngưng và `lastMatchDayDelta` của mem không đánh là `null`; `getStatsView({ memberId })` chỉ trả dòng của mem đó và `members[0].podium` khớp; `getHistory` trả tháng 10 trước tháng 9; `getMatchDayDetail("2026-10-16")` ném `VALIDATION "Ngày thi đấu không hợp lệ"`; ngày không có lịch → `null`.
-- [ ] **Step 2–4:** FAIL → viết → PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add rankings, stats and history view data"`
+- [x] **Step 1: Viết test thất bại** — dựng 2 buổi (`2026-09-26`, `2026-10-03`) bằng `setAttendance` + `enterResult` với 6 mem và `seededRng`; kiểm: `getSeasonView("2026-09")` có `ended: true` lúc `vn("2026-10-01T08:00")`, `getSeasonView("2026-10")` có `ended: false` lúc `vn("2026-10-04T08:00")`; hạng 1 khớp `seasonStandings` gọi trực tiếp trên `loadResultMatches`; `getEloView` không có mem đã ngưng và `lastMatchDayDelta` của mem không đánh là `null`; `getStatsView({ memberId })` chỉ trả dòng của mem đó và `members[0].podium` khớp; `getHistory` trả tháng 10 trước tháng 9; `getMatchDayDetail("2026-10-16")` ném `VALIDATION "Ngày thi đấu không hợp lệ"`; ngày không có lịch → `null`.
+- [x] **Step 2–4:** FAIL → viết → PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add rankings, stats and history view data"`
 
 ---
 
@@ -730,8 +730,8 @@ export function resetPasswordByUsername(db: Db, username: string, newPassword: s
 
 Script đọc `DATABASE_URL` từ `.env`, hỏi thông tin bằng `node:readline/promises` (mật khẩu hỏi hai lần, không in ra), gọi hàm trên, in kết quả tiếng Việt, đóng kết nối, thoát mã 1 khi lỗi. `admin:reset-password` nhận username làm tham số: `pnpm admin:reset-password minh.nt`.
 
-- [ ] **Step 1: Viết test thất bại** — `createFirstAdmin` tạo admin với ELO đã nhập; gọi lần hai → VALIDATION đúng thông báo; `resetPasswordByUsername` đổi được mật khẩu (đăng nhập bằng mật khẩu mới thành công) và thu hồi phiên cũ.
-- [ ] **Step 2–4:** FAIL → viết → PASS. Chạy thử script thật trên database dev: `pnpm db:migrate && pnpm admin:create`.
-- [ ] **Step 5: Kiểm tra toàn bộ** · `pnpm test && pnpm test:int && pnpm lint && pnpm typecheck` PASS.
-- [ ] **Step 6: Ghi trong báo cáo** đoạn cần thêm vào `CLAUDE.md` (Trạng thái; Lệnh: `db:up`, `db:migrate`, `db:generate`, `test:int`, `admin:create`, `admin:reset-password`; cấu trúc `src/server/`). Subagent không sửa `CLAUDE.md`.
-- [ ] **Step 7: Commit** · `git commit -m "feat: add admin bootstrap commands"`
+- [x] **Step 1: Viết test thất bại** — `createFirstAdmin` tạo admin với ELO đã nhập; gọi lần hai → VALIDATION đúng thông báo; `resetPasswordByUsername` đổi được mật khẩu (đăng nhập bằng mật khẩu mới thành công) và thu hồi phiên cũ.
+- [x] **Step 2–4:** FAIL → viết → PASS. Chạy thử script thật trên database dev: `pnpm db:migrate && pnpm admin:create`.
+- [x] **Step 5: Kiểm tra toàn bộ** · `pnpm test && pnpm test:int && pnpm lint && pnpm typecheck` PASS.
+- [x] **Step 6: Ghi trong báo cáo** đoạn cần thêm vào `CLAUDE.md` (Trạng thái; Lệnh: `db:up`, `db:migrate`, `db:generate`, `test:int`, `admin:create`, `admin:reset-password`; cấu trúc `src/server/`). Subagent không sửa `CLAUDE.md`.
+- [x] **Step 7: Commit** · `git commit -m "feat: add admin bootstrap commands"`

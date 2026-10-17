@@ -69,22 +69,22 @@ export type Winner = "A" | "B";
 export type Rng = () => number;   // [0, 1)
 ```
 
-- [ ] **Step 1: Tạo app trong thư mục tạm** (thư mục dự án đã có file nên không tạo trực tiếp)
+- [x] **Step 1: Tạo app trong thư mục tạm** (thư mục dự án đã có file nên không tạo trực tiếp)
 
 ```bash
 cd "$(mktemp -d)" && pnpm create next-app@16 app --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-pnpm --yes
 ```
 Expected: thư mục `app/` có `package.json`, `src/app/`.
 
-- [ ] **Step 2: Chép vào dự án mà không ghi đè file đang có**
+- [x] **Step 2: Chép vào dự án mà không ghi đè file đang có**
 
 `rsync -a --ignore-existing <tmp>/app/ /home/doanducanh/Desktop/Test/` (bỏ `.git` và `node_modules` của app tạm), rồi `pnpm install` ở thư mục dự án. Đặt `"name": "anh-em-it"` trong `package.json`. Kiểm tra `tsconfig.json` có `"strict": true`.
 
-- [ ] **Step 3: Thêm Vitest, Prettier, date-fns**
+- [x] **Step 3: Thêm Vitest, Prettier, date-fns**
 
 `pnpm add date-fns @date-fns/tz` và `pnpm add -D vitest prettier`. `vitest.config.ts`: môi trường `node`, `include: ["src/**/*.test.ts"]`, alias `@` → `src`. Script trong `package.json`: `"test": "vitest run"`, `"test:watch": "vitest"`. `.prettierrc.json`: `{ "semi": true, "singleQuote": false, "printWidth": 100 }`. `.gitignore` có `node_modules`, `.next`, `.env*` (trừ `.env.example`).
 
-- [ ] **Step 4: Tạo `src/domain/types.ts` (như trên) và test khói**
+- [x] **Step 4: Tạo `src/domain/types.ts` (như trên) và test khói**
 
 ```ts
 // src/domain/smoke.test.ts
@@ -92,12 +92,12 @@ import { describe, it, expect } from "vitest";
 describe("smoke", () => { it("runs", () => expect(1 + 1).toBe(2)); });
 ```
 
-- [ ] **Step 5: Kiểm tra**
+- [x] **Step 5: Kiểm tra**
 
 Run: `pnpm test && pnpm lint && pnpm build`
 Expected: 1 test pass; lint không lỗi; build thành công.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A && git commit -m "chore: scaffold Next.js app with Vitest"
@@ -127,7 +127,7 @@ export function lastMatchDayOfSeason(season: SeasonId): LocalDate; // thứ 7 cu
 export function isPastMatchDay(matchDay: LocalDate, now: Date): boolean; // now >= weekEnd
 ```
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 Dùng instant UTC để bắt lỗi múi giờ (Review Focus 1). 2026-10-17 là thứ 7.
 
@@ -156,17 +156,17 @@ it("isPastMatchDay", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại**
+- [x] **Step 2: Chạy để thấy thất bại**
 
 Run: `pnpm test src/domain/time.test.ts` · Expected: FAIL (module chưa có).
 
-- [ ] **Step 3: Viết `time.ts`**
+- [x] **Step 3: Viết `time.ts`**
 
 Dùng `TZDate` của `@date-fns/tz` với `TIME_ZONE`, và `startOfISOWeek`/`addDays` của date-fns (tuần ISO bắt đầu thứ 2). Định dạng `LocalDate` bằng `format(d, "yyyy-MM-dd")` trên `TZDate`.
 
-- [ ] **Step 4: Chạy để thấy pass** · Run: `pnpm test src/domain/time.test.ts` · Expected: PASS.
+- [x] **Step 4: Chạy để thấy pass** · Run: `pnpm test src/domain/time.test.ts` · Expected: PASS.
 
-- [ ] **Step 5: Commit** · `git add src/domain/time* && git commit -m "feat: add Vietnam-time week and season helpers"`
+- [x] **Step 5: Commit** · `git add src/domain/time* && git commit -m "feat: add Vietnam-time week and season helpers"`
 
 ---
 
@@ -198,7 +198,7 @@ Luật (spec 4.6), gọi W là điểm cao hơn, L là điểm thấp hơn. Thô
 
 Trong `reason`, W–L luôn ghi điểm cao trước.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 it.each([[21,0],[21,19],[22,20],[25,23],[29,27],[30,28],[30,29]])("hợp lệ %i–%i", (a,b) => {
@@ -219,10 +219,10 @@ it.each([[-1,21],[21.5,19],[NaN,21],[21,Infinity]])("dữ liệu bậy %s–%s",
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · `pnpm test src/domain/score.test.ts` · FAIL.
-- [ ] **Step 3: Viết `checkScore`** theo bảng trên, kiểm tra theo đúng thứ tự các dòng.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add badminton score validation"`
+- [x] **Step 2: Chạy để thấy thất bại** · `pnpm test src/domain/score.test.ts` · FAIL.
+- [x] **Step 3: Viết `checkScore`** theo bảng trên, kiểm tra theo đúng thứ tự các dòng.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add badminton score validation"`
 
 ---
 
@@ -252,7 +252,7 @@ export function rankTotals<K>(rows: ReadonlyMap<K, Totals>): Ranked<K>[];
 
 `rankTotals` sắp: wins giảm → diff giảm → pointsFor giảm → pointsAgainst tăng → played tăng. Bằng nhau cả 5 thì cùng hạng, hạng sau bị bỏ qua (1, 1, 3). Thứ tự hiển thị trong nhóm đồng hạng: theo `String(key)` tăng dần (ổn định).
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const m = (a: Pair, b: Pair, sa: number, sb: number, n = 1): ResultMatch =>
@@ -280,10 +280,10 @@ it("đồng hạng kiểu 1, 1, 3", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết các hàm** theo Interfaces.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add standings with tie-aware ranking"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết các hàm** theo Interfaces.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add standings with tie-aware ranking"`
 
 ---
 
@@ -307,7 +307,7 @@ export function validateDiagram(d: Diagram): string[];   // rỗng nếu hợp l
 export function findDiagram(playerCount: number, seed1: number, seed2: number): Diagram | null;
 ```
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 it("có đúng 16 sơ đồ", () => expect(DIAGRAMS).toHaveLength(16));
@@ -326,13 +326,13 @@ it("trận 1 của 10-4-6 là 1+3 / 2+4", () =>
   expect(findDiagram(10,4,6)?.matches[0]).toEqual([[1,3],[2,4]]));
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết `diagrams.ts`**
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết `diagrams.ts`**
 
 Chép **chính xác** 16 sơ đồ từ Phụ lục A của spec, giữ đúng thứ tự trận. `validateDiagram` kiểm: số trận = số người; mỗi trận 4 vị trí khác nhau; mỗi vị trí trong `diagramSlots(d)` xuất hiện đúng 4 lần; không dùng vị trí ngoài tập đó.
 
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add match diagrams with validation"`
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add match diagrams with validation"`
 
 ---
 
@@ -372,7 +372,7 @@ export function noDiagramMessage(seed1: number, seed2: number): string;
 
 `computeSeeds`: sắp `eloTenths` giảm → `joinedAt` tăng → `id` tăng; 4 người đầu là 1, còn lại 2. `generateSchedule`: dưới 5 → `NOT_ENOUGH`; đúng 5 → sơ đồ "5", xáo cả 5 vào vị trí 1–5; còn lại đếm seed, `findDiagram`, xáo Hạt giống 1 vào 1..k và Hạt giống 2 vào 5..4+n, rồi thay vị trí bằng id mem; `number` bắt đầu từ 1.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 // seeding.test.ts
@@ -415,8 +415,8 @@ it("5 người bỏ qua hạt giống", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết ba file** theo Interfaces. `seededRng`: mulberry32.
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết ba file** theo Interfaces. `seededRng`: mulberry32.
 
 ```ts
 export function seededRng(seed: number): Rng {
@@ -426,8 +426,8 @@ export function seededRng(seed: number): Rng {
 }
 ```
 
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add seeding and schedule generation"`
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add seeding and schedule generation"`
 
 ---
 
@@ -462,7 +462,7 @@ mỗi đội: m = min(|R1 − R2| / 2000, 1)
 đội thắng nhận +, đội thua nhận −
 ```
 
-- [ ] **Step 1: Viết test thất bại** (bảng ví dụ kiểm chứng của spec, đơn vị phần mười)
+- [x] **Step 1: Viết test thất bại** (bảng ví dụ kiểm chứng của spec, đơn vị phần mười)
 
 ```ts
 it("hai đội ngang nhau", () =>
@@ -483,10 +483,10 @@ it("chênh ≥ 2000 thì m = 1", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết `eloMatchDeltas`** theo thuật toán trên.
-- [ ] **Step 4: Chạy để thấy pass** · PASS. Nếu một ví dụ lệch 0,1, sửa code chứ không sửa số mong đợi (CLAUDE.md, mục Lưu ý).
-- [ ] **Step 5: Commit** · `git commit -m "feat: add doubles ELO calculation"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết `eloMatchDeltas`** theo thuật toán trên.
+- [x] **Step 4: Chạy để thấy pass** · PASS. Nếu một ví dụ lệch 0,1, sửa code chứ không sửa số mong đợi (CLAUDE.md, mục Lưu ý).
+- [x] **Step 5: Commit** · `git commit -m "feat: add doubles ELO calculation"`
 
 ---
 
@@ -516,7 +516,7 @@ export function replayElo(input: EloInput): EloState;
 
 Thứ tự sự kiện: trận đặt tại `checkInClosesAt(matchDay)`; điều chỉnh tại `at`. Sắp theo thời điểm; cùng thời điểm thì điều chỉnh trước; các trận cùng buổi theo `number`. Điều chỉnh đặt ELO = giá trị mới (không tính vào `lastMatchDayDelta`). Người thắng của trận suy ra từ `scoreA > scoreB`.
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const init = new Map([["a",10000],["b",10000],["c",10000],["d",10000]]);
@@ -550,10 +550,10 @@ it("mem trong trận không có ELO ban đầu thì ném lỗi", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết `replayElo`.** Lỗi thiếu ELO ban đầu: `throw new Error(\`Thiếu ELO ban đầu của mem ${id}\`)`.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add ELO replay with adjustments"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết `replayElo`.** Lỗi thiếu ELO ban đầu: `throw new Error(\`Thiếu ELO ban đầu của mem ${id}\`)`.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add ELO replay with adjustments"`
 
 ---
 
@@ -578,7 +578,7 @@ export function canChangeAttendance(matchDay: LocalDate, now: Date, officialResu
 export function canEditResults(matchDay: LocalDate, now: Date, role: Role): boolean;
 ```
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const day = "2026-10-17";
@@ -603,10 +603,10 @@ it("canEditResults", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết ba hàm** theo Interfaces.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add match day status and time-based permissions"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết ba hàm** theo Interfaces.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add match day status and time-based permissions"`
 
 ---
 
@@ -630,7 +630,7 @@ export type Podium = { first: number; second: number; third: number; fourth: num
 export function podiumCounts(endedSeasonStandings: readonly Ranked<MemberId>[][]): Map<MemberId, Podium>;
 ```
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const noon = new Date("2026-10-31T05:00:00Z");
@@ -652,10 +652,10 @@ it("podiumCounts tính cả đồng hạng", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết các hàm** theo Interfaces.
-- [ ] **Step 4: Chạy để thấy pass** · PASS.
-- [ ] **Step 5: Commit** · `git commit -m "feat: add season end and podium counts"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết các hàm** theo Interfaces.
+- [x] **Step 4: Chạy để thấy pass** · PASS.
+- [x] **Step 5: Commit** · `git commit -m "feat: add season end and podium counts"`
 
 ---
 
@@ -681,7 +681,7 @@ export function pairStats(matches: readonly ResultMatch[], filter: StatsFilter):
 - `memberStats`: cột chỉ số từ các trận trong khoảng; `podium` từ `seasonStandings` của các mùa thuộc `endedSeasons` **và** nằm trong khoảng. Mem không có podium thì `{0,0,0,0}`. Lọc `memberId`: chỉ trả dòng của mem đó (giữ hạng tính trên toàn bộ).
 - `pairStats`: lọc `memberId` giữ các cặp có mem đó (giữ hạng tính trên toàn bộ).
 
-- [ ] **Step 1: Viết test thất bại**
+- [x] **Step 1: Viết test thất bại**
 
 ```ts
 const M = (day: string, a: Pair, b: Pair, sa: number, sb: number): ResultMatch =>
@@ -710,8 +710,8 @@ it("pairStats gộp cặp không phân thứ tự", () => {
 });
 ```
 
-- [ ] **Step 2: Chạy để thấy thất bại** · FAIL.
-- [ ] **Step 3: Viết ba hàm** theo Interfaces.
-- [ ] **Step 4: Chạy toàn bộ test** · Run: `pnpm test && pnpm lint` · Expected: mọi test PASS, lint sạch.
-- [ ] **Step 5: Cập nhật `CLAUDE.md`** mục Trạng thái (Kế hoạch 1 xong) và Lệnh (`pnpm test`, `pnpm test:watch`, `pnpm lint`, `pnpm build`, `pnpm dev`). Nếu là subagent: ghi các thay đổi cần cập nhật vào báo cáo thay vì sửa file.
-- [ ] **Step 6: Commit** · `git commit -m "feat: add filtered member and pair statistics"`
+- [x] **Step 2: Chạy để thấy thất bại** · FAIL.
+- [x] **Step 3: Viết ba hàm** theo Interfaces.
+- [x] **Step 4: Chạy toàn bộ test** · Run: `pnpm test && pnpm lint` · Expected: mọi test PASS, lint sạch.
+- [x] **Step 5: Cập nhật `CLAUDE.md`** mục Trạng thái (Kế hoạch 1 xong) và Lệnh (`pnpm test`, `pnpm test:watch`, `pnpm lint`, `pnpm build`, `pnpm dev`). Nếu là subagent: ghi các thay đổi cần cập nhật vào báo cáo thay vì sửa file.
+- [x] **Step 6: Commit** · `git commit -m "feat: add filtered member and pair statistics"`
