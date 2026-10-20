@@ -156,6 +156,9 @@ describe("member profile", () => {
       code: "VALIDATION",
       message: "Hãy đổi mật khẩu của mình ở màn Tôi",
     });
+    await expect(
+      resetPassword(t.db, admin, adminMember.id.toUpperCase(), "matkhaumoi2"),
+    ).rejects.toMatchObject({ code: "VALIDATION" });
     expect(await resolveSession(t.db, s.token, vn("2026-10-14T10:01"))).not.toBeNull();
     expect(
       (await login(t.db, { username: "quan.tri", password: TEST_PASSWORD }, vn("2026-10-14T10:02")))

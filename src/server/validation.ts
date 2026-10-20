@@ -55,9 +55,13 @@ export function parseLocalDate(raw: string): LocalDate {
 
 export const parseSeasonId = (raw: string): SeasonId => parse(seasonSchema, raw, SEASON_MESSAGE);
 
-/** A malformed id can never name a member: NOT_FOUND, like an unknown one. */
+/**
+ * A malformed id can never name a member: NOT_FOUND, like an unknown one.
+ * Returns the lowercase canonical form: Postgres matches uuids case-insensitively, so every
+ * comparison with `actor.memberId` (self checks) must see the same spelling.
+ */
 export function parseMemberId(raw: string): string {
   const r = memberIdSchema.safeParse(raw);
   if (!r.success) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
-  return r.data;
+  return r.data.toLowerCase();
 }

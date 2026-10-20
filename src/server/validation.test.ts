@@ -34,6 +34,7 @@ describe("validation", () => {
   it("mã mem", () => {
     const id = "3f2b8c1e-9a4d-4e7b-8c2a-1d5e6f7a8b9c";
     expect(parseMemberId(id)).toBe(id);
+    expect(parseMemberId(id.toUpperCase())).toBe(id);
     for (const bad of ["not-a-uuid", "", "3f2b8c1e-9a4d-4e7b-8c2a"])
       expect(() => parseMemberId(bad)).toThrow(
         expect.objectContaining({ code: "NOT_FOUND", message: "Không tìm thấy mem" }),
