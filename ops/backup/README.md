@@ -19,6 +19,8 @@ Tab **Actions** → **Backup** → **Run workflow** → **Run workflow**.
 1. Mở commit của bản cần dùng, bấm vào `anh-em-it.sql.gz` → **Download raw file**.
 2. Trong repo mã nguồn, chạy `pnpm db:restore <đường-dẫn-file>` (xem `docs/ops/runbook.md`, mục 7 và 8). Lệnh sẽ hỏi tên database trước khi ghi đè.
 
+Lưu ý: chỉ khôi phục được các bản sao lưu từ commit có script hiện tại (dump chỉ gồm schema `public` và `drizzle`). Bản dump toàn database do phiên bản script cũ tạo ra sẽ bị từ chối và được hoàn tác, không làm hỏng database đích.
+
 ## Secret
 
 - `DATABASE_URL`: chuỗi kết nối **trực tiếp** tới Neon (giá trị `DATABASE_URL_UNPOOLED` trên Vercel). Đổi mật khẩu Neon thì cập nhật secret này.
