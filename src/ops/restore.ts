@@ -6,6 +6,7 @@ import { RESET_SQL, checkRestoreFile } from "./restore-guard";
 /**
  * Replaces the whole database at `url` with the dump in `file`, in one transaction, using the
  * PostgreSQL 17 `psql` from Docker. The URL is passed through the environment, never argv.
+ * psql errors go straight to the terminal (libpq messages name host and user, never the password).
  */
 export async function restoreDatabase(url: string, file: string): Promise<void> {
   const kind = checkRestoreFile(file);
@@ -30,7 +31,7 @@ export async function restoreDatabase(url: string, file: string): Promise<void> 
     {
       input,
       env: { ...process.env, PGURL: url },
-      stdio: ["pipe", "ignore", "pipe"],
+      stdio: ["pipe", "ignore", "inherit"],
       maxBuffer: 64 * 1024 * 1024,
     },
   );

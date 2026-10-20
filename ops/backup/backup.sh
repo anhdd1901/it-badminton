@@ -12,6 +12,7 @@ fi
 export PGURL="$BACKUP_DATABASE_URL"
 out="$dir/anh-em-it.sql.gz"
 tmp="$out.tmp"
+trap 'rm -f "$tmp"' EXIT
 
 dump() {
   docker run --rm --network host -e PGURL postgres:17 \
@@ -25,6 +26,7 @@ if ! dump; then
 fi
 # pg_dump 17.6+ writes a random \restrict key into every dump. Keep the old file when only that
 # key differs, so an unchanged week produces no commit (the random key itself stays, it guards psql).
+gzip -t "$tmp"
 content() { gzip -dc "$1" | grep -Ev '^\\(un)?restrict '; }
 if [ -f "$out" ] && cmp -s <(content "$out") <(content "$tmp"); then
   rm "$tmp"

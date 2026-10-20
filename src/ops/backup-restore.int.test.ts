@@ -1,8 +1,8 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { gunzipSync } from "node:zlib";
+import { gunzipSync, gzipSync } from "node:zlib";
 import { sql } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDb } from "@/server/db/client";
@@ -85,6 +85,16 @@ describe("sao lưu và khôi phục", () => {
       expect(rows).toEqual([{ username: "chu.nhiem" }]);
     }
   }, 180_000);
+
+  it("file dump lỗi giữa chừng thì database đích giữ nguyên", async () => {
+    const bad = path.join(dir, "hong.sql.gz");
+    writeFileSync(bad, gzipSync("CREATE TABLE public.tam (id int);\nSELECT 1/0;\n"));
+    await expect(restoreDatabase(restoreUrl(), bad)).rejects.toThrow();
+    const { db, close } = createDb(restoreUrl());
+    const rows = await db.select({ username: members.username }).from(members);
+    await close();
+    expect(rows).toEqual([{ username: "chu.nhiem" }]);
+  }, 120_000);
 
   it("backup.sh báo lỗi khi thiếu BACKUP_DATABASE_URL", () => {
     expect(() => run("backup.sh", { BACKUP_DATABASE_URL: "" })).toThrow();

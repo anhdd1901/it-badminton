@@ -18,7 +18,7 @@
 - Migration chỉ chạy khi `VERCEL_ENV === "production"`; preview deployment không đụng database production.
 - Vercel function region `sin1`; Neon region AWS `ap-southeast-1`.
 - `pg_dump` và `psql` chạy bằng `docker run --rm postgres:17 …` cho khớp phiên bản server 17.
-- Sao lưu: cron `0 16 * * 0` (UTC) = chủ nhật 23:00 giờ Việt Nam. Một file `anh-em-it.sql.gz` (`pg_dump --format=plain --no-owner --no-privileges`, `gzip -n`), ghi đè mỗi tuần, lịch sử git giữ các bản cũ. Dữ liệu không đổi thì không commit.
+- Sao lưu: cron `17 16 * * 0` (UTC) = chủ nhật 23:17 giờ Việt Nam (lệch khỏi phút 0 vì GitHub hay trễ lịch đúng giờ). Một file `anh-em-it.sql.gz` (`pg_dump --format=plain --no-owner --no-privileges`, `gzip -n`), ghi đè mỗi tuần, lịch sử git giữ các bản cũ. Dữ liệu không đổi thì không commit.
 - Bước đánh dấu **[Người dùng]** do người dùng làm theo runbook; agent điều phối hướng dẫn từng bước trong chat, chờ người dùng báo xong rồi chạy bước kiểm tra kế tiếp. Subagent không làm các bước này.
 - Commit sau mỗi task: `<loại>(plan-4/task-N): …`; xác minh `pnpm test && pnpm test:int && pnpm lint && pnpm typecheck && pnpm format:check && pnpm build`.
 
@@ -140,7 +140,7 @@ src/app/manifest.ts, src/app/icon.png, src/app/apple-icon.png, public/icons/*
   2. Vercel → Storage → Create → Neon (Marketplace), region Singapore, nối vào project cho cả Production/Preview/Development → kiểm tra có `DATABASE_URL`, `DATABASE_URL_UNPOOLED`.
   3. Vercel → Storage → Create → Blob, nối vào project → có `BLOB_READ_WRITE_TOKEN`.
   4. Deploy lại (Redeploy) để migration chạy; đọc build log có "Đã chạy migration".
-  5. Tạo admin đầu tiên từ máy: tạo `.env.production.local` chỉ chứa `DATABASE_URL_UNPOOLED=…` (copy từ Vercel → Settings → Environment Variables), chạy `ENV_FILE=.env.production.local pnpm admin:create`.
+  5. Tạo admin đầu tiên từ máy: tạo `.env.prod-admin` chỉ chứa `DATABASE_URL_UNPOOLED=…` (copy từ Vercel → Settings → Environment Variables), chạy `ENV_FILE=.env.prod-admin pnpm admin:create`.
   6. Tạo repo riêng tư `it-badminton-backup` (không tick README), thêm secret `DATABASE_URL` = giá trị `DATABASE_URL_UNPOOLED`; đẩy `backup.sh`, `commit.sh`, `README.md`, `.github/workflows/backup.yml` lên; Actions → Backup → Run workflow; kiểm commit có `anh-em-it.sql.gz`.
   7. Diễn tập khôi phục vào database dev local.
   8. Khi cần khôi phục production: các bước và cảnh báo.
@@ -159,7 +159,7 @@ Agent điều phối làm task này trực tiếp trong chat (không giao subage
 - [ ] **Step 1: [Người dùng] Runbook mục 1–3** (Vercel project, Neon, Blob). Agent kiểm: người dùng gửi URL `*.vercel.app` của bản deploy.
 - [ ] **Step 2: [Người dùng] Runbook mục 4** (Redeploy). Agent kiểm: người dùng dán dòng build log có "Đã chạy migration" (không dán biến môi trường).
 - [ ] **Step 3: Agent kiểm header production:** `curl -sI https://<app>.vercel.app/dang-nhap` có `strict-transport-security`, `content-security-policy` với `nonce-`, `x-content-type-options: nosniff`, `referrer-policy: strict-origin-when-cross-origin`.
-- [ ] **Step 4: [Người dùng] Runbook mục 5** (tạo admin). Agent nhắc xóa `.env.production.local` sau khi dùng hoặc giữ lại nhưng không commit (đã nằm trong `.gitignore`).
+- [ ] **Step 4: [Người dùng] Runbook mục 5** (tạo admin). Agent nhắc xóa `.env.prod-admin` sau khi dùng hoặc giữ lại nhưng không commit (đã nằm trong `.gitignore`).
 - [ ] **Step 5: Agent chạy thử bằng `agent-browser` trên production** với tài khoản admin người dùng cung cấp (mật khẩu bọc trong `<private>`): đăng nhập; màn Tuần này hiện đúng ngày; đổi theme; tải avatar ở màn Tôi → URL ảnh thuộc `*.public.blob.vercel-storage.com`, ảnh hiện được (CSP cho phép); xóa avatar; đăng xuất. Chụp màn hình ở 390×844. Không tạo dữ liệu thi đấu thử trên production.
 - [ ] **Step 6: Kiểm Neon ngủ:** chờ Neon tạm ngưng (mặc định 5 phút không dùng), mở `/` → khung đang tải rồi trang hiện, không lỗi.
 - [ ] **Step 7:** Xóa mục "chưa thử `blobAvatarStore` với Vercel Blob thật" khỏi backlog; commit `docs(plan-4/task-5): record production go-live`.

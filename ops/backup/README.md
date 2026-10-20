@@ -6,7 +6,7 @@
 
 - `anh-em-it.sql.gz`: bản sao lưu mới nhất của database production (`pg_dump` dạng SQL, nén gzip). Các bản cũ nằm trong lịch sử commit.
 - `backup.sh`, `commit.sh`: script tạo và commit bản sao lưu.
-- `.github/workflows/backup.yml`: chạy sao lưu mỗi **chủ nhật 23:00** giờ Việt Nam. Tuần nào dữ liệu không đổi thì không có commit mới.
+- `.github/workflows/backup.yml`: chạy sao lưu mỗi **chủ nhật 23:17** giờ Việt Nam. Tuần nào dữ liệu không đổi thì không có commit mới.
 
 Bản gốc của các file này nằm ở `ops/backup/` trong repo mã nguồn `it-badminton`. Sửa ở đó trước rồi chép sang đây.
 

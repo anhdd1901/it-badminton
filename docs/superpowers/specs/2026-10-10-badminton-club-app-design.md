@@ -278,7 +278,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Test đầu cuối | Playwright | 1.64.x | các luồng chính trên trình duyệt |
 | PostgreSQL cho dev và test | Docker (`postgres:17`) | | database local và database test tách riêng |
 | Lint, format | ESLint (cấu hình của Next.js) + Prettier | 10.x / 3.x | |
-| Hosting | Vercel (gói Hobby), tên miền miễn phí `*.vercel.app` (ví dụ `anh-em-it.vercel.app` nếu còn trống) | | deploy từ git; function chạy ở region `sin1`; migration tự chạy khi deploy production (`vercel.json`), bản preview không đụng database production |
+| Hosting | Vercel (gói Hobby), tên miền miễn phí `*.vercel.app` (ví dụ `anh-em-it.vercel.app` nếu còn trống) | | deploy từ git; function chạy ở region `sin1`; migration tự chạy sau khi build xong ở deploy production (`vercel.json`); database Neon chỉ nối vào môi trường Production, bản preview không có database |
 | Sao lưu | GitHub Actions + `pg_dump` | | sao lưu tự động hằng tuần (6.5) |
 
 **Không dùng:** thư viện auth bên ngoài (NextAuth/Auth.js…), vì đăng nhập username/mật khẩu với phiên ở server đơn giản hơn tự viết; thư viện quản lý state hay React Query, vì dữ liệu đọc qua Server Components; service worker.
@@ -324,7 +324,7 @@ Chỉ cân nhắc thêm thư viện khi phát sinh yêu cầu mới: cập nhậ
 Neon gói miễn phí lưu dữ liệu bền nhưng chỉ khôi phục được về trạng thái trong 6 giờ gần nhất; không có database miễn phí nào thay được việc sao lưu. Sao lưu ở đây để chống lỗi của người hoặc của code (xóa nhầm, bug ghi sai).
 
 - Mã nguồn dự án nằm trên GitHub.
-- Một workflow GitHub Actions chạy mỗi **chủ nhật 23:00** giờ Việt Nam: `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
+- Một workflow GitHub Actions chạy mỗi **chủ nhật 23:17** giờ Việt Nam (lệch khỏi phút 0 cho GitHub ít trễ lịch): `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
 - Chuỗi kết nối database và quyền ghi vào repo sao lưu lưu trong GitHub Secrets.
 - Workflow nằm trong chính repo sao lưu riêng tư (`it-badminton-backup`), để log và secret không lộ ra repo mã nguồn công khai; bản gốc của workflow và script giữ ở `ops/backup/` trong repo mã nguồn.
 - Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL, không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:17` cho khớp phiên bản server.

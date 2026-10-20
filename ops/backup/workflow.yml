@@ -4,8 +4,8 @@ name: Backup
 
 on:
   schedule:
-    # Sunday 23:00 Asia/Ho_Chi_Minh (16:00 UTC).
-    - cron: "0 16 * * 0"
+    # Sunday 23:17 Asia/Ho_Chi_Minh (16:17 UTC); off the hour, when GitHub delays fewer runs.
+    - cron: "17 16 * * 0"
   workflow_dispatch:
 
 permissions:
@@ -28,9 +28,9 @@ jobs:
       - name: Dump database
         env:
           BACKUP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: ./backup.sh .
+        run: bash ./backup.sh .
 
       - name: Commit and push
         run: |
-          ./commit.sh .
+          bash ./commit.sh .
           git push

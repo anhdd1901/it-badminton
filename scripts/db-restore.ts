@@ -29,7 +29,14 @@ async function main(): Promise<void> {
     console.error("Đã hủy");
     process.exit(1);
   }
-  await restoreDatabase(url, file);
+  try {
+    await restoreDatabase(url, file);
+  } catch {
+    console.error(
+      "Khôi phục thất bại, database không bị thay đổi (đã hoàn tác). Xem lỗi của psql ở trên.",
+    );
+    process.exit(1);
+  }
   console.log("Đã khôi phục");
 }
 
