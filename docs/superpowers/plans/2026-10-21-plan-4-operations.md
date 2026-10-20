@@ -91,11 +91,11 @@ src/app/manifest.ts, src/app/icon.png, src/app/apple-icon.png, public/icons/*
 **Interfaces:**
 - Icon: nền `#111111`, chữ "AE" màu `#FF6B00`, font `src/fonts/be-vietnam-pro/BeVietnamPro-Bold.ttf` (sharp `text` với `fontfile`), chữ chiếm khoảng 55% chiều rộng; bản maskable để chữ nằm trong vùng an toàn 80% ở giữa.
 
-- [ ] **Step 1: Viết test (fail)** — `manifest.test.ts`: `manifest().icons` có đúng 3 mục `/icons/icon-192.png` (192x192), `/icons/icon-512.png` (512x512), `/icons/icon-maskable-512.png` (512x512, `purpose: "maskable"`); mỗi file tồn tại trong `public/` và `sharp(file).metadata()` đúng kích thước.
-- [ ] **Step 2: Chạy `pnpm test src/app/manifest.test.ts`** → FAIL.
-- [ ] **Step 3: Viết `make-icons.ts`, chạy `pnpm icons`, cập nhật `manifest.ts`, chuyển `shadcn`, xóa file mẫu không dùng (grep trước khi xóa).**
-- [ ] **Step 4: Chạy lại** → PASS; `pnpm audit --prod` không còn mục `braces`; `pnpm build` sạch.
-- [ ] **Step 5: Commit** `feat(plan-4/task-2): add PWA icons, move shadcn to dev dependencies`.
+- [x] **Step 1: Viết test (fail)** — `manifest.test.ts`: `manifest().icons` có đúng 3 mục `/icons/icon-192.png` (192x192), `/icons/icon-512.png` (512x512), `/icons/icon-maskable-512.png` (512x512, `purpose: "maskable"`); mỗi file tồn tại trong `public/` và `sharp(file).metadata()` đúng kích thước.
+- [x] **Step 2: Chạy `pnpm test src/app/manifest.test.ts`** → FAIL.
+- [x] **Step 3: Viết `make-icons.ts`, chạy `pnpm icons`, cập nhật `manifest.ts`, chuyển `shadcn`, xóa file mẫu không dùng (grep trước khi xóa).**
+- [x] **Step 4: Chạy lại** → PASS; `pnpm audit --prod` không còn mục `braces`; `pnpm build` sạch.
+- [x] **Step 5: Commit** `feat(plan-4/task-2): add PWA icons, move shadcn to dev dependencies`.
 
 ---
 
