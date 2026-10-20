@@ -80,7 +80,7 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - Client component và `src/ui/` chỉ được `import type` từ `@/server/*` và `@/app/_lib/*` (rule ESLint); `src/server/` không có `import "server-only"` vì lệnh quản trị, Vitest và seed e2e cũng dùng nó (spec 5.4).
 - Server Action đi qua `runAction` (`src/app/_lib/action.ts`), trừ `loginAction`/`logoutAction`; action chỉ đọc dữ liệu thì truyền `{ revalidate: false }`.
 - `ALLOW_FAKE_CLOCK=1` + `APP_FAKE_NOW` chỉ dùng cho e2e/local (`src/app/_lib/clock.ts`); không bao giờ đặt ở môi trường production.
-- **Nhánh làm việc:** `master` là nhánh chính. Mỗi kế hoạch mới: viết → người dùng duyệt → tạo worktree riêng (`using-git-worktrees`) → thực hiện bằng subagent-driven-development → merge về `master`. Worktree mới cần `pnpm install` và chép `.env`.
+- **Nhánh làm việc:** `main` là nhánh chính (remote `origin` trên GitHub). Mỗi kế hoạch mới: viết → người dùng duyệt → tạo worktree riêng (`using-git-worktrees`) → thực hiện bằng subagent-driven-development → merge về `main`. Worktree mới cần `pnpm install` và chép `.env`.
 - **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev`, `anh_em_it_test` và `anh_em_it_e2e` (e2e tự tạo). Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` ở `src/fonts/be-vietnam-pro/`.
 - **Next.js 16 khác kiến thức cũ:** trước khi viết code Next, đọc hướng dẫn trong `node_modules/next/dist/docs/` (xem `AGENTS.md`).
