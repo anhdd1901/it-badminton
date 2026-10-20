@@ -146,9 +146,9 @@ src/app/manifest.ts, src/app/icon.png, src/app/apple-icon.png, public/icons/*
   8. Khi cần khôi phục production: các bước và cảnh báo.
   9. Đổi/thu hồi secret khi lộ: Neon reset password, cập nhật Vercel env và secret repo sao lưu.
 
-- [ ] **Step 1: Viết `workflow.yml`, chạy `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest ops/backup/workflow.yml`** → không lỗi.
-- [ ] **Step 2: Viết `ops/backup/README.md` và `docs/ops/runbook.md`.**
-- [ ] **Step 3: Commit** `docs(plan-4/task-4): add backup workflow and operations runbook`.
+- [x] **Step 1: Viết `workflow.yml`, chạy `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest ops/backup/workflow.yml`** → không lỗi.
+- [x] **Step 2: Viết `ops/backup/README.md` và `docs/ops/runbook.md`.**
+- [x] **Step 3: Commit** `docs(plan-4/task-4): add backup workflow and operations runbook`.
 
 ---
 

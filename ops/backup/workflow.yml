@@ -1,0 +1,36 @@
+# Copy of .github/workflows/backup.yml in the private backup repo (it-badminton-backup).
+# Edit here first, then copy to the backup repo (see docs/ops/runbook.md).
+name: Backup
+
+on:
+  schedule:
+    # Sunday 23:00 Asia/Ho_Chi_Minh (16:00 UTC).
+    - cron: "0 16 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: backup
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure git
+        run: |
+          git config user.name "backup-bot"
+          git config user.email "backup-bot@users.noreply.github.com"
+
+      - name: Dump database
+        env:
+          BACKUP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: ./backup.sh .
+
+      - name: Commit and push
+        run: |
+          ./commit.sh .
+          git push
