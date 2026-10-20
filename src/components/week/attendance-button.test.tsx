@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActionResult } from "@/ui/action-result";
 import { AttendanceButton } from "./attendance-button";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn() }) }));
+const refresh = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: vi.fn(), refresh }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 const setAttendanceAction = vi.fn<(id: string, attending: boolean) => Promise<ActionResult>>();
 vi.mock("@/app/_actions/attendance", () => ({
@@ -26,6 +27,7 @@ describe("AttendanceButton", () => {
     expect(alert.textContent).toBe("Buổi đấu đã khóa, không thể thay đổi điểm danh");
     expect(screen.getByRole("button", { name: "Điểm danh" })).toBeTruthy();
     expect(setAttendanceAction).toHaveBeenCalledWith("m1", true);
+    expect(refresh).toHaveBeenCalled();
   });
 
   it("thành công: nút thành Hủy điểm danh", async () => {

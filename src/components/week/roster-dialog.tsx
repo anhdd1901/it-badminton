@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getRosterAction, setAttendanceAction } from "@/app/_actions/attendance";
 import { MemberAvatar } from "@/components/member-avatar";
@@ -31,12 +32,16 @@ export function RosterDialog({
 }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const { run: loadRoster } = useAppAction(getRosterAction);
   const { run: setAttendance } = useAppAction(setAttendanceAction);
 
   async function load() {
+    setLoading(true);
     const r = await loadRoster();
+    setLoading(false);
     if (r.ok) {
       setRows(r.data);
       setError(null);
@@ -50,6 +55,7 @@ export function RosterDialog({
     setBusyId(null);
     if (!r.ok) {
       setError(r.message);
+      if (r.code === "LOCKED") router.refresh();
       return;
     }
     setRows((cur) =>
@@ -60,7 +66,16 @@ export function RosterDialog({
   }
 
   return (
-    <Dialog onOpenChange={(open) => open && canManage && void load()}>
+    <Dialog
+      onOpenChange={(open) => {
+        if (open) {
+          if (canManage) void load();
+        } else {
+          setError(null);
+          setRows(null);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <button
           type="button"
@@ -81,7 +96,9 @@ export function RosterDialog({
             {error}
           </p>
         ) : null}
-        {canManage ? (
+        {canManage && loading && !rows ? (
+          <p className="text-sm text-text-2">Đang tải danh sách…</p>
+        ) : canManage ? (
           <ul className="flex max-h-[60vh] flex-col gap-1 overflow-y-auto">
             {(rows ?? []).map((row) => (
               <li key={row.member.id} className="flex items-center gap-3 py-1">
@@ -93,6 +110,7 @@ export function RosterDialog({
                   type="button"
                   size="sm"
                   variant={row.attending ? "outline" : "default"}
+                  aria-label={`${row.attending ? "Hủy điểm danh" : "Điểm danh"} ${row.member.displayName}`}
                   disabled={!canChange || busyId === row.member.id}
                   onClick={() => void toggle(row)}
                 >

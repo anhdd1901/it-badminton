@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 import { setAttendanceAction } from "@/app/_actions/attendance";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export function AttendanceButton({
   const [shown, setShown] = useOptimistic(confirmed);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const router = useRouter();
   const { run } = useAppAction(setAttendanceAction);
 
   function onClick() {
@@ -36,7 +38,10 @@ export function AttendanceButton({
       setShown(next);
       const result = await run(memberId, next);
       if (result.ok) setConfirmed(next);
-      else setError(result.message);
+      else {
+        setError(result.message);
+        if (result.code === "LOCKED") router.refresh();
+      }
     });
   }
 
