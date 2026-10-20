@@ -148,6 +148,10 @@ export async function resetPassword(
 ): Promise<void> {
   requireRole(actor, "admin");
   const memberId = parseMemberId(rawMemberId);
+  // Own password needs the current one (changeOwnPassword): a hijacked admin session must not take over.
+  if (memberId === actor.memberId) {
+    throw new AppError("VALIDATION", "Hãy đổi mật khẩu của mình ở màn Tôi");
+  }
   const passwordHash = await hashPassword(parsePassword(newPassword));
   await db.transaction(async (tx) => {
     const rows = await tx

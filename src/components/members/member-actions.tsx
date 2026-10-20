@@ -192,16 +192,18 @@ export function MemberActions({
                 onSubmit={(v) => changeUsernameAction(member.id, v)}
               />
               <AvatarForm member={member} />
-              <FieldForm
-                id="manage-password"
-                label="Mật khẩu mới"
-                initial=""
-                hint="Tối thiểu 8 ký tự. Mem sẽ bị đăng xuất khỏi mọi thiết bị."
-                submit="Đặt lại"
-                clearOnSuccess
-                secret
-                onSubmit={(v) => resetPasswordAction(member.id, v)}
-              />
+              {!isSelf ? (
+                <FieldForm
+                  id="manage-password"
+                  label="Mật khẩu mới"
+                  initial=""
+                  hint="Tối thiểu 8 ký tự. Mem sẽ bị đăng xuất khỏi mọi thiết bị."
+                  submit="Đặt lại"
+                  clearOnSuccess
+                  secret
+                  onSubmit={(v) => resetPasswordAction(member.id, v)}
+                />
+              ) : null}
               <FieldForm
                 id="manage-elo"
                 label="ELO hiện tại"
@@ -244,9 +246,7 @@ export function MemberActions({
           <>
             <DialogHeader>
               <DialogTitle>Ngưng hoạt động {member.displayName}?</DialogTitle>
-              <DialogDescription>
-                Ngưng hoạt động {member.displayName}? Mem sẽ bị đăng xuất khỏi mọi thiết bị.
-              </DialogDescription>
+              <DialogDescription>Mem sẽ bị đăng xuất khỏi mọi thiết bị.</DialogDescription>
             </DialogHeader>
             {errorNode}
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -263,9 +263,7 @@ export function MemberActions({
           <form onSubmit={onTransfer} className="flex flex-col gap-4">
             <DialogHeader>
               <DialogTitle>Chuyển quyền admin cho {member.displayName}?</DialogTitle>
-              <DialogDescription>
-                Chuyển quyền admin cho {member.displayName}? Bạn sẽ trở thành mem thường.
-              </DialogDescription>
+              <DialogDescription>Bạn sẽ trở thành mem thường.</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="transfer-password">Mật khẩu của bạn</Label>

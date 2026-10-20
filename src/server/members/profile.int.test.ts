@@ -147,6 +147,22 @@ describe("member profile", () => {
     );
   });
 
+  it("admin không tự đặt lại mật khẩu của mình: VALIDATION, mật khẩu và phiên giữ nguyên", async () => {
+    const adminMember = await makeMember(t.db, { username: "quan.tri", role: "admin" });
+    const admin = actorOf(adminMember);
+    const now = vn("2026-10-14T10:00");
+    const s = await createSession(t.db, adminMember.id, now);
+    await expect(resetPassword(t.db, admin, adminMember.id, "matkhaumoi2")).rejects.toMatchObject({
+      code: "VALIDATION",
+      message: "Hãy đổi mật khẩu của mình ở màn Tôi",
+    });
+    expect(await resolveSession(t.db, s.token, vn("2026-10-14T10:01"))).not.toBeNull();
+    expect(
+      (await login(t.db, { username: "quan.tri", password: TEST_PASSWORD }, vn("2026-10-14T10:02")))
+        .ok,
+    ).toBe(true);
+  });
+
   it("mã mem sai định dạng: NOT_FOUND", async () => {
     const admin = actorOf(await makeMember(t.db, { role: "admin" }));
     const notFound = { code: "NOT_FOUND", message: MESSAGES.memberNotFound };

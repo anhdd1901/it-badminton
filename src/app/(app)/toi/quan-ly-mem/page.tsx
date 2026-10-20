@@ -1,6 +1,7 @@
 import { getDb } from "@/app/_lib/db";
 import { requireActor } from "@/app/_lib/session";
 import { Forbidden } from "@/components/forbidden";
+import type { ManagedMember } from "@/components/members/member-actions";
 import { MemberForm } from "@/components/members/member-form";
 import { MemberList } from "@/components/members/member-list";
 import { PillTabs } from "@/components/pill-tabs";
@@ -15,7 +16,17 @@ export default async function ManageMembersPage({
   const actor = await requireActor();
   if (actor.role !== "admin") return <Forbidden />;
   const inactive = (await searchParams)["trang-thai"] === "ngung";
-  const members = await listMembers(getDb(), actor, inactive ? "inactive" : "active");
+  const rows = await listMembers(getDb(), actor, inactive ? "inactive" : "active");
+  // Only what the screen shows crosses to the client (no createdAt).
+  const members: ManagedMember[] = rows.map((m) => ({
+    id: m.id,
+    displayName: m.displayName,
+    username: m.username,
+    avatarUrl: m.avatarUrl,
+    active: m.active,
+    role: m.role,
+    eloTenths: m.eloTenths,
+  }));
 
   return (
     <main className="flex flex-col gap-4 p-4">
