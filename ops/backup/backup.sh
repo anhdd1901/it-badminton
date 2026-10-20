@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Dumps the database in $BACKUP_DATABASE_URL to <dir>/anh-em-it.sql.gz with the PostgreSQL 17
-# client from Docker. The URL is read from the environment only, so it never shows up in
+# Dumps the database in $BACKUP_DATABASE_URL to <dir>/anh-em-it.sql.gz with the PostgreSQL 18
+# client from Docker (PG_IMAGE overrides it). pg_dump refuses a server NEWER than itself, so this
+# image must be at least as new as the Neon server; it can dump older servers just fine. The URL is read from the environment only, so it never shows up in
 # `ps` output or in CI logs.
 set -euo pipefail
 
@@ -32,6 +33,7 @@ case "$url" in
     ;;
 esac
 export PGURL="$url"
+pg_image="${PG_IMAGE:-postgres:18}"
 out="$dir/anh-em-it.sql.gz"
 tmp="$out.tmp"
 trap 'rm -f "$tmp"' EXIT
@@ -39,7 +41,7 @@ trap 'rm -f "$tmp"' EXIT
 # Only the schemas the app owns: add-ons such as Neon Auth create their own (neon_auth) that a
 # restore into another database could not rebuild.
 dump() {
-  docker run --rm --network host -e PGURL postgres:17 \
+  docker run --rm --network host -e PGURL "$pg_image" \
     sh -c 'pg_dump --format=plain --no-owner --no-privileges --schema=public --schema=drizzle "$PGURL"' | gzip -n >"$tmp"
 }
 

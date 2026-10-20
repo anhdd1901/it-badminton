@@ -261,7 +261,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, chọn tháng, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế |
 | Icon | lucide-react | 1.x | |
 | Font | Be Vietnam Pro qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/be-vietnam-pro/` (8.1) |
-| Database | PostgreSQL | 17 (local), Neon (production) | Neon tạo qua Vercel Marketplace, region AWS `ap-southeast-1` (Singapore) |
+| Database | PostgreSQL | 17 (local), 18 (Neon, production) | Neon tạo qua Vercel Marketplace, region AWS `ap-southeast-1` (Singapore) |
 | Driver | `postgres` (postgres.js) | 3.x | kết nối PostgreSQL, dùng chung cho local và Neon |
 | ORM và migration | Drizzle ORM + drizzle-kit | 0.45.x / 0.31.x | định nghĩa bảng, truy vấn có kiểu, sinh migration |
 | Kiểm tra dữ liệu | Zod | 4.x | kiểm tra input của mọi server action và form |
@@ -327,7 +327,7 @@ Neon gói miễn phí lưu dữ liệu bền nhưng chỉ khôi phục được 
 - Một workflow GitHub Actions chạy mỗi **chủ nhật 23:17** giờ Việt Nam (lệch khỏi phút 0 cho GitHub ít trễ lịch): `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
 - Chuỗi kết nối database và quyền ghi vào repo sao lưu lưu trong GitHub Secrets.
 - Workflow nằm trong chính repo sao lưu riêng tư (`it-badminton-backup`), để log và secret không lộ ra repo mã nguồn công khai; bản gốc của workflow và script giữ ở `ops/backup/` trong repo mã nguồn.
-- Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL chỉ gồm schema `public` và `drizzle` của app (bỏ qua schema của add-on như `neon_auth`), không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:17` cho khớp phiên bản server.
+- Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL chỉ gồm schema `public` và `drizzle` của app (bỏ qua schema của add-on như `neon_auth`), không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:18` (đổi được bằng biến `PG_IMAGE`): `pg_dump` từ chối dump máy chủ có phiên bản **mới hơn** nó, nhưng dump được máy chủ cũ hơn, nên image phải không cũ hơn bản PostgreSQL của Neon; file dump từ 18 đã được kiểm là khôi phục được vào database dev bản 17. Neon nâng lên bản mới hơn thì đổi `PG_IMAGE` cho khớp.
 - Khôi phục: `pnpm db:restore <file>`. Lệnh in host và tên database đích, bắt gõ đúng tên database rồi mới ghi đè.
 - Không cần thao tác định kỳ. Các bước cần người dùng làm trên GitHub (tạo repo, thêm secrets) sẽ được hướng dẫn khi tới bước đó.
 

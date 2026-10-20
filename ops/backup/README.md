@@ -10,6 +10,10 @@
 
 Bản gốc của các file này nằm ở `ops/backup/` trong repo mã nguồn `it-badminton`. Sửa ở đó trước rồi chép sang đây.
 
+## Phiên bản PostgreSQL
+
+Script dùng image Docker `postgres:18` (khớp Neon hiện chạy PostgreSQL 18). `pg_dump` chỉ dump được máy chủ **cùng hoặc cũ hơn** bản của nó: nếu log báo `server version mismatch`, Neon đã lên bản mới hơn. Khi đó đổi sang image mới hơn bằng cách thêm `PG_IMAGE: postgres:<số-bản>` vào mục `env` của bước "Dump database" trong workflow (và bản gốc ở `ops/backup/workflow.yml`).
+
 ## Chạy tay
 
 Tab **Actions** → **Backup** → **Run workflow** → **Run workflow**.

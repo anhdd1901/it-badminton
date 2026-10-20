@@ -5,6 +5,7 @@ import path from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { sql } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { createDb } from "@/server/db/client";
 import { members } from "@/server/db/schema";
 import { createFirstAdmin } from "@/server/members/bootstrap";
@@ -105,6 +106,68 @@ describe("sao lưu và khôi phục", () => {
     await close();
     expect(rows).toEqual([{ username: "chu.nhiem" }]);
   }, 120_000);
+
+  it("sao lưu được từ máy chủ PostgreSQL 18 (như Neon) và khôi phục vào database dev bản 17", async () => {
+    const name = `aei-pg18-${process.pid}`;
+    const sh = (args: string[]) => execFileSync("docker", args, { encoding: "utf8" }).trim();
+    sh([
+      "run",
+      "-d",
+      "--rm",
+      "--name",
+      name,
+      "-e",
+      "POSTGRES_PASSWORD=pw",
+      "-p",
+      "127.0.0.1::5432",
+      "postgres:18",
+    ]);
+    try {
+      for (let i = 0; i < 60; i++) {
+        try {
+          sh(["exec", name, "pg_isready", "-U", "postgres", "-q"]);
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 1000));
+        }
+      }
+      const port = sh(["port", name, "5432/tcp"]).split(":").pop();
+      const url18 = `postgres://postgres:pw@127.0.0.1:${port}/postgres`;
+      const { db, close } = createDb(url18);
+      await migrate(db, { migrationsFolder: "drizzle" });
+      await createFirstAdmin(
+        db,
+        {
+          username: "may.chu.18",
+          displayName: "Máy chủ 18",
+          password: "matkhau123",
+          initialElo: "1000",
+        },
+        vn("2026-10-12T09:00"),
+      );
+      await close();
+
+      const dir18 = mkdtempSync(path.join(tmpdir(), "aei-backup18-"));
+      try {
+        execFileSync("bash", [path.resolve("ops/backup", "backup.sh"), dir18], {
+          env: { ...process.env, BACKUP_DATABASE_URL: url18 },
+          encoding: "utf8",
+        });
+        const file = path.join(dir18, "anh-em-it.sql.gz");
+        await restoreDatabase(restoreUrl(), file);
+        const target = createDb(restoreUrl());
+        const rows = await target.db.select({ username: members.username }).from(members);
+        await target.close();
+        expect(rows).toEqual([{ username: "may.chu.18" }]);
+      } finally {
+        rmSync(dir18, { recursive: true, force: true });
+      }
+    } finally {
+      try {
+        sh(["rm", "-f", name]);
+      } catch {}
+    }
+  }, 300_000);
 
   /** Runs backup.sh and returns its failure: exit status plus stderr (never the secret). */
   function failure(url: string): { status: number; stderr: string } {
