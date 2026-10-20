@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActionResult } from "@/ui/action-result";
+import { UNEXPECTED_MESSAGE, type ActionResult } from "@/ui/action-result";
 import { useAppAction } from "./use-app-action";
 
 const replace = vi.fn();
@@ -68,8 +68,10 @@ describe("useAppAction", () => {
     expect(hook.current.pending).toBe(false);
 
     await act(async () => {
-      await expect(hook.current.run(true)).rejects.toThrow("boom");
+      const out = await hook.current.run(true);
+      expect(out).toEqual({ ok: false, code: "UNEXPECTED", message: UNEXPECTED_MESSAGE });
     });
+    expect(toastError).toHaveBeenCalledWith(UNEXPECTED_MESSAGE);
     expect(hook.current.pending).toBe(false);
   });
 });

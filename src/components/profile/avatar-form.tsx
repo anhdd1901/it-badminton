@@ -79,6 +79,7 @@ export function AvatarForm({ member }: { member: AvatarMember }) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="sr-only"
+            tabIndex={-1}
             onChange={onPick}
             aria-label="Chọn ảnh đại diện"
           />

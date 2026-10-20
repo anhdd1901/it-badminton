@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import type { ActionResult } from "@/ui/action-result";
+import { UNEXPECTED_MESSAGE, type ActionResult } from "@/ui/action-result";
 
 export function useAppAction<A extends unknown[], T>(
   action: (...args: A) => Promise<ActionResult<T>>,
@@ -21,6 +21,11 @@ export function useAppAction<A extends unknown[], T>(
           }
         }
         return result;
+      } catch {
+        // A rejected call (body over the limit, network drop). Server redirects
+        // arrive as navigations, not rejections, so nothing to rethrow here.
+        toast.error(UNEXPECTED_MESSAGE);
+        return { ok: false, code: "UNEXPECTED", message: UNEXPECTED_MESSAGE } as ActionResult<T>;
       } finally {
         setPending(false);
       }
