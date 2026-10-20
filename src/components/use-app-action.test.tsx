@@ -6,7 +6,18 @@ import { useAppAction } from "./use-app-action";
 
 const replace = vi.fn();
 const toastError = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace }),
+  // Stand-in with Next's behaviour: navigation errors carry a digest and are rethrown.
+  unstable_rethrow: (e: unknown) => {
+    const digest = (e as { digest?: unknown } | null)?.digest;
+    if (
+      typeof digest === "string" &&
+      (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_HTTP_ERROR_FALLBACK"))
+    )
+      throw e;
+  },
+}));
 vi.mock("sonner", () => ({ toast: { error: (m: string) => toastError(m) } }));
 
 beforeEach(() => {
@@ -72,6 +83,22 @@ describe("useAppAction", () => {
       expect(out).toEqual({ ok: false, code: "UNEXPECTED", message: UNEXPECTED_MESSAGE });
     });
     expect(toastError).toHaveBeenCalledWith(UNEXPECTED_MESSAGE);
+    expect(hook.current.pending).toBe(false);
+  });
+
+  it("lỗi chuyển hướng của Next được ném lại: không toast, pending false", async () => {
+    const redirectError = Object.assign(new Error("NEXT_REDIRECT"), {
+      digest: "NEXT_REDIRECT;replace;/dang-nhap;307;",
+    });
+    const { result: hook } = renderHook(() =>
+      useAppAction(async (): Promise<ActionResult<number>> => {
+        throw redirectError;
+      }),
+    );
+    await act(async () => {
+      await expect(hook.current.run()).rejects.toBe(redirectError);
+    });
+    expect(toastError).not.toHaveBeenCalled();
     expect(hook.current.pending).toBe(false);
   });
 });

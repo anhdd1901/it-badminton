@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { unstable_rethrow, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { UNEXPECTED_MESSAGE, type ActionResult } from "@/ui/action-result";
@@ -21,9 +21,11 @@ export function useAppAction<A extends unknown[], T>(
           }
         }
         return result;
-      } catch {
-        // A rejected call (body over the limit, network drop). Server redirects
-        // arrive as navigations, not rejections, so nothing to rethrow here.
+      } catch (e) {
+        // A Server Action's redirect() rejects the client promise with a redirect
+        // error that the router must see, so Next navigation errors are rethrown.
+        unstable_rethrow(e);
+        // Anything else is a failed call (body over the limit, network drop).
         toast.error(UNEXPECTED_MESSAGE);
         return { ok: false, code: "UNEXPECTED", message: UNEXPECTED_MESSAGE } as ActionResult<T>;
       } finally {
