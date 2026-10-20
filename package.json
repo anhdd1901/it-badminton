@@ -18,6 +18,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:migrate:deploy": "tsx scripts/migrate-deploy.ts",
+    "db:restore": "tsx scripts/db-restore.ts",
     "icons": "tsx scripts/make-icons.ts",
     "admin:create": "tsx scripts/admin-create.ts",
     "admin:reset-password": "tsx scripts/admin-reset-password.ts"

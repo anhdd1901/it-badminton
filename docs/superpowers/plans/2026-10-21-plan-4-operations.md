@@ -116,13 +116,13 @@ src/app/manifest.ts, src/app/icon.png, src/app/apple-icon.png, public/icons/*
   - `RESET_SQL = "DROP SCHEMA IF EXISTS drizzle CASCADE; DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"`.
 - `db-restore.ts`: đích = `directUrl(process.env)` (nạp `ENV_FILE` như `cli.ts`); in "Sẽ GHI ĐÈ database <database> trên <host> bằng <file>"; hỏi "Gõ tên database để xác nhận: "; sai → "Đã hủy" thoát 1; đúng → chạy `RESET_SQL` rồi nạp file qua `docker run --rm -i --network host -e PGURL postgres:17 sh -c 'psql -v ON_ERROR_STOP=1 --single-transaction "$PGURL"'` (giải nén `.gz` bằng `zlib` trong Node rồi pipe vào stdin); in "Đã khôi phục". Lỗi in `safeErrorSummary`.
 
-- [ ] **Step 1: Viết test (fail)**
+- [x] **Step 1: Viết test (fail)**
   - `restore-guard.test.ts`: `.sql`, `.sql.gz` hợp lệ; `.dump`, `.gz`, `.txt` ném đúng thông báo; `describeTarget("postgres://u:p@ep-x.ap-southeast-1.aws.neon.tech/neondb?sslmode=require")` → `{ host: "ep-x.ap-southeast-1.aws.neon.tech", database: "neondb" }`; `confirmMatches(" neondb ", "neondb")` true, `"NEONDB"` false.
   - `backup-restore.int.test.ts` (cần Docker): tạo database tạm `anh_em_it_restore`; seed vào `anh_em_it_test` một admin bằng `createFirstAdmin`; chạy `backup.sh` (env `BACKUP_DATABASE_URL` = URL test) vào thư mục tạm là một git repo mới; kiểm file tồn tại, giải nén có `CREATE TABLE public.members`; chạy `commit.sh` hai lần → lần hai in "Không có thay đổi" và `git rev-list --count HEAD` vẫn là 1; khôi phục file vào `anh_em_it_restore` (gọi hàm khôi phục với xác nhận đúng) → bảng `members` có đúng admin đó; khôi phục lần hai vẫn thành công (đặt lại schema). Xóa database tạm ở `afterAll`.
-- [ ] **Step 2: Chạy `pnpm test src/ops && pnpm test:int src/ops`** → FAIL.
-- [ ] **Step 3: Viết mã** (tách phần chạy khôi phục thành hàm `restoreDatabase(url, file)` trong `scripts/db-restore.ts` hoặc `src/ops/restore.ts` để test gọi được; phần hỏi xác nhận ở `main`).
-- [ ] **Step 4: Chạy lại** → PASS; `shellcheck` cho hai file `.sh` nếu có (`docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable ops/backup/*.sh`).
-- [ ] **Step 5: Commit** `feat(plan-4/task-3): add backup and restore scripts`.
+- [x] **Step 2: Chạy `pnpm test src/ops && pnpm test:int src/ops`** → FAIL.
+- [x] **Step 3: Viết mã** (tách phần chạy khôi phục thành hàm `restoreDatabase(url, file)` trong `scripts/db-restore.ts` hoặc `src/ops/restore.ts` để test gọi được; phần hỏi xác nhận ở `main`).
+- [x] **Step 4: Chạy lại** → PASS; `shellcheck` cho hai file `.sh` nếu có (`docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable ops/backup/*.sh`).
+- [x] **Step 5: Commit** `feat(plan-4/task-3): add backup and restore scripts`.
 
 ---
 

@@ -5,11 +5,8 @@ import { directUrl } from "../src/ops/deploy-env";
 import { createDb } from "../src/server/db/client";
 import { AppError, safeErrorSummary } from "../src/server/errors";
 
-/**
- * Loads `ENV_FILE` (e.g. `.env.production.local`) when set, otherwise `.env`, and connects
- * with the direct URL so admin commands work against Neon too.
- */
-export function connect(): ReturnType<typeof createDb> {
+/** Loads `ENV_FILE` (e.g. `.env.production.local`) when set, otherwise `.env`. */
+export function loadEnv(): void {
   const envFile = process.env.ENV_FILE;
   if (envFile) {
     if (!existsSync(envFile)) {
@@ -20,12 +17,21 @@ export function connect(): ReturnType<typeof createDb> {
   } else if (!process.env.DATABASE_URL && existsSync(".env")) {
     process.loadEnvFile(".env");
   }
+}
+
+/** Direct connection URL for admin commands (works against Neon too); exits when missing. */
+export function targetUrl(): string {
+  loadEnv();
   try {
-    return createDb(directUrl(process.env));
+    return directUrl(process.env);
   } catch {
     console.error("Thiếu DATABASE_URL (đặt trong file .env)");
     process.exit(1);
   }
+}
+
+export function connect(): ReturnType<typeof createDb> {
+  return createDb(targetUrl());
 }
 
 /** Line prompts on stdin; secret answers are not echoed. Works with piped input too. */

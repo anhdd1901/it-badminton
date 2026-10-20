@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
-    exclude: ["**/node_modules/**", "src/server/**/*.int.test.ts"],
+    exclude: ["**/node_modules/**", "src/**/*.int.test.ts"],
     env: { TZ: "America/Los_Angeles" },
     setupFiles: ["src/test/setup-dom.ts"],
   },

@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/server/**/*.int.test.ts"],
+    include: ["src/server/**/*.int.test.ts", "src/ops/**/*.int.test.ts"],
     fileParallelism: false,
     globalSetup: "src/server/test/global-setup.ts",
     env: { TZ: "America/Los_Angeles" },
