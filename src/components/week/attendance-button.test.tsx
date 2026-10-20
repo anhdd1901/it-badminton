@@ -12,7 +12,10 @@ vi.mock("@/app/_actions/attendance", () => ({
   setAttendanceAction: (id: string, attending: boolean) => setAttendanceAction(id, attending),
 }));
 
-beforeEach(() => setAttendanceAction.mockReset());
+beforeEach(() => {
+  setAttendanceAction.mockReset();
+  refresh.mockReset();
+});
 
 describe("AttendanceButton", () => {
   it("lỗi: trả về trạng thái cũ và hiện thông báo dưới nút", async () => {
@@ -25,9 +28,10 @@ describe("AttendanceButton", () => {
     fireEvent.click(screen.getByRole("button", { name: "Điểm danh" }));
     const alert = await screen.findByRole("alert");
     expect(alert.textContent).toBe("Buổi đấu đã khóa, không thể thay đổi điểm danh");
-    expect(screen.getByRole("button", { name: "Điểm danh" })).toBeTruthy();
+    // The error shows before the transition ends; the optimistic state reverts after it.
+    expect(await screen.findByRole("button", { name: "Điểm danh" })).toBeTruthy();
     expect(setAttendanceAction).toHaveBeenCalledWith("m1", true);
-    expect(refresh).toHaveBeenCalled();
+    await waitFor(() => expect(refresh).toHaveBeenCalled());
   });
 
   it("thành công: nút thành Hủy điểm danh", async () => {

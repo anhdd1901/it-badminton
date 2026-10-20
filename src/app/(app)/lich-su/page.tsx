@@ -26,7 +26,7 @@ export default async function HistoryPage() {
                     className="flex min-h-11 flex-col justify-center rounded-lg border border-border bg-surface p-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     <span className="font-medium">{formatDay(d.day)}</span>
-                    <span className="text-text-2">
+                    <span className="text-text-2 tabular-nums">
                       {d.playerCount} người · đã nhập {d.resultCount}/{d.matchCount} trận
                     </span>
                   </Link>

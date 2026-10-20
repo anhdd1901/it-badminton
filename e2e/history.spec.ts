@@ -77,7 +77,7 @@ test("subadmin không sửa được buổi đã qua", async ({ page }) => {
 
 test("ngày sai hoặc không có lịch chính thức: 404", async ({ page }) => {
   await login(page, "admin");
-  for (const day of ["2026-02-30", "2026-10-14"]) {
+  for (const day of ["2026-02-30", "2026-10-14", "2026-09-26"]) {
     // loading.tsx streams the shell first, so the status is already 200; assert on the content.
     await page.goto(`/lich-su/${day}`);
     await expect(page.getByText("Không tìm thấy trang")).toBeVisible();
