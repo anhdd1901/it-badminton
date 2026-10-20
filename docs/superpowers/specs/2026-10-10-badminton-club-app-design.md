@@ -236,7 +236,7 @@ Danh sách kiểm tra khi làm và khi chạy `security-review`. Không thay th�
   - Giới hạn 5 MB ở server: đặt `serverActions.bodySizeLimit` vừa đủ (mặc định 1 MB) và kiểm tra lại kích thước trong action. Sharp đặt `limitInputPixels` để chặn ảnh nén có kích thước điểm ảnh khổng lồ.
   - Luôn mã hóa lại ảnh (bỏ metadata EXIF, gồm vị trí GPS) trước khi lưu. Tên file trên Blob do server sinh ngẫu nhiên. Xóa file cũ khi đổi hoặc xóa avatar.
 - **Rò rỉ dữ liệu:**
-  - Code đụng database, hash mật khẩu, token hay biến môi trường bí mật nằm trong module có `import "server-only"`.
+  - Code đụng database, hash mật khẩu, token hay biến môi trường bí mật không được vào bundle phía client: module nối với Next.js (`src/app/_lib/`) có `import "server-only"`; lớp nghiệp vụ `src/server/` được chặn bằng rule ESLint (client component và `src/ui/` chỉ được `import type` từ `@/server/*` và `@/app/_lib/*`), vì `src/server/` còn được dùng bởi lệnh quản trị, test và seed e2e chạy ngoài Next.js.
   - Dữ liệu truyền xuống Client Component chỉ gồm trường cần hiển thị; không truyền nguyên bản ghi mem (có hash mật khẩu).
   - Lỗi không lường trước: người dùng chỉ thấy thông báo chung (9); log ở server không ghi mật khẩu, hash, token, tham số SQL hay chuỗi kết nối. Áp dụng cả cho lệnh quản trị ở `scripts/`.
 - **Header:** Content-Security-Policy dùng nonce sinh trong `proxy.ts` (`script-src 'self' 'nonce-…' 'strict-dynamic'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`; `img-src` cho phép miền Vercel Blob). Chấp nhận việc nonce buộc mọi trang render động, vì trang nào cũng phụ thuộc người đang đăng nhập. Thêm `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`; HTTPS và HSTS do Vercel lo.
