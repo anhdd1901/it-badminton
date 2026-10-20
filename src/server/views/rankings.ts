@@ -48,7 +48,7 @@ export async function loadMemberRefs(
   return new Map(rows.map((r) => [r.id, r]));
 }
 
-function ref(refs: Map<string, MemberRef>, id: string): MemberRef {
+export function ref(refs: Map<string, MemberRef>, id: string): MemberRef {
   const m = refs.get(id);
   if (!m) throw new Error(`Thiếu mem ${id}`);
   return m;

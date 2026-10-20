@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { seededRng } from "@/domain/rng";
 import { attendeeKey } from "@/domain/schedule";
 import type { Actor } from "../actor";
+import { setActive } from "../members/admin";
 import { setAttendance } from "../match-days/attendance";
-import { enterResult } from "../match-days/results";
+import { deleteResult, enterResult } from "../match-days/results";
 import { makeMember, useTestDb, vn } from "../test/db";
 import { getWeekView } from "./week";
 
@@ -107,5 +108,29 @@ describe("getWeekView", () => {
     const v = await getWeekView(t.db, as(ms[0]), WED);
     expect(v.notice).toEqual({ kind: "NO_DIAGRAM", seed1: 0, seed2: 7 });
     expect(v.schedule).toBeNull();
+  });
+
+  it("thông báo chỉ đếm mem đang hoạt động", async () => {
+    const ms = await Promise.all(
+      Array.from({ length: 5 }, (_, i) => makeMember(t.db, { role: i === 0 ? "admin" : "member" })),
+    );
+    await attend(ms);
+    const sat = vn("2026-10-17T09:00");
+    const key = attendeeKey(ms.map((m) => m.id));
+    await enterResult(
+      t.db,
+      as(ms[0]),
+      { day: "2026-10-17", scheduleKey: key, matchNumber: 1, scoreA: 21, scoreB: 15 },
+      sat,
+    );
+    await setActive(t.db, as(ms[0]), ms[4].id, false, sat);
+    await deleteResult(
+      t.db,
+      as(ms[0]),
+      { day: "2026-10-17", scheduleKey: key, matchNumber: 1 },
+      sat,
+    );
+    const v = await getWeekView(t.db, as(ms[0]), sat);
+    expect(v.notice).toEqual({ kind: "NOT_ENOUGH", count: 4 });
   });
 });

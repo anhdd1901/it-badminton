@@ -5,7 +5,7 @@ import type { Db } from "../db/client";
 import { matchDays, matchResults, officialSchedules, scheduledMatches } from "../db/schema";
 import { finalizeDue } from "../match-days/schedule";
 import { parseLocalDate } from "../validation";
-import { loadMemberRefs, type MemberRef } from "./rankings";
+import { loadMemberRefs, type MemberRef, ref } from "./rankings";
 import type { PlayerRef, WeekMatch } from "./week";
 
 type HistoryDay = { day: LocalDate; playerCount: number; matchCount: number; resultCount: number };
@@ -99,11 +99,11 @@ export async function getMatchDayDetail(
   const refs = await loadMemberRefs(db, ids);
   const seedOf = new Map(official.assignments.map((a) => [a.memberId, a.seed]));
   const player = (id: string): PlayerRef => {
-    const m = refs.get(id);
+    const m = ref(refs, id);
     return {
       id,
-      displayName: m?.displayName ?? "",
-      avatarUrl: m?.avatarUrl ?? null,
+      displayName: m.displayName,
+      avatarUrl: m.avatarUrl,
       seed: seedOf.get(id) ?? null,
     };
   };

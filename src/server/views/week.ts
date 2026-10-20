@@ -1,4 +1,4 @@
-import { asc, eq, inArray, sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import {
   canChangeAttendance,
   canEditResults,
@@ -20,6 +20,7 @@ import {
   scheduledMatches,
 } from "../db/schema";
 import { finalizeDue, findDraft, officialResultCount } from "../match-days/schedule";
+import { loadMemberRefs, ref as memberRef } from "./rankings";
 
 export type PlayerRef = {
   id: string;
@@ -169,26 +170,17 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
 
   let schedule: WeekView["schedule"] = null;
   if (source) {
-    // Official schedules may include members who are no longer in the list: one extra query for them.
-    const info = new Map<string, { displayName: string; avatarUrl: string | null }>(
-      attendees.map((a) => [a.member.id, a.member]),
+    // Official schedules may include members who are no longer in the list.
+    const refs = await loadMemberRefs(
+      db,
+      rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]),
     );
-    const missing = [...new Set(rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]))].filter(
-      (id) => !info.has(id),
-    );
-    if (missing.length > 0) {
-      const extra = await db
-        .select({ id: members.id, displayName: members.displayName, avatarUrl: members.avatarUrl })
-        .from(members)
-        .where(inArray(members.id, missing));
-      for (const e of extra) info.set(e.id, e);
-    }
     const ref = (id: string): PlayerRef => {
-      const m = info.get(id);
+      const m = memberRef(refs, id);
       return {
         id,
-        displayName: m?.displayName ?? "",
-        avatarUrl: m?.avatarUrl ?? null,
+        displayName: m.displayName,
+        avatarUrl: m.avatarUrl,
         seed: seedOf.get(id) ?? null,
       };
     };
@@ -205,7 +197,8 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
   }
 
   let notice: WeekView["notice"] = null;
-  if (ids.length < 5) notice = { kind: "NOT_ENOUGH", count: ids.length };
+  const activeCount = ids.filter((id) => currentSeeds.has(id)).length;
+  if (activeCount < 5) notice = { kind: "NOT_ENOUGH", count: activeCount };
   else if (!schedule) {
     notice = {
       kind: "NO_DIAGRAM",
