@@ -40,6 +40,7 @@ describe("sao lưu và khôi phục", () => {
 
   afterAll(async () => {
     rmSync(dir, { recursive: true, force: true });
+    await t.db.execute(sql.raw("DROP SCHEMA IF EXISTS neon_auth CASCADE"));
     const { db, close } = createDb(adminUrl());
     await db.execute(sql.raw("DROP DATABASE IF EXISTS anh_em_it_restore"));
     await close();
@@ -64,11 +65,17 @@ describe("sao lưu và khôi phục", () => {
       vn("2026-10-12T09:00"),
     );
 
+    // Neon Auth (and similar add-ons) create schemas the app does not own; they must stay out of the dump.
+    await t.db.execute(sql.raw("CREATE SCHEMA IF NOT EXISTS neon_auth"));
+    await t.db.execute(sql.raw("CREATE TABLE IF NOT EXISTS neon_auth.users_sync (id text)"));
+
     const out = run("backup.sh", { BACKUP_DATABASE_URL: testUrl() });
     expect(out).not.toContain("postgres://");
     const file = path.join(dir, "anh-em-it.sql.gz");
     const dump = gunzipSync(readFileSync(file)).toString("utf8");
     expect(dump).toContain("CREATE TABLE public.members");
+    expect(dump).toContain("CREATE TABLE drizzle.__drizzle_migrations");
+    expect(dump).not.toContain("neon_auth");
 
     expect(run("commit.sh")).not.toContain("Không có thay đổi");
     run("backup.sh", { BACKUP_DATABASE_URL: testUrl() });
@@ -88,7 +95,10 @@ describe("sao lưu và khôi phục", () => {
 
   it("file dump lỗi giữa chừng thì database đích giữ nguyên", async () => {
     const bad = path.join(dir, "hong.sql.gz");
-    writeFileSync(bad, gzipSync("CREATE TABLE public.tam (id int);\nSELECT 1/0;\n"));
+    writeFileSync(
+      bad,
+      gzipSync("CREATE SCHEMA public;\nCREATE TABLE public.tam (id int);\nSELECT 1/0;\n"),
+    );
     await expect(restoreDatabase(restoreUrl(), bad)).rejects.toThrow();
     const { db, close } = createDb(restoreUrl());
     const rows = await db.select({ username: members.username }).from(members);

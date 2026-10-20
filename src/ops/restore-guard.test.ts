@@ -35,9 +35,9 @@ describe("confirmMatches", () => {
 });
 
 describe("RESET_SQL", () => {
-  it("xóa schema drizzle và public rồi tạo lại public", () => {
+  it("chỉ xóa schema drizzle và public (bản dump tự tạo lại cả hai)", () => {
     expect(RESET_SQL).toBe(
-      "DROP SCHEMA IF EXISTS drizzle CASCADE; DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;",
+      "DROP SCHEMA IF EXISTS drizzle CASCADE; DROP SCHEMA IF EXISTS public CASCADE;",
     );
   });
 });

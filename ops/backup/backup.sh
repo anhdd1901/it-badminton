@@ -14,9 +14,11 @@ out="$dir/anh-em-it.sql.gz"
 tmp="$out.tmp"
 trap 'rm -f "$tmp"' EXIT
 
+# Only the schemas the app owns: add-ons such as Neon Auth create their own (neon_auth) that a
+# restore into another database could not rebuild.
 dump() {
   docker run --rm --network host -e PGURL postgres:17 \
-    sh -c 'pg_dump --format=plain --no-owner --no-privileges "$PGURL"' | gzip -n >"$tmp"
+    sh -c 'pg_dump --format=plain --no-owner --no-privileges --schema=public --schema=drizzle "$PGURL"' | gzip -n >"$tmp"
 }
 
 if ! dump; then

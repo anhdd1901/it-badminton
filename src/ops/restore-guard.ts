@@ -16,6 +16,9 @@ export function confirmMatches(typed: string, database: string): boolean {
   return typed.trim() === database;
 }
 
-/** The dump recreates both schemas; drop them first so a restore can run on a non-empty database. */
+/**
+ * The dump (`--schema=public --schema=drizzle`) creates both schemas itself, so a restore only has
+ * to drop them first to run on a non-empty database.
+ */
 export const RESET_SQL =
-  "DROP SCHEMA IF EXISTS drizzle CASCADE; DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;";
+  "DROP SCHEMA IF EXISTS drizzle CASCADE; DROP SCHEMA IF EXISTS public CASCADE;";

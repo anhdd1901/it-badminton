@@ -327,7 +327,7 @@ Neon gói miễn phí lưu dữ liệu bền nhưng chỉ khôi phục được 
 - Một workflow GitHub Actions chạy mỗi **chủ nhật 23:17** giờ Việt Nam (lệch khỏi phút 0 cho GitHub ít trễ lịch): `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
 - Chuỗi kết nối database và quyền ghi vào repo sao lưu lưu trong GitHub Secrets.
 - Workflow nằm trong chính repo sao lưu riêng tư (`it-badminton-backup`), để log và secret không lộ ra repo mã nguồn công khai; bản gốc của workflow và script giữ ở `ops/backup/` trong repo mã nguồn.
-- Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL, không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:17` cho khớp phiên bản server.
+- Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL chỉ gồm schema `public` và `drizzle` của app (bỏ qua schema của add-on như `neon_auth`), không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:17` cho khớp phiên bản server.
 - Khôi phục: `pnpm db:restore <file>`. Lệnh in host và tên database đích, bắt gõ đúng tên database rồi mới ghi đè.
 - Không cần thao tác định kỳ. Các bước cần người dùng làm trên GitHub (tạo repo, thêm secrets) sẽ được hướng dẫn khi tới bước đó.
 
