@@ -72,6 +72,7 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 
 ## Lưu ý
 
+- `ALLOW_FAKE_CLOCK=1` + `APP_FAKE_NOW` chỉ dùng cho e2e/local (`src/app/_lib/clock.ts`); không bao giờ đặt ở môi trường production.
 - **Nhánh làm việc:** kế hoạch 2–4 làm tiếp trên nhánh `worktree-plan-1-foundation-domain` (worktree `.claude/worktrees/plan-1-foundation-domain`), chưa merge vào `master`. Mỗi kế hoạch: viết → người dùng duyệt → thực hiện bằng subagent-driven-development.
 - **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev` và `anh_em_it_test`. Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` ở `src/fonts/be-vietnam-pro/`.
