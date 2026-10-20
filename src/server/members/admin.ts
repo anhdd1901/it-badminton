@@ -16,9 +16,9 @@ import { isUniqueViolation } from "./profile";
 
 const SINGLE_ADMIN_INDEX = "members_single_admin";
 
-/** `memberId` must already be parsed with parseMemberId. */
-async function loadMember(db: Db, memberId: string) {
-  const [row] = await db
+/** `memberId` must already be parsed with parseMemberId. Pass `lock` inside a transaction to row-lock it. */
+async function loadMember(db: Db, memberId: string, lock = false) {
+  const query = db
     .select({
       id: members.id,
       role: members.role,
@@ -27,6 +27,7 @@ async function loadMember(db: Db, memberId: string) {
     })
     .from(members)
     .where(eq(members.id, memberId));
+  const [row] = await (lock ? query.for("update") : query);
   if (!row) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
   return row;
 }
@@ -41,17 +42,22 @@ export async function setActive(
 ): Promise<void> {
   requireRole(actor, "admin");
   const memberId = parseMemberId(rawMemberId);
-  const target = await loadMember(db, memberId);
   if (active) {
-    await db.update(members).set({ active: true }).where(eq(members.id, memberId));
+    await db.transaction(async (tx) => {
+      await loadMember(tx, memberId, true);
+      await tx.update(members).set({ active: true }).where(eq(members.id, memberId));
+    });
     return;
   }
-  if (target.role === "admin") throw new AppError("VALIDATION", "Không thể ngưng hoạt động admin");
 
   await finalizeDue(db, now);
   const day = matchDayOfWeek(now);
   await db.transaction(async (tx) => {
     await lockMatchDay(tx, day);
+    const target = await loadMember(tx, memberId, true);
+    if (target.role === "admin") {
+      throw new AppError("VALIDATION", "Không thể ngưng hoạt động admin");
+    }
     await tx
       .update(members)
       .set({ active: false, role: target.role === "subadmin" ? "member" : target.role })
@@ -83,14 +89,17 @@ export async function setSubadmin(
   isSubadmin: boolean,
 ): Promise<void> {
   requireRole(actor, "admin");
-  const target = await loadMember(db, parseMemberId(memberId));
-  if (!target.active || target.role === "admin") {
-    throw new AppError("VALIDATION", "Chỉ đặt subadmin cho mem đang hoạt động, không phải admin");
-  }
-  await db
-    .update(members)
-    .set({ role: isSubadmin ? "subadmin" : "member" })
-    .where(eq(members.id, target.id));
+  const targetId = parseMemberId(memberId);
+  await db.transaction(async (tx) => {
+    const target = await loadMember(tx, targetId, true);
+    if (!target.active || target.role === "admin") {
+      throw new AppError("VALIDATION", "Chỉ đặt subadmin cho mem đang hoạt động, không phải admin");
+    }
+    await tx
+      .update(members)
+      .set({ role: isSubadmin ? "subadmin" : "member" })
+      .where(eq(members.id, target.id));
+  });
 }
 
 export async function transferAdmin(
@@ -104,10 +113,6 @@ export async function transferAdmin(
   if (!(await verifyPassword(self.passwordHash, input.password))) {
     throw new AppError("VALIDATION", MESSAGES.wrongPassword);
   }
-  const target = await loadMember(db, targetId);
-  if (!target.active || target.id === actor.memberId) {
-    throw new AppError("VALIDATION", "Chỉ chuyển quyền cho mem khác đang hoạt động");
-  }
   try {
     await db.transaction(async (tx) => {
       // Serialises concurrent transfers by the same admin: the loser sees it is no longer admin.
@@ -117,6 +122,10 @@ export async function transferAdmin(
         .where(eq(members.id, actor.memberId))
         .for("update");
       if (me?.role !== "admin") throw new AppError("FORBIDDEN", MESSAGES.forbidden);
+      const target = await loadMember(tx, targetId, true);
+      if (!target.active || target.id === actor.memberId) {
+        throw new AppError("VALIDATION", "Chỉ chuyển quyền cho mem khác đang hoạt động");
+      }
       await tx.update(members).set({ role: "member" }).where(eq(members.id, actor.memberId));
       await tx.update(members).set({ role: "admin" }).where(eq(members.id, target.id));
     });

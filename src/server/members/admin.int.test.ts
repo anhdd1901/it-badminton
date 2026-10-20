@@ -185,4 +185,19 @@ describe("member administration", () => {
     expect(admins).toHaveLength(1);
     expect([a.id, b.id]).toContain(admins[0].id);
   });
+
+  it("setActive đọc mem đích trong transaction", async () => {
+    const admin = await makeMember(t.db, { role: "admin" });
+    for (let i = 0; i < 10; i++) {
+      const sub = await makeMember(t.db, { role: "subadmin" });
+      await Promise.allSettled([
+        setActive(t.db, actorOf(admin), sub.id, false, vn("2026-10-13T08:00")),
+        setSubadmin(t.db, actorOf(admin), sub.id, true),
+      ]);
+      expect((await t.db.select().from(members).where(eq(members.id, sub.id)))[0]).toMatchObject({
+        active: false,
+        role: "member",
+      });
+    }
+  });
 });

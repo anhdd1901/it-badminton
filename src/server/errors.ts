@@ -39,3 +39,10 @@ export const MESSAGES = {
 export function resultConflict(scoreA: number, scoreB: number): string {
   return `Trận này vừa được nhập ${scoreA}–${scoreB}, hãy tải lại`;
 }
+
+/** Log-safe description of an unexpected error: never message, SQL params or connection strings. */
+export function safeErrorSummary(e: unknown): string {
+  if (!(e instanceof Error)) return "UnknownError";
+  const code = (e as { code?: unknown }).code ?? (e.cause as { code?: unknown } | undefined)?.code;
+  return typeof code === "string" ? `${e.name} ${code}` : e.name;
+}

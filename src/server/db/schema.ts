@@ -64,6 +64,7 @@ export const loginAttempts = pgTable("login_attempts", {
   username: text("username").primaryKey(),
   failedCount: integer("failed_count").notNull().default(0),
   lockedUntil: tstz("locked_until"),
+  lastFailedAt: tstz("last_failed_at").notNull().defaultNow(),
 });
 
 export const matchDays = pgTable("match_days", {

@@ -101,4 +101,20 @@ describe("auth", () => {
       });
     expect(await t.db.select().from(loginAttempts)).toHaveLength(0);
   });
+
+  it("dọn bản ghi khóa cũ hơn 24 giờ", async () => {
+    await t.db.insert(loginAttempts).values([
+      { username: "cu.khong.khoa", failedCount: 2, lastFailedAt: vn("2026-10-12T08:00") },
+      {
+        username: "cu.dang.khoa",
+        failedCount: 0,
+        lastFailedAt: vn("2026-10-12T08:00"),
+        lockedUntil: vn("2026-10-13T12:00"),
+      },
+    ]);
+    await login(t.db, { username: "nguoi.khac", password: "x" }, vn("2026-10-13T09:00"));
+    const names = (await t.db.select().from(loginAttempts)).map((r) => r.username);
+    expect(names).not.toContain("cu.khong.khoa");
+    expect(names).toContain("cu.dang.khoa");
+  });
 });

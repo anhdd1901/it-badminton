@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { Writable } from "node:stream";
 import { createDb } from "../src/server/db/client";
-import { AppError } from "../src/server/errors";
+import { AppError, safeErrorSummary } from "../src/server/errors";
 
 export function connect(): ReturnType<typeof createDb> {
   if (!process.env.DATABASE_URL && existsSync(".env")) process.loadEnvFile(".env");
@@ -66,6 +66,6 @@ export function createPrompter() {
 
 export function reportFailure(e: unknown): never {
   if (e instanceof AppError) console.error(e.message);
-  else console.error("Có lỗi không mong muốn:", e);
+  else console.error("Có lỗi không mong muốn: " + safeErrorSummary(e));
   process.exit(1);
 }
