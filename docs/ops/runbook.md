@@ -32,11 +32,13 @@ Các bước làm trên Vercel, Neon và GitHub để đưa app lên production,
 
 ## 5. Tạo admin đầu tiên
 
-1. Trên Vercel: **Settings → Environment Variables** → `DATABASE_URL_UNPOOLED` → hiện giá trị và copy.
-2. Ở thư mục repo trên máy, tạo file `.env.prod-admin` chỉ có một dòng:
+1. Lấy chuỗi kết nối **trực tiếp** từ Neon (biến trên Vercel có ổ khóa là biến Sensitive, Vercel không cho xem lại giá trị): Vercel → **Storage** → database → **Open in Neon** (hoặc mở <https://console.neon.tech>) → project → nút **Connect** → chọn đúng Branch (nhánh chính), Database `neondb`, Role chủ sở hữu → **tắt** công tắc **Connection pooling** → copy chuỗi (hiện mật khẩu nếu cần). Chuỗi đúng không chứa `-pooler` trong tên máy chủ.
+2. Ở thư mục repo trên máy, chạy lệnh sau: nó hỏi chuỗi (dán vào, màn hình không hiện chữ) rồi ghi file `.env.prod-admin` chỉ có một dòng, không để chuỗi lọt vào lịch sử lệnh:
    ```
-   DATABASE_URL_UNPOOLED=<giá trị vừa copy>
+   read -rs -p "Dán chuỗi kết nối trực tiếp: " U; echo "DATABASE_URL_UNPOOLED=$U" > .env.prod-admin; unset U; chmod 600 .env.prod-admin
+   grep -c -- '-pooler' .env.prod-admin
    ```
+   Lệnh `grep` phải in `0`. In `1` nghĩa là đã dán nhầm chuỗi có pooler: xóa file và làm lại với công tắc Connection pooling tắt.
 3. Chạy `ENV_FILE=.env.prod-admin pnpm admin:create` rồi trả lời các câu hỏi.
 4. Đăng nhập app bằng tài khoản vừa tạo. Thêm mem khác ở **Tôi → Quản lý mem**.
 5. File `.env.prod-admin` không bao giờ được commit (`.gitignore` đã chặn mọi file `.env*`). Không đổi tên nó thành `.env.production*` hay `.env.local`: Next.js tự nạp các file đó khi chạy app ở máy. Dùng xong có thể xóa.
@@ -44,7 +46,7 @@ Các bước làm trên Vercel, Neon và GitHub để đưa app lên production,
 ## 6. Bật sao lưu tự động
 
 1. Trên GitHub: **New repository** → tên `it-badminton-backup`, chọn **Private**, **không** tick README/.gitignore/license → **Create repository**.
-2. Repo vừa tạo → **Settings → Secrets and variables → Actions → New repository secret** → Name `DATABASE_URL`, Secret là giá trị `DATABASE_URL_UNPOOLED` (giống mục 5) → **Add secret**.
+2. Repo vừa tạo → **Settings → Secrets and variables → Actions → New repository secret** → Name `DATABASE_URL`, Secret là chuỗi kết nối **trực tiếp** lấy từ Neon (cách lấy như mục 5, bước 1; nên là cùng chuỗi trong `.env.prod-admin`) → **Add secret**.
 3. Đẩy các file sao lưu lên repo đó, từ thư mục repo mã nguồn:
    ```bash
    tmp=$(mktemp -d)
@@ -77,7 +79,7 @@ Chỉ làm khi dữ liệu production bị hỏng, ví dụ xóa nhầm hoặc b
 ## 9. Khi lộ hoặc đổi mật khẩu database
 
 1. Vercel → Storage → database → **Open in Neon** → **Branches** → nhánh chính → **Roles & Databases** → role của app → **Reset password** (giao diện Neon có thể đổi chỗ; tìm mục Roles).
-2. Kiểm tra `DATABASE_URL`/`DATABASE_URL_UNPOOLED` trên Vercel đã mang mật khẩu mới (tích hợp Neon thường tự cập nhật; nếu không, sửa tay), rồi **Redeploy** và đăng nhập app để chắc chắn.
+2. Kiểm tra `DATABASE_URL`/`DATABASE_URL_UNPOOLED` trên Vercel đã mang mật khẩu mới (tích hợp Neon thường tự cập nhật; nếu không, sửa tay: biến Sensitive không xem lại được, chỉ ghi đè bằng giá trị mới lấy từ Neon), rồi **Redeploy** và đăng nhập app để chắc chắn.
 3. Sửa hoặc xóa file `.env.prod-admin` ở máy.
 4. Cập nhật secret `DATABASE_URL` của repo `it-badminton-backup` (mục 6.2) và chạy tay workflow để kiểm tra.
 5. Nếu có dùng `BLOB_READ_WRITE_TOKEN` và token bị lộ: Vercel → Storage → Blob store → **Settings** → tạo token mới, rồi Redeploy. Kho chỉ có `BLOB_STORE_ID` (OIDC) không có token để lộ.
