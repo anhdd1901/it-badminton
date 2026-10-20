@@ -106,6 +106,48 @@ describe("sao lưu và khôi phục", () => {
     expect(rows).toEqual([{ username: "chu.nhiem" }]);
   }, 120_000);
 
+  /** Runs backup.sh and returns its failure: exit status plus stderr (never the secret). */
+  function failure(url: string): { status: number; stderr: string } {
+    try {
+      run("backup.sh", { BACKUP_DATABASE_URL: url });
+    } catch (e) {
+      const err = e as { status: number; stderr: Buffer | string };
+      return { status: err.status, stderr: String(err.stderr) };
+    }
+    throw new Error("backup.sh lẽ ra phải lỗi");
+  }
+
+  it.each(["********************", "psql", "DATABASE_URL_UNPOOLED", "localhost/anh_em_it_test"])(
+    "chuỗi không phải URL kết nối (%s) bị từ chối ngay, không đi tìm socket cục bộ",
+    (bad) => {
+      const f = failure(bad);
+      expect(f.status).toBe(1);
+      expect(f.stderr).toContain("không phải chuỗi kết nối");
+      expect(f.stderr).toContain("postgres://");
+      expect(f.stderr).not.toContain("socket");
+      expect(f.stderr).not.toContain(bad);
+    },
+  );
+
+  it("chuỗi kết nối qua pooler bị từ chối với hướng dẫn dùng chuỗi trực tiếp", () => {
+    const f = failure(
+      "postgres://u:matkhaubimat@ep-cool-123-pooler.ap-southeast-1.aws.neon.tech/neondb",
+    );
+    expect(f.status).toBe(1);
+    expect(f.stderr).toContain("-pooler");
+    expect(f.stderr).not.toContain("matkhaubimat");
+  });
+
+  it.each([
+    ["dấu nháy bao quanh", (u: string) => `"${u}"`],
+    ["tiền tố tên biến", (u: string) => `DATABASE_URL_UNPOOLED=${u}`],
+    ["tiền tố và dấu nháy", (u: string) => `DATABASE_URL_UNPOOLED="${u}"`],
+    ["khoảng trắng và xuống dòng thừa", (u: string) => ` ${u}\n`],
+  ])("dán thừa (%s) vẫn sao lưu được", (_name, wrap) => {
+    const out = run("backup.sh", { BACKUP_DATABASE_URL: wrap(testUrl()) });
+    expect(out).toMatch(/Đã sao lưu|Dữ liệu không đổi/);
+  });
+
   it("backup.sh báo lỗi khi thiếu BACKUP_DATABASE_URL", () => {
     expect(() => run("backup.sh", { BACKUP_DATABASE_URL: "" })).toThrow();
   });

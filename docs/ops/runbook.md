@@ -58,7 +58,7 @@ Các bước làm trên Vercel, Neon và GitHub để đưa app lên production,
    ```
    Nếu `git push` báo `refusing to allow ... without workflow scope`: token đang dùng thiếu quyền `workflow`. Khi đó đẩy ba file kia trước (bỏ thư mục `.github`), rồi tạo workflow trên web: repo → **Add file → Create new file** → tên `.github/workflows/backup.yml` → dán nội dung `ops/backup/workflow.yml` → **Commit changes**.
 4. Tab **Actions** → **Backup** → **Run workflow**. Chờ xanh, rồi kiểm tra có commit `backup: …` chứa `anh-em-it.sql.gz`.
-5. Workflow đỏ thì GitHub gửi email. Mở log: dòng `pg_dump lỗi` thường do sai secret hoặc Neon đổi mật khẩu (xem mục 9).
+5. Workflow đỏ thì GitHub gửi email. Mở log: dòng "Secret DATABASE_URL không phải chuỗi kết nối" nghĩa là giá trị secret sai (hay gặp nhất: copy khi Vercel còn hiện dấu `***` vì chưa bấm **Show secret**); sửa ở **Settings → Secrets and variables → Actions → DATABASE_URL → Update secret**. Dòng `pg_dump lỗi` thường do Neon đổi mật khẩu (xem mục 9).
 
 ## 7. Diễn tập khôi phục (vào database dev ở máy)
 

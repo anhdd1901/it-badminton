@@ -23,4 +23,4 @@ Lưu ý: chỉ khôi phục được các bản sao lưu từ commit có script 
 
 ## Secret
 
-- `DATABASE_URL`: chuỗi kết nối **trực tiếp** tới Neon (giá trị `DATABASE_URL_UNPOOLED` trên Vercel). Đổi mật khẩu Neon thì cập nhật secret này.
+- `DATABASE_URL`: chuỗi kết nối **trực tiếp** tới Neon (giá trị `DATABASE_URL_UNPOOLED`, không có `-pooler` trong tên máy chủ), bắt đầu bằng `postgres://` hoặc `postgresql://`. Đổi mật khẩu Neon thì cập nhật secret này. Dán thừa dấu nháy, khoảng trắng hay chữ `DATABASE_URL_UNPOOLED=` ở đầu thì script tự bỏ; còn giá trị không phải chuỗi kết nối (ví dụ dấu `***` khi chưa bấm Show secret) thì workflow dừng và báo rõ lý do.

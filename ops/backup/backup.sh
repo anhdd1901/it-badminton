@@ -9,7 +9,29 @@ if [ -z "${BACKUP_DATABASE_URL:-}" ]; then
   echo "Thiếu BACKUP_DATABASE_URL" >&2
   exit 1
 fi
-export PGURL="$BACKUP_DATABASE_URL"
+
+# Tolerate a sloppy copy/paste: whitespace, quotes, or the variable name in front of the value.
+url="${BACKUP_DATABASE_URL//[$'\r\n\t ']/}"
+url="${url//\"/}"
+url="${url//\'/}"
+url="${url#DATABASE_URL_UNPOOLED=}"
+url="${url#DATABASE_URL=}"
+# Anything else would be taken by pg_dump as a database *name* on the local socket, which fails
+# with a confusing error. The value itself is never printed.
+case "$url" in
+  postgres://* | postgresql://*) ;;
+  *)
+    echo "Secret DATABASE_URL không phải chuỗi kết nối (${#url} ký tự): phải bắt đầu bằng postgres:// hoặc postgresql://. Lấy lại chuỗi đầy đủ từ Neon (không phải dấu ***) và tạo lại secret." >&2
+    exit 1
+    ;;
+esac
+case "$url" in
+  *@*-pooler*)
+    echo "Secret DATABASE_URL là chuỗi qua pooler (có -pooler trong tên máy chủ). Sao lưu cần chuỗi kết nối trực tiếp (DATABASE_URL_UNPOOLED)." >&2
+    exit 1
+    ;;
+esac
+export PGURL="$url"
 out="$dir/anh-em-it.sql.gz"
 tmp="$out.tmp"
 trap 'rm -f "$tmp"' EXIT
