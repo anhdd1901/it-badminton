@@ -28,7 +28,7 @@ Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4
 - `pnpm dev`: chạy app ở máy
 - `pnpm test` / `pnpm test:watch`: chạy test (Vitest, cố định `TZ=America/Los_Angeles` để lộ lỗi múi giờ)
 - `pnpm typecheck`: kiểm tra kiểu TypeScript (Vitest không kiểm tra kiểu, nên luôn chạy lệnh này)
-- `pnpm lint`, `pnpm build`
+- `pnpm lint`, `pnpm build` · `pnpm format` / `pnpm format:check`: Prettier (bỏ qua các đường dẫn trong `.prettierignore`)
 - `pnpm db:up`: bật PostgreSQL (Docker) · `pnpm db:generate`: sinh migration từ `src/server/db/schema.ts` · `pnpm db:migrate`: chạy migration lên database dev
 - `pnpm test:int`: test tích hợp với PostgreSQL thật (`*.int.test.ts`, database test, chạy tuần tự)
 - `graphify query "..."` / `graphify path A B` / `graphify explain X`: tra đồ thị code · `graphify update .`: dựng lại đồ thị (chỉ code, không tốn token) · `/graphify .` trong Claude Code: dựng lần đầu
