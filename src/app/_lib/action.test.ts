@@ -82,3 +82,17 @@ describe("runAction", () => {
     expect(r).toMatchObject({ ok: false, code: "UNEXPECTED" });
   });
 });
+
+describe("runAction revalidate option", () => {
+  it("skips revalidatePath when revalidate is false", async () => {
+    getActor.mockResolvedValue({ memberId: "m", role: "member" });
+    const r = await runAction(async () => 1, { revalidate: false });
+    expect(r).toEqual({ ok: true, data: 1 });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+  it("revalidates by default", async () => {
+    getActor.mockResolvedValue({ memberId: "m", role: "member" });
+    await runAction(async () => 1);
+    expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
+  });
+});

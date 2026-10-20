@@ -26,7 +26,10 @@ export function PairStatsTable({ rows }: { rows: Row[] }) {
                     <MemberAvatar member={r.members[0]} size={24} />
                     <MemberAvatar member={r.members[1]} size={24} />
                   </span>
-                  <span className="whitespace-nowrap">
+                  <span
+                    className="block max-w-[9rem] truncate"
+                    title={`${r.members[0].displayName} & ${r.members[1].displayName}`}
+                  >
                     {r.members[0].displayName} &amp; {r.members[1].displayName}
                   </span>
                 </span>

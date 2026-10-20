@@ -10,7 +10,7 @@ export default function ErrorPage({
   return (
     <main className="flex flex-col items-center gap-4 p-8 text-center">
       <p role="alert">Có lỗi không mong muốn, hãy thử lại</p>
-      <Button onClick={reset} className="rounded-full bg-accent text-on-accent">
+      <Button onClick={reset} className="bg-accent text-on-accent">
         Thử lại
       </Button>
     </main>

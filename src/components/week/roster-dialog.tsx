@@ -103,7 +103,7 @@ export function RosterDialog({
             {(rows ?? []).map((row) => (
               <li key={row.member.id} className="flex items-center gap-3 py-1">
                 <MemberAvatar member={row.member} size={32} />
-                <span className="flex-1 text-sm">
+                <span className="min-w-0 flex-1 truncate text-sm">
                   {row.member.displayName} (@{row.member.username})
                 </span>
                 <Button

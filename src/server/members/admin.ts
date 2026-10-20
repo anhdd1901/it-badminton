@@ -7,6 +7,7 @@ import { type Actor, requireRole } from "../actor";
 import { verifyPassword } from "../auth/password";
 import { revokeSessions } from "../auth/sessions";
 import type { Db } from "../db/client";
+import { loadEloState } from "../data/loaders";
 import { lockMatchDay } from "../db/lock";
 import { attendances, eloAdjustments, matchDays, members } from "../db/schema";
 import { AppError, MESSAGES } from "../errors";
@@ -146,6 +147,13 @@ export async function adjustElo(
   const memberId = parseMemberId(input.memberId);
   const eloTenths = parseEloInput(input.elo);
   await loadMember(db, memberId);
+  // An adjustment equal to the current ELO would only freeze it against later result edits.
+  const [{ initialEloTenths }] = await db
+    .select({ initialEloTenths: members.initialEloTenths })
+    .from(members)
+    .where(eq(members.id, memberId));
+  const current = (await loadEloState(db)).current.get(memberId) ?? initialEloTenths;
+  if (current === eloTenths) return;
   await db
     .insert(eloAdjustments)
     .values({ memberId, eloTenths, adjustedBy: actor.memberId, at: now });

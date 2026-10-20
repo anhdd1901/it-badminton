@@ -46,6 +46,7 @@ function FieldForm({
   clearOnSuccess,
   inputMode,
   secret,
+  disableUnchanged,
 }: {
   id: string;
   label: string;
@@ -56,6 +57,7 @@ function FieldForm({
   clearOnSuccess?: boolean;
   inputMode?: "decimal";
   secret?: boolean;
+  disableUnchanged?: boolean;
 }) {
   const [value, setValue] = useState(initial);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +93,11 @@ function FieldForm({
           type={secret ? "password" : "text"}
           required
         />
-        <Button type="submit" variant="outline" disabled={pending}>
+        <Button
+          type="submit"
+          variant="outline"
+          disabled={pending || (disableUnchanged === true && value.trim() === initial)}
+        >
           {submit}
         </Button>
       </div>
@@ -211,6 +217,7 @@ export function MemberActions({
                 hint="Số lớn hơn 0, tối đa 5000, tối đa 1 chữ số thập phân (ví dụ 1016,8)."
                 submit="Điều chỉnh"
                 inputMode="decimal"
+                disableUnchanged
                 onSubmit={(v) => adjustEloAction(member.id, v)}
               />
               {!isSelf && member.active ? (

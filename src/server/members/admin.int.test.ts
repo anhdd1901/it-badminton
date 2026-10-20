@@ -4,7 +4,7 @@ import type { Role } from "@/domain/types";
 import type { Actor } from "../actor";
 import { createSession, resolveSession } from "../auth/sessions";
 import { loadEloState } from "../data/loaders";
-import { attendances, members } from "../db/schema";
+import { attendances, eloAdjustments, members } from "../db/schema";
 import { MESSAGES } from "../errors";
 import { setAttendance } from "../match-days/attendance";
 import { finalizeDue } from "../match-days/schedule";
@@ -134,6 +134,17 @@ describe("member administration", () => {
       vn("2026-10-13T08:00"),
     );
     expect((await loadEloState(t.db)).current.get(m.id)).toBe(10505);
+  });
+
+  it("điều chỉnh ELO bằng giá trị hiện tại thì không tạo mốc", async () => {
+    const admin = await makeMember(t.db, { role: "admin" });
+    const m = await makeMember(t.db);
+    const cur = (await loadEloState(t.db)).current.get(m.id) ?? 0;
+    const at = vn("2026-10-13T08:00");
+    await adjustElo(t.db, actorOf(admin), { memberId: m.id, elo: cur / 10 }, at);
+    expect(await t.db.select().from(eloAdjustments)).toHaveLength(0);
+    await adjustElo(t.db, actorOf(admin), { memberId: m.id, elo: (cur + 10) / 10 }, at);
+    expect(await t.db.select().from(eloAdjustments)).toHaveLength(1);
   });
 
   it("đã chốt lúc 12:00 thì ngưng mem với giờ 11:59 vẫn giữ điểm danh", async () => {

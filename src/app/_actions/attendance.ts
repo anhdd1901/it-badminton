@@ -17,5 +17,5 @@ export async function setAttendanceAction(
 export async function getRosterAction(): Promise<
   ActionResult<{ member: MemberRef; attending: boolean }[]>
 > {
-  return runAction(({ db, actor, now }) => getRoster(db, actor, now));
+  return runAction(({ db, actor, now }) => getRoster(db, actor, now), { revalidate: false });
 }

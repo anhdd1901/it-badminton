@@ -33,7 +33,9 @@ export function EloTable({ rows }: { rows: Row[] }) {
                 <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                   <span className="flex items-center gap-2">
                     <MemberAvatar member={r.member} size={24} />
-                    <span className="whitespace-nowrap">{r.member.displayName}</span>
+                    <span className="block max-w-[9rem] truncate" title={r.member.displayName}>
+                      {r.member.displayName}
+                    </span>
                   </span>
                 </th>
                 <td className="p-2 text-right tabular-nums">{formatElo(r.eloTenths)}</td>

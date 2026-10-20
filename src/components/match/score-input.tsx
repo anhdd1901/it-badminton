@@ -66,7 +66,9 @@ export function ScoreInput({
       }}
     >
       <div className="flex flex-col gap-1">
-        <Label htmlFor="score-a">{labelA}</Label>
+        <Label htmlFor="score-a" className="block leading-snug [overflow-wrap:anywhere]">
+          {labelA}
+        </Label>
         <Input
           id="score-a"
           inputMode="numeric"
@@ -78,7 +80,9 @@ export function ScoreInput({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="score-b">{labelB}</Label>
+        <Label htmlFor="score-b" className="block leading-snug [overflow-wrap:anywhere]">
+          {labelB}
+        </Label>
         <Input
           id="score-b"
           inputMode="numeric"

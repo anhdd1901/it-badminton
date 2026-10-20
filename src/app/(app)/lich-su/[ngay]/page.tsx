@@ -30,10 +30,10 @@ export default async function MatchDayDetailPage({ params }: PageProps<"/lich-su
         {detail.participants.map((p) => (
           <li
             key={p.id}
-            className="flex items-center gap-1 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm"
+            className="flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm"
           >
             <MemberAvatar member={p} size={24} />
-            {p.displayName}
+            <span className="truncate">{p.displayName}</span>
           </li>
         ))}
       </ul>

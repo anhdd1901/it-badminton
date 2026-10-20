@@ -17,6 +17,7 @@ export function toActionResult(e: unknown): ActionResult<never> {
 
 export async function runAction<T>(
   fn: (ctx: { db: Db; actor: Actor; now: Date }) => Promise<T>,
+  { revalidate = true }: { revalidate?: boolean } = {},
 ): Promise<ActionResult<T>> {
   try {
     const actor = await getActor();
@@ -28,7 +29,7 @@ export async function runAction<T>(
       };
     }
     const data = await fn({ db: getDb(), actor, now: now() });
-    revalidatePath("/", "layout");
+    if (revalidate) revalidatePath("/", "layout");
     return { ok: true, data };
   } catch (e) {
     // A successful action may end with redirect(): still refresh cached data first.
