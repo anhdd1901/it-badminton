@@ -32,13 +32,13 @@ Các bước làm trên Vercel, Neon và GitHub để đưa app lên production,
 
 ## 5. Tạo admin đầu tiên
 
-1. Lấy chuỗi kết nối **trực tiếp** từ Neon (biến trên Vercel có ổ khóa là biến Sensitive, Vercel không cho xem lại giá trị): Vercel → **Storage** → database → **Open in Neon** (hoặc mở <https://console.neon.tech>) → project → nút **Connect** → chọn đúng Branch (nhánh chính), Database `neondb`, Role chủ sở hữu → **tắt** công tắc **Connection pooling** → copy chuỗi (hiện mật khẩu nếu cần). Chuỗi đúng không chứa `-pooler` trong tên máy chủ.
-2. Ở thư mục repo trên máy, chạy lệnh sau: nó hỏi chuỗi (dán vào, màn hình không hiện chữ) rồi ghi file `.env.prod-admin` chỉ có một dòng, không để chuỗi lọt vào lịch sử lệnh:
+1. Lấy chuỗi kết nối **trực tiếp** (biến trên Vercel có ổ khóa là biến Sensitive, không xem lại được ở **Settings → Environment Variables**). Cách dễ nhất: Vercel → **Storage** → bấm database Neon → khung **Quickstart**, tab `.env.local` → bấm **Show secret** → bôi đen và copy **dòng `DATABASE_URL_UNPOOLED=…`** (không dùng `DATABASE_URL`, đó là chuỗi qua pooler; không dùng nút Copy Snippet vì nó copy cả khối nhiều dòng). Cách khác: **Open in Neon** → nút **Connect** → tắt **Connection pooling** → copy chuỗi. Chuỗi đúng không chứa `-pooler` trong tên máy chủ.
+2. Ở thư mục repo trên máy, chạy lệnh sau: nó hỏi chuỗi (dán vào, màn hình không hiện chữ) rồi ghi file `.env.prod-admin` chỉ có một dòng, không để chuỗi lọt vào lịch sử lệnh. Dán cả dòng có tiền tố `DATABASE_URL_UNPOOLED=` hay chỉ phần giá trị đều được:
    ```
-   read -rs -p "Dán chuỗi kết nối trực tiếp: " U; echo "DATABASE_URL_UNPOOLED=$U" > .env.prod-admin; unset U; chmod 600 .env.prod-admin
+   read -rs -p "Dán chuỗi kết nối trực tiếp: " U; U="${U#DATABASE_URL_UNPOOLED=}"; U="${U//\"/}"; echo "DATABASE_URL_UNPOOLED=$U" > .env.prod-admin; unset U; chmod 600 .env.prod-admin
    grep -c -- '-pooler' .env.prod-admin
    ```
-   Lệnh `grep` phải in `0`. In `1` nghĩa là đã dán nhầm chuỗi có pooler: xóa file và làm lại với công tắc Connection pooling tắt.
+   Lệnh `grep` phải in `0`. In `1` nghĩa là đã dán nhầm chuỗi có pooler: xóa file và làm lại. Dùng xong nhớ bấm ẩn lại giá trị trên Vercel.
 3. Chạy `ENV_FILE=.env.prod-admin pnpm admin:create` rồi trả lời các câu hỏi.
 4. Đăng nhập app bằng tài khoản vừa tạo. Thêm mem khác ở **Tôi → Quản lý mem**.
 5. File `.env.prod-admin` không bao giờ được commit (`.gitignore` đã chặn mọi file `.env*`). Không đổi tên nó thành `.env.production*` hay `.env.local`: Next.js tự nạp các file đó khi chạy app ở máy. Dùng xong có thể xóa.
