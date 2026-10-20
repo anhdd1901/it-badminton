@@ -110,10 +110,7 @@ export async function getMatchDayDetail(
   return {
     day: localDay,
     key: official.key,
-    participants: official.assignments.flatMap((a) => {
-      const m = refs.get(a.memberId);
-      return m ? [m] : [];
-    }),
+    participants: official.assignments.map((a) => ref(refs, a.memberId)),
     matches: rows.map((r) => ({
       number: r.number,
       teamA: [player(r.a1), player(r.a2)],

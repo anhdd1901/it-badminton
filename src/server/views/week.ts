@@ -198,13 +198,15 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
 
   let notice: WeekView["notice"] = null;
   const activeCount = ids.filter((id) => currentSeeds.has(id)).length;
-  if (activeCount < 5) notice = { kind: "NOT_ENOUGH", count: activeCount };
-  else if (!schedule) {
-    notice = {
-      kind: "NO_DIAGRAM",
-      seed1: attendees.filter((a) => a.member.seed === 1).length,
-      seed2: attendees.filter((a) => a.member.seed === 2).length,
-    };
+  if (!schedule) {
+    notice =
+      activeCount < 5
+        ? { kind: "NOT_ENOUGH", count: activeCount }
+        : {
+            kind: "NO_DIAGRAM",
+            seed1: attendees.filter((a) => a.member.seed === 1).length,
+            seed2: attendees.filter((a) => a.member.seed === 2).length,
+          };
   }
 
   return {

@@ -133,4 +133,28 @@ describe("getWeekView", () => {
     const v = await getWeekView(t.db, as(ms[0]), sat);
     expect(v.notice).toEqual({ kind: "NOT_ENOUGH", count: 4 });
   });
+
+  it("lịch chính thức đã có: ngưng một mem không sinh thông báo", async () => {
+    const ms = await Promise.all(
+      Array.from({ length: 5 }, (_, i) => makeMember(t.db, { role: i === 0 ? "admin" : "member" })),
+    );
+    await attend(ms);
+    const sat = vn("2026-10-17T09:00");
+    await enterResult(
+      t.db,
+      as(ms[0]),
+      {
+        day: "2026-10-17",
+        scheduleKey: attendeeKey(ms.map((m) => m.id)),
+        matchNumber: 1,
+        scoreA: 21,
+        scoreB: 15,
+      },
+      sat,
+    );
+    await setActive(t.db, as(ms[0]), ms[4].id, false, sat);
+    const v = await getWeekView(t.db, as(ms[0]), sat);
+    expect(v.schedule).not.toBeNull();
+    expect(v.notice).toBeNull();
+  });
 });
