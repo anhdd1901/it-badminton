@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import type { Db } from "../src/server/db/client";
 import { setSubadmin } from "../src/server/members/admin";
 import { createFirstAdmin } from "../src/server/members/bootstrap";
+import { TABLES } from "../src/server/test/tables";
 import { createMember } from "../src/server/members/profile";
 
 export const PASSWORD = "matkhau123";
@@ -16,19 +17,6 @@ export const SEED = [
   { username: "dung", displayName: "Dũng", role: "member", elo: 1500 },
   { username: "emm", displayName: "Em", role: "member", elo: 1600 },
 ] as const;
-
-const TABLES = [
-  "members",
-  "auth_sessions",
-  "login_attempts",
-  "match_days",
-  "attendances",
-  "draft_schedules",
-  "official_schedules",
-  "scheduled_matches",
-  "match_results",
-  "elo_adjustments",
-];
 
 export async function resetAndSeed(db: Db): Promise<void> {
   await db.execute(sql.raw(`TRUNCATE ${TABLES.join(", ")} RESTART IDENTITY CASCADE`));

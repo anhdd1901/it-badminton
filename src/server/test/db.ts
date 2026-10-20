@@ -5,6 +5,7 @@ import type { Role } from "@/domain/types";
 import { hashPassword } from "../auth/password";
 import { createDb, type Db } from "../db/client";
 import { members } from "../db/schema";
+import { TABLES } from "./tables";
 
 export const TEST_PASSWORD = "matkhau123";
 
@@ -12,19 +13,6 @@ export const TEST_PASSWORD = "matkhau123";
 export function vn(local: string): Date {
   return new Date(`${local}:00+07:00`);
 }
-
-const TABLES = [
-  "members",
-  "auth_sessions",
-  "login_attempts",
-  "match_days",
-  "attendances",
-  "draft_schedules",
-  "official_schedules",
-  "scheduled_matches",
-  "match_results",
-  "elo_adjustments",
-];
 
 let memberCounter = 0;
 let passwordHash: Promise<string> | undefined;
