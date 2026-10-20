@@ -14,13 +14,17 @@ function season(v: string | string[] | undefined): SeasonId | undefined {
   return s !== undefined && SEASON_RE.test(s) ? s : undefined;
 }
 
+function clamp(s: SeasonId | undefined, max: SeasonId): SeasonId {
+  return s === undefined || s > max ? max : s;
+}
+
 export function parseRankingParams(
   sp: SearchParams,
   currentSeason: SeasonId,
 ): { board: "mua" | "elo"; season: SeasonId } {
   return {
     board: single(sp.bang) === "elo" ? "elo" : "mua",
-    season: season(sp.mua) ?? currentSeason,
+    season: clamp(season(sp.mua), currentSeason),
   };
 }
 

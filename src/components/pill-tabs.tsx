@@ -3,9 +3,15 @@ import { cn } from "@/lib/utils";
 
 export type PillTabItem = { href: string; label: string; active: boolean };
 
-export function PillTabs({ items }: { items: PillTabItem[] }) {
+export function PillTabs({
+  items,
+  "aria-label": label,
+}: {
+  items: PillTabItem[];
+  "aria-label"?: string;
+}) {
   return (
-    <nav className="flex gap-2">
+    <nav aria-label={label} className="flex gap-2">
       {items.map((it) => (
         <Link
           key={it.href}

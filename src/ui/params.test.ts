@@ -12,6 +12,9 @@ describe("parseRankingParams", () => {
   it("mua hợp lệ được giữ", () => {
     expect(parseRankingParams({ mua: "2026-03" }, "2026-10").season).toBe("2026-03");
   });
+  it("mùa sau mùa hiện tại bị đưa về mùa hiện tại", () => {
+    expect(parseRankingParams({ mua: "2999-01" }, "2026-10").season).toBe("2026-10");
+  });
   it.each([["abc"], ["2026-13"], ["2026-00"], [["2026-01", "2026-02"]]])(
     "mua sai %j về mùa hiện tại",
     (mua) => {

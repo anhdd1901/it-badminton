@@ -24,6 +24,7 @@ export default async function RankingPage({
     <main className="flex flex-col gap-4 p-4">
       <h1 className="text-xl font-semibold">Xếp hạng</h1>
       <PillTabs
+        aria-label="Bảng xếp hạng"
         items={[
           { href: "/xep-hang", label: "Mùa", active: board === "mua" },
           { href: "/xep-hang?bang=elo", label: "ELO", active: board === "elo" },
