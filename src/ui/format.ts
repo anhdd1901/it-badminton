@@ -34,3 +34,8 @@ export function formatSeason(season: SeasonId): string {
 export function formatDiff(n: number): string {
   return n > 0 ? `+${n}` : String(n);
 }
+
+/** Giá trị ô nhập ELO mà `parseEloInput` đọc được (không có dấu nghìn): 10168 → "1016,8". */
+export function eloInputValue(tenths: number): string {
+  return (tenths / 10).toFixed(1).replace(".", ",");
+}
