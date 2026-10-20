@@ -1,13 +1,10 @@
 import type { getSeasonView } from "@/server/views/rankings";
 import { MemberAvatar } from "@/components/member-avatar";
+import { formatDiff } from "@/ui/format";
 
 type Row = Awaited<ReturnType<typeof getSeasonView>>["rows"][number];
 
 const th = "p-2 text-right font-medium";
-
-function diffText(n: number): string {
-  return n > 0 ? `+${n}` : String(n);
-}
 
 export function SeasonTable({ rows }: { rows: Row[] }) {
   if (rows.length === 0) {
@@ -56,7 +53,7 @@ export function SeasonTable({ rows }: { rows: Row[] }) {
                 </span>
               </th>
               <td className="p-2 text-right">{r.totals.wins}</td>
-              <td className="p-2 text-right">{diffText(r.diff)}</td>
+              <td className="p-2 text-right">{formatDiff(r.diff)}</td>
               <td className="p-2 text-right">{r.totals.pointsFor}</td>
               <td className="p-2 text-right">{r.totals.pointsAgainst}</td>
               <td className="p-2 text-right">{r.totals.played}</td>

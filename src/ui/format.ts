@@ -30,3 +30,7 @@ export function formatSeason(season: SeasonId): string {
   const [y, m] = season.split("-").map(Number);
   return `Tháng ${m}/${y}`;
 }
+
+export function formatDiff(n: number): string {
+  return n > 0 ? `+${n}` : String(n);
+}

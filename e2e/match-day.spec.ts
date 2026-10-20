@@ -88,4 +88,11 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   await expect(page.getByText(/▲/).nth(1)).toBeVisible();
   await page.goto("/xep-hang?mua=abc");
   await expect(page.getByText("Tháng 10/2026")).toBeVisible();
+
+  // Thống kê (Task 10): tham số lạ bị bỏ qua, trang vẫn hiện bình thường.
+  await page.goto("/thong-ke?tu=2026-13");
+  await expect(page.getByRole("heading", { name: "Thống kê" })).toBeVisible();
+  await expect(page.getByRole("rowheader", { name: "An", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Theo cặp" }).click();
+  await expect(page.getByRole("rowheader", { name: /&/ }).first()).toBeVisible();
 });
