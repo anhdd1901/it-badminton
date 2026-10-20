@@ -66,18 +66,18 @@ src/app/manifest.ts, src/app/icon.png, src/app/apple-icon.png, public/icons/*
   - Script `"db:migrate:deploy": "tsx scripts/migrate-deploy.ts"`.
   - `scripts/cli.ts` `connect()`: nếu có `ENV_FILE` thì nạp file đó thay cho `.env`; dùng `directUrl(process.env)`.
 
-- [ ] **Step 1: Viết test (fail)**
+- [x] **Step 1: Viết test (fail)**
   - `deploy-env.test.ts`: `shouldMigrate({ VERCEL_ENV: "production" })` true; `"preview"`, `"development"`, `{}` → false. `directUrl({ DATABASE_URL_UNPOOLED: "a", DATABASE_URL: "b" })` → `"a"`; chỉ có `DATABASE_URL` → `"b"`; trống → ném lỗi.
   - `client.test.ts`: `connectionOptions()` có `prepare: false`, `max: 5`, `connect_timeout: 15`, `idle_timeout: 20`.
-- [ ] **Step 2: Chạy `pnpm test src/ops src/server/db/client.test.ts`** → FAIL.
-- [ ] **Step 3: Viết mã**
+- [x] **Step 2: Chạy `pnpm test src/ops src/server/db/client.test.ts`** → FAIL.
+- [x] **Step 3: Viết mã**
   - `migrate-deploy.ts`: `shouldMigrate(process.env)` false → in "Bỏ qua migration (không phải production)" và thoát 0; true → `migrate(db, { migrationsFolder: "drizzle" })` với `createDb(directUrl(process.env))`, in "Đã chạy migration", lỗi thì in `safeErrorSummary` và thoát 1.
   - `drizzle.config.ts` dùng `DATABASE_URL_UNPOOLED ?? DATABASE_URL`.
   - `vercel.json`: `{ "regions": ["sin1"], "buildCommand": "pnpm db:migrate:deploy && pnpm build" }`.
   - `.env.example` thêm dòng `DATABASE_URL_UNPOOLED=` (để trống ở local) kèm chú thích một dòng.
   - Spec: 6.1 dòng Hosting thêm "region `sin1`", dòng Database thêm "Neon region Singapore"; 6.2 thêm `DATABASE_URL_UNPOOLED` (kết nối trực tiếp cho migration, sao lưu, khôi phục, lệnh quản trị) và `DATABASE_URL_E2E`; 6.5 ghi các quyết định ở Global Constraints về sao lưu (workflow trong repo sao lưu, một file ghi đè, không commit khi không đổi, Docker `postgres:17`).
-- [ ] **Step 4: Chạy lại** → PASS; chạy toàn bộ xác minh (test tích hợp vẫn xanh với `prepare: false`).
-- [ ] **Step 5: Commit** `feat(plan-4/task-1): configure Neon connections and production migrations`.
+- [x] **Step 4: Chạy lại** → PASS; chạy toàn bộ xác minh (test tích hợp vẫn xanh với `prepare: false`).
+- [x] **Step 5: Commit** `feat(plan-4/task-1): configure Neon connections and production migrations`.
 
 ---
 

@@ -1,17 +1,31 @@
 import { existsSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { Writable } from "node:stream";
+import { directUrl } from "../src/ops/deploy-env";
 import { createDb } from "../src/server/db/client";
 import { AppError, safeErrorSummary } from "../src/server/errors";
 
+/**
+ * Loads `ENV_FILE` (e.g. `.env.production.local`) when set, otherwise `.env`, and connects
+ * with the direct URL so admin commands work against Neon too.
+ */
 export function connect(): ReturnType<typeof createDb> {
-  if (!process.env.DATABASE_URL && existsSync(".env")) process.loadEnvFile(".env");
-  const url = process.env.DATABASE_URL;
-  if (!url) {
+  const envFile = process.env.ENV_FILE;
+  if (envFile) {
+    if (!existsSync(envFile)) {
+      console.error(`Không tìm thấy file ${envFile}`);
+      process.exit(1);
+    }
+    process.loadEnvFile(envFile);
+  } else if (!process.env.DATABASE_URL && existsSync(".env")) {
+    process.loadEnvFile(".env");
+  }
+  try {
+    return createDb(directUrl(process.env));
+  } catch {
     console.error("Thiếu DATABASE_URL (đặt trong file .env)");
     process.exit(1);
   }
-  return createDb(url);
 }
 
 /** Line prompts on stdin; secret answers are not echoed. Works with piped input too. */

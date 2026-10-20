@@ -261,7 +261,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, chọn tháng, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế |
 | Icon | lucide-react | 1.x | |
 | Font | Be Vietnam Pro qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/be-vietnam-pro/` (8.1) |
-| Database | PostgreSQL | 17 (local), Neon (production) | |
+| Database | PostgreSQL | 17 (local), Neon (production) | Neon tạo qua Vercel Marketplace, region AWS `ap-southeast-1` (Singapore) |
 | Driver | `postgres` (postgres.js) | 3.x | kết nối PostgreSQL, dùng chung cho local và Neon |
 | ORM và migration | Drizzle ORM + drizzle-kit | 0.45.x / 0.31.x | định nghĩa bảng, truy vấn có kiểu, sinh migration |
 | Kiểm tra dữ liệu | Zod | 4.x | kiểm tra input của mọi server action và form |
@@ -278,7 +278,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Test đầu cuối | Playwright | 1.64.x | các luồng chính trên trình duyệt |
 | PostgreSQL cho dev và test | Docker (`postgres:17`) | | database local và database test tách riêng |
 | Lint, format | ESLint (cấu hình của Next.js) + Prettier | 10.x / 3.x | |
-| Hosting | Vercel (gói Hobby), tên miền miễn phí `*.vercel.app` (ví dụ `anh-em-it.vercel.app` nếu còn trống) | | deploy từ git |
+| Hosting | Vercel (gói Hobby), tên miền miễn phí `*.vercel.app` (ví dụ `anh-em-it.vercel.app` nếu còn trống) | | deploy từ git; function chạy ở region `sin1`; migration tự chạy khi deploy production (`vercel.json`), bản preview không đụng database production |
 | Sao lưu | GitHub Actions + `pg_dump` | | sao lưu tự động hằng tuần (6.5) |
 
 **Không dùng:** thư viện auth bên ngoài (NextAuth/Auth.js…), vì đăng nhập username/mật khẩu với phiên ở server đơn giản hơn tự viết; thư viện quản lý state hay React Query, vì dữ liệu đọc qua Server Components; service worker.
@@ -287,8 +287,10 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 
 | Biến | Dùng để |
 |---|---|
-| `DATABASE_URL` | chuỗi kết nối PostgreSQL (Neon ở production, Docker ở local) |
+| `DATABASE_URL` | chuỗi kết nối PostgreSQL cho app (Neon ở production qua pooler, Docker ở local) |
+| `DATABASE_URL_UNPOOLED` | kết nối trực tiếp tới Neon, dùng cho migration, sao lưu, khôi phục và lệnh quản trị; để trống ở local |
 | `DATABASE_URL_TEST` | database dành riêng cho test tích hợp |
+| `DATABASE_URL_E2E` | database dành riêng cho test đầu cuối (tên phải kết thúc bằng `_e2e`) |
 | `BLOB_READ_WRITE_TOKEN` | quyền ghi Vercel Blob |
 
 GitHub Secrets cho sao lưu: xem 6.5.
@@ -324,7 +326,9 @@ Neon gói miễn phí lưu dữ liệu bền nhưng chỉ khôi phục được 
 - Mã nguồn dự án nằm trên GitHub.
 - Một workflow GitHub Actions chạy mỗi **chủ nhật 23:00** giờ Việt Nam: `pg_dump` toàn bộ database production, commit file vào một **repo GitHub riêng tư** dành cho sao lưu. Lịch sử git giữ mọi bản sao lưu.
 - Chuỗi kết nối database và quyền ghi vào repo sao lưu lưu trong GitHub Secrets.
-- Khôi phục: `pnpm db:restore <file>`.
+- Workflow nằm trong chính repo sao lưu riêng tư (`it-badminton-backup`), để log và secret không lộ ra repo mã nguồn công khai; bản gốc của workflow và script giữ ở `ops/backup/` trong repo mã nguồn.
+- Mỗi lần sao lưu ghi đè một file `anh-em-it.sql.gz` (`pg_dump` dạng SQL, không kèm owner/quyền, nén `gzip -n`); dữ liệu không đổi thì không tạo commit. `pg_dump` và `psql` chạy bằng image Docker `postgres:17` cho khớp phiên bản server.
+- Khôi phục: `pnpm db:restore <file>`. Lệnh in host và tên database đích, bắt gõ đúng tên database rồi mới ghi đè.
 - Không cần thao tác định kỳ. Các bước cần người dùng làm trên GitHub (tạo repo, thêm secrets) sẽ được hướng dẫn khi tới bước đó.
 
 ## 7. Dữ liệu
