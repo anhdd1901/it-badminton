@@ -33,6 +33,8 @@ export const MESSAGES = {
   wrongPassword: "Mật khẩu không đúng",
   scheduleChanged: "Lịch thi đấu vừa thay đổi, hãy tải lại",
   adminChanged: "Quyền admin vừa thay đổi, hãy tải lại",
+  avatarTooLarge: "Ảnh tối đa 5 MB",
+  avatarFormat: "Ảnh phải là JPG, PNG hoặc WEBP",
 } as const;
 
 /** Score of pair A first. */

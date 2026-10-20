@@ -4,7 +4,9 @@ import { hashPassword, verifyPassword } from "../auth/password";
 import { revokeSessions } from "../auth/sessions";
 import type { Db } from "../db/client";
 import { loginAttempts, members } from "../db/schema";
-import { AppError, MESSAGES } from "../errors";
+import { AppError, MESSAGES, safeErrorSummary } from "../errors";
+import { processAvatar } from "./avatar";
+import type { AvatarStore } from "./avatar-store";
 import {
   parseDisplayName,
   parseEloInput,
@@ -48,8 +50,9 @@ export async function usernameExists(db: Db, username: string): Promise<boolean>
 export async function createMember(
   db: Db,
   actor: Actor,
-  input: NewMember,
+  input: NewMember & { avatar?: Uint8Array },
   now: Date,
+  store?: AvatarStore,
 ): Promise<{ id: string }> {
   requireRole(actor, "admin");
   const username = parseUsername(input.username);
@@ -57,11 +60,15 @@ export async function createMember(
   const password = parsePassword(input.password);
   const initialEloTenths = parseEloInput(input.initialElo);
   if (await usernameExists(db, username)) throw new AppError("CONFLICT", MESSAGES.usernameTaken);
+  const processed = input.avatar ? await processAvatar(input.avatar) : undefined;
+  if (processed && !store) throw new Error("createMember: avatar given without a store");
   const passwordHash = await hashPassword(password);
+  const avatarUrl = processed && store ? await store.put(processed) : null;
   try {
     const [row] = await db
       .insert(members)
       .values({
+        avatarUrl,
         username,
         displayName,
         passwordHash,
@@ -73,6 +80,13 @@ export async function createMember(
       .returning({ id: members.id });
     return { id: row.id };
   } catch (e) {
+    if (avatarUrl && store) {
+      try {
+        await store.remove(avatarUrl);
+      } catch (cleanupError) {
+        console.error(`avatar cleanup failed: ${safeErrorSummary(cleanupError)}`);
+      }
+    }
     if (isUniqueViolation(e)) throw new AppError("CONFLICT", MESSAGES.usernameTaken);
     throw e;
   }
