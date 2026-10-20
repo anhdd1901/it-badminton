@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { createDb } from "../src/server/db/client";
-import { assertSafeE2eDatabase } from "./guard";
+import { assertSafeE2eDatabase } from "../src/server/test/e2e-guard";
 import { resetAndSeed } from "./seed";
 
 export default async function globalSetup(): Promise<void> {

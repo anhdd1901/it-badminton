@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import type { Db } from "../src/server/db/client";
 import { setSubadmin } from "../src/server/members/admin";
 import { createFirstAdmin } from "../src/server/members/bootstrap";
+import { assertConnectedToE2e } from "../src/server/test/e2e-guard";
 import { TABLES } from "../src/server/test/tables";
 import { createMember } from "../src/server/members/profile";
 
@@ -19,6 +20,10 @@ export const SEED = [
 ] as const;
 
 export async function resetAndSeed(db: Db): Promise<void> {
+  const [{ current_database: connected }] = (await db.execute(
+    sql`SELECT current_database()`,
+  )) as unknown as { current_database: string }[];
+  assertConnectedToE2e(connected);
   await db.execute(sql.raw(`TRUNCATE ${TABLES.join(", ")} RESTART IDENTITY CASCADE`));
   const seedTime = new Date(new Date(FAKE_NOW).getTime() - 7 * 24 * 3_600_000);
   const [first, ...rest] = SEED;
