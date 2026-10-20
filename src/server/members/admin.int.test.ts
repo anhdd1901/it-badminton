@@ -188,16 +188,62 @@ describe("member administration", () => {
 
   it("setActive đọc mem đích trong transaction", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
-    for (let i = 0; i < 10; i++) {
-      const sub = await makeMember(t.db, { role: "subadmin" });
-      await Promise.allSettled([
-        setActive(t.db, actorOf(admin), sub.id, false, vn("2026-10-13T08:00")),
-        setSubadmin(t.db, actorOf(admin), sub.id, true),
-      ]);
-      expect((await t.db.select().from(members).where(eq(members.id, sub.id)))[0]).toMatchObject({
-        active: false,
-        role: "member",
+    const target = await makeMember(t.db, { role: "subadmin" });
+    let pending!: Promise<void>;
+    await t.db.transaction(async (tx) => {
+      await tx.select().from(members).where(eq(members.id, target.id)).for("update");
+      pending = setActive(t.db, actorOf(admin), target.id, false, vn("2026-10-13T08:00"));
+      pending.catch(() => {});
+      await new Promise((r) => setTimeout(r, 400));
+      // Admin role moves to the target while setActive waits for the lock.
+      await tx.update(members).set({ role: "member" }).where(eq(members.id, admin.id));
+      await tx.update(members).set({ role: "admin" }).where(eq(members.id, target.id));
+    });
+    await expect(pending).rejects.toMatchObject({ code: "VALIDATION" });
+    expect((await t.db.select().from(members).where(eq(members.id, target.id)))[0]).toMatchObject({
+      active: true,
+      role: "admin",
+    });
+  });
+
+  it("setSubadmin đọc mem đích trong transaction", async () => {
+    const admin = await makeMember(t.db, { role: "admin" });
+    const target = await makeMember(t.db, { role: "member" });
+    let pending!: Promise<void>;
+    await t.db.transaction(async (tx) => {
+      await tx.select().from(members).where(eq(members.id, target.id)).for("update");
+      pending = setSubadmin(t.db, actorOf(admin), target.id, true);
+      pending.catch(() => {});
+      await new Promise((r) => setTimeout(r, 400));
+      await tx.update(members).set({ active: false }).where(eq(members.id, target.id));
+    });
+    await expect(pending).rejects.toMatchObject({ code: "VALIDATION" });
+    expect((await t.db.select().from(members).where(eq(members.id, target.id)))[0]).toMatchObject({
+      active: false,
+      role: "member",
+    });
+  });
+
+  it("transferAdmin đọc mem đích trong transaction", async () => {
+    const admin = await makeMember(t.db, { role: "admin" });
+    const target = await makeMember(t.db, { role: "member" });
+    let pending!: Promise<void>;
+    await t.db.transaction(async (tx) => {
+      await tx.select().from(members).where(eq(members.id, target.id)).for("update");
+      pending = transferAdmin(t.db, actorOf(admin), {
+        memberId: target.id,
+        password: TEST_PASSWORD,
       });
-    }
+      pending.catch(() => {});
+      await new Promise((r) => setTimeout(r, 800));
+      await tx.update(members).set({ active: false }).where(eq(members.id, target.id));
+    });
+    await expect(pending).rejects.toMatchObject({
+      code: "VALIDATION",
+      message: "Chỉ chuyển quyền cho mem khác đang hoạt động",
+    });
+    const rows = await t.db.select().from(members);
+    expect(rows.find((r) => r.id === admin.id)?.role).toBe("admin");
+    expect(rows.find((r) => r.id === target.id)?.role).toBe("member");
   });
 });

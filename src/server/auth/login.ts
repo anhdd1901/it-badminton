@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { and, eq, isNull, lt, or } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import type { Actor } from "../actor";
 import type { Db } from "../db/client";
 import { loginAttempts, members } from "../db/schema";
@@ -16,10 +16,18 @@ const LOCK_MS = 15 * 60_000;
 const USERNAME_FORMAT = /^[a-z0-9._]{3,30}$/;
 const STALE_ATTEMPT_MS = 24 * 3_600_000;
 
-let dummyHash: Promise<string> | undefined;
-/** Hash checked when no active member matches, so response time does not reveal usernames. */
+function makeDummyHash(): Promise<string> {
+  const p = hashPassword(randomBytes(16).toString("hex"));
+  // Drop a failed attempt so the next call retries instead of failing forever.
+  p.catch(() => {
+    if (dummyHash === p) dummyHash = undefined;
+  });
+  return p;
+}
+/** Hash checked when no active member matches, so response time does not reveal usernames. Started at load. */
+let dummyHash: Promise<string> | undefined = makeDummyHash();
 function getDummyHash(): Promise<string> {
-  dummyHash ??= hashPassword(randomBytes(16).toString("hex"));
+  dummyHash ??= makeDummyHash();
   return dummyHash;
 }
 
@@ -43,12 +51,16 @@ export async function login(
   // Reserve the attempt atomically (row lock) before the slow password check,
   // so parallel guesses cannot all read the same failed count.
   const reservation = await db.transaction(async (tx) => {
-    await tx.insert(loginAttempts).values({ username }).onConflictDoNothing();
+    // Upsert-and-lock in one statement: a separate insert + select could find the row
+    // deleted in between (successful login, password reset, cleanup).
     const [row] = await tx
-      .select()
-      .from(loginAttempts)
-      .where(eq(loginAttempts.username, username))
-      .for("update");
+      .insert(loginAttempts)
+      .values({ username })
+      .onConflictDoUpdate({
+        target: loginAttempts.username,
+        set: { username: sql`excluded.username` },
+      })
+      .returning();
     if (row.lockedUntil && row.lockedUntil > now) return "locked" as const;
     const failed = row.failedCount + 1;
     const locksNow = failed >= MAX_FAILURES;
