@@ -13,13 +13,22 @@ import { adjustElo, setActive, setSubadmin, transferAdmin } from "./admin";
 
 describe("member administration", () => {
   const t = useTestDb();
-  const actorOf = (m: { id: string; role: Role }): Actor => ({ memberId: m.id, role: m.role, sessionId: "s" });
+  const actorOf = (m: { id: string; role: Role }): Actor => ({
+    memberId: m.id,
+    role: m.role,
+    sessionId: "s",
+  });
 
   it("ngưng mem: thu hồi phiên, mất subadmin, rời điểm danh tuần này", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
     const sub = await makeMember(t.db, { role: "subadmin" });
     const s = await createSession(t.db, sub.id, vn("2026-10-12T08:00"));
-    await setAttendance(t.db, actorOf(sub), { memberId: sub.id, attending: true }, vn("2026-10-12T08:00"));
+    await setAttendance(
+      t.db,
+      actorOf(sub),
+      { memberId: sub.id, attending: true },
+      vn("2026-10-12T08:00"),
+    );
     await setActive(t.db, actorOf(admin), sub.id, false, vn("2026-10-13T08:00"));
     expect(await resolveSession(t.db, s.token, vn("2026-10-13T08:01"))).toBeNull();
     expect((await t.db.select().from(members).where(eq(members.id, sub.id)))[0]).toMatchObject({
@@ -42,7 +51,9 @@ describe("member administration", () => {
 
   it("không ngưng được admin", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
-    await expect(setActive(t.db, actorOf(admin), admin.id, false, vn("2026-10-13T08:00"))).rejects.toMatchObject({
+    await expect(
+      setActive(t.db, actorOf(admin), admin.id, false, vn("2026-10-13T08:00")),
+    ).rejects.toMatchObject({
       code: "VALIDATION",
       message: "Không thể ngưng hoạt động admin",
     });
@@ -51,7 +62,13 @@ describe("member administration", () => {
   it("mem không tồn tại: NOT_FOUND", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
     await expect(
-      setActive(t.db, actorOf(admin), "00000000-0000-0000-0000-000000000000", false, vn("2026-10-13T08:00")),
+      setActive(
+        t.db,
+        actorOf(admin),
+        "00000000-0000-0000-0000-000000000000",
+        false,
+        vn("2026-10-13T08:00"),
+      ),
     ).rejects.toMatchObject({ code: "NOT_FOUND", message: MESSAGES.memberNotFound });
   });
 
@@ -60,23 +77,36 @@ describe("member administration", () => {
     const m = await makeMember(t.db);
     const off = await makeMember(t.db, { active: false });
     await setSubadmin(t.db, actorOf(admin), m.id, true);
-    expect((await t.db.select().from(members).where(eq(members.id, m.id)))[0].role).toBe("subadmin");
+    expect((await t.db.select().from(members).where(eq(members.id, m.id)))[0].role).toBe(
+      "subadmin",
+    );
     await setSubadmin(t.db, actorOf(admin), m.id, false);
     expect((await t.db.select().from(members).where(eq(members.id, m.id)))[0].role).toBe("member");
     const message = "Chỉ đặt subadmin cho mem đang hoạt động, không phải admin";
-    await expect(setSubadmin(t.db, actorOf(admin), off.id, true)).rejects.toMatchObject({ code: "VALIDATION", message });
-    await expect(setSubadmin(t.db, actorOf(admin), admin.id, true)).rejects.toMatchObject({ code: "VALIDATION", message });
+    await expect(setSubadmin(t.db, actorOf(admin), off.id, true)).rejects.toMatchObject({
+      code: "VALIDATION",
+      message,
+    });
+    await expect(setSubadmin(t.db, actorOf(admin), admin.id, true)).rejects.toMatchObject({
+      code: "VALIDATION",
+      message,
+    });
   });
 
   it("chuyển quyền admin", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
     const m = await makeMember(t.db);
-    await expect(transferAdmin(t.db, actorOf(admin), { memberId: m.id, password: "sai" })).rejects.toMatchObject({
+    await expect(
+      transferAdmin(t.db, actorOf(admin), { memberId: m.id, password: "sai" }),
+    ).rejects.toMatchObject({
       message: MESSAGES.wrongPassword,
     });
     await expect(
       transferAdmin(t.db, actorOf(admin), { memberId: admin.id, password: TEST_PASSWORD }),
-    ).rejects.toMatchObject({ code: "VALIDATION", message: "Chỉ chuyển quyền cho mem khác đang hoạt động" });
+    ).rejects.toMatchObject({
+      code: "VALIDATION",
+      message: "Chỉ chuyển quyền cho mem khác đang hoạt động",
+    });
     await transferAdmin(t.db, actorOf(admin), { memberId: m.id, password: TEST_PASSWORD });
     const rows = await t.db.select().from(members);
     expect(rows.find((r) => r.id === admin.id)?.role).toBe("member");
@@ -97,14 +127,24 @@ describe("member administration", () => {
   it("mốc điều chỉnh ELO", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
     const m = await makeMember(t.db);
-    await adjustElo(t.db, actorOf(admin), { memberId: m.id, elo: "1050,5" }, vn("2026-10-13T08:00"));
+    await adjustElo(
+      t.db,
+      actorOf(admin),
+      { memberId: m.id, elo: "1050,5" },
+      vn("2026-10-13T08:00"),
+    );
     expect((await loadEloState(t.db)).current.get(m.id)).toBe(10505);
   });
 
   it("đã chốt lúc 12:00 thì ngưng mem với giờ 11:59 vẫn giữ điểm danh", async () => {
     const admin = await makeMember(t.db, { role: "admin" });
     const m = await makeMember(t.db);
-    await setAttendance(t.db, actorOf(m), { memberId: m.id, attending: true }, vn("2026-10-12T08:00"));
+    await setAttendance(
+      t.db,
+      actorOf(m),
+      { memberId: m.id, attending: true },
+      vn("2026-10-12T08:00"),
+    );
     await finalizeDue(t.db, vn("2026-10-17T12:00"));
     await setActive(t.db, actorOf(admin), m.id, false, vn("2026-10-17T11:59"));
     expect((await t.db.select().from(members).where(eq(members.id, m.id)))[0].active).toBe(false);
@@ -115,10 +155,18 @@ describe("member administration", () => {
     const admin = await makeMember(t.db, { role: "admin" });
     const notFound = { code: "NOT_FOUND", message: MESSAGES.memberNotFound };
     const now = vn("2026-10-13T08:00");
-    await expect(setActive(t.db, actorOf(admin), "not-a-uuid", false, now)).rejects.toMatchObject(notFound);
-    await expect(setSubadmin(t.db, actorOf(admin), "not-a-uuid", true)).rejects.toMatchObject(notFound);
-    await expect(transferAdmin(t.db, actorOf(admin), { memberId: "not-a-uuid", password: TEST_PASSWORD })).rejects.toMatchObject(notFound);
-    await expect(adjustElo(t.db, actorOf(admin), { memberId: "not-a-uuid", elo: 1000 }, now)).rejects.toMatchObject(notFound);
+    await expect(setActive(t.db, actorOf(admin), "not-a-uuid", false, now)).rejects.toMatchObject(
+      notFound,
+    );
+    await expect(setSubadmin(t.db, actorOf(admin), "not-a-uuid", true)).rejects.toMatchObject(
+      notFound,
+    );
+    await expect(
+      transferAdmin(t.db, actorOf(admin), { memberId: "not-a-uuid", password: TEST_PASSWORD }),
+    ).rejects.toMatchObject(notFound);
+    await expect(
+      adjustElo(t.db, actorOf(admin), { memberId: "not-a-uuid", elo: 1000 }, now),
+    ).rejects.toMatchObject(notFound);
   });
 
   it("hai lần chuyển quyền song song: chỉ một thành công, luôn đúng một admin", async () => {
@@ -126,7 +174,9 @@ describe("member administration", () => {
     const a = await makeMember(t.db);
     const b = await makeMember(t.db);
     const results = await Promise.allSettled(
-      [a, b].map((m) => transferAdmin(t.db, actorOf(admin), { memberId: m.id, password: TEST_PASSWORD })),
+      [a, b].map((m) =>
+        transferAdmin(t.db, actorOf(admin), { memberId: m.id, password: TEST_PASSWORD }),
+      ),
     );
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
     const rejected = results.find((r) => r.status === "rejected") as PromiseRejectedResult;

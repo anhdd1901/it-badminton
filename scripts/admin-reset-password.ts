@@ -15,7 +15,9 @@ async function main(): Promise<void> {
     const again = await prompt.askSecret("Nhập lại mật khẩu: ");
     if (password !== again) throw new AppError("VALIDATION", "Hai lần nhập mật khẩu không khớp");
     await resetPasswordByUsername(db, username, password);
-    console.log(`Đã đặt lại mật khẩu cho "${username.trim().toLowerCase()}" và đăng xuất mọi phiên.`);
+    console.log(
+      `Đã đặt lại mật khẩu cho "${username.trim().toLowerCase()}" và đăng xuất mọi phiên.`,
+    );
   } catch (e) {
     prompt.close();
     await close();

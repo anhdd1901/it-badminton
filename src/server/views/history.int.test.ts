@@ -9,7 +9,11 @@ import { getHistory, getMatchDayDetail } from "./history";
 
 describe("history views", () => {
   const t = useTestDb();
-  const as = (m: { id: string; role: Actor["role"] }): Actor => ({ memberId: m.id, role: m.role, sessionId: "s" });
+  const as = (m: { id: string; role: Actor["role"] }): Actor => ({
+    memberId: m.id,
+    role: m.role,
+    sessionId: "s",
+  });
   const NOW = vn("2026-10-04T08:00");
 
   async function setup() {
@@ -21,9 +25,22 @@ describe("history views", () => {
       ["2026-10-03", "2026-09-30T10:00", "2026-10-03T09:00"],
     ]) {
       for (const m of ms) {
-        await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), { rng: seededRng(1) });
+        await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), {
+          rng: seededRng(1),
+        });
       }
-      await enterResult(t.db, as(ms[0]), { day, scheduleKey: attendeeKey(ms.map((m) => m.id)), matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
+      await enterResult(
+        t.db,
+        as(ms[0]),
+        {
+          day,
+          scheduleKey: attendeeKey(ms.map((m) => m.id)),
+          matchNumber: 1,
+          scoreA: 21,
+          scoreB: 15,
+        },
+        vn(sat),
+      );
     }
     return ms;
   }
@@ -32,7 +49,9 @@ describe("history views", () => {
     await setup();
     const h = await getHistory(t.db, NOW);
     expect(h.map((g) => g.season)).toEqual(["2026-10", "2026-09"]);
-    expect(h[0].days).toEqual([{ day: "2026-10-03", playerCount: 6, matchCount: 6, resultCount: 1 }]);
+    expect(h[0].days).toEqual([
+      { day: "2026-10-03", playerCount: 6, matchCount: 6, resultCount: 1 },
+    ]);
   });
 
   it("getMatchDayDetail: chi tiết, null, VALIDATION", async () => {

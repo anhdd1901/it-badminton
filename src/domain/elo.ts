@@ -70,8 +70,16 @@ type Event =
 /** Replays matches and admin adjustments in time order to get current ELO. */
 export function replayElo(input: EloInput): EloState {
   const events: Event[] = [
-    ...input.adjustments.map((adjustment): Event => ({ kind: "adjustment", time: adjustment.at.getTime(), adjustment })),
-    ...input.matches.map((match): Event => ({ kind: "match", time: checkInClosesAt(match.matchDay).getTime(), match })),
+    ...input.adjustments.map((adjustment): Event => ({
+      kind: "adjustment",
+      time: adjustment.at.getTime(),
+      adjustment,
+    })),
+    ...input.matches.map((match): Event => ({
+      kind: "match",
+      time: checkInClosesAt(match.matchDay).getTime(),
+      match,
+    })),
   ];
   events.sort((x, y) => {
     if (x.time !== y.time) return x.time - y.time;

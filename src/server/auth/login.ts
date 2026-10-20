@@ -6,7 +6,8 @@ import { MESSAGES } from "../errors";
 import { verifyPassword } from "./password";
 import { createSession } from "./sessions";
 
-export type LoginResult = { ok: true; token: string; actor: Actor } | { ok: false; message: string };
+export type LoginResult =
+  { ok: true; token: string; actor: Actor } | { ok: false; message: string };
 
 const MAX_FAILURES = 5;
 const LOCK_MS = 15 * 60_000;
@@ -25,13 +26,20 @@ export async function login(
   // so parallel guesses cannot all read the same failed count.
   const reservation = await db.transaction(async (tx) => {
     await tx.insert(loginAttempts).values({ username }).onConflictDoNothing();
-    const [row] = await tx.select().from(loginAttempts).where(eq(loginAttempts.username, username)).for("update");
+    const [row] = await tx
+      .select()
+      .from(loginAttempts)
+      .where(eq(loginAttempts.username, username))
+      .for("update");
     if (row.lockedUntil && row.lockedUntil > now) return "locked" as const;
     const failed = row.failedCount + 1;
     const locksNow = failed >= MAX_FAILURES;
     await tx
       .update(loginAttempts)
-      .set({ failedCount: locksNow ? 0 : failed, lockedUntil: locksNow ? new Date(now.getTime() + LOCK_MS) : null })
+      .set({
+        failedCount: locksNow ? 0 : failed,
+        lockedUntil: locksNow ? new Date(now.getTime() + LOCK_MS) : null,
+      })
       .where(eq(loginAttempts.username, username));
     return locksNow ? ("locksNow" as const) : ("counted" as const);
   });
@@ -43,5 +51,8 @@ export async function login(
     const { token, sessionId } = await createSession(db, member.id, now);
     return { ok: true, token, actor: { memberId: member.id, role: member.role, sessionId } };
   }
-  return { ok: false, message: reservation === "locksNow" ? MESSAGES.loginLocked : MESSAGES.badLogin };
+  return {
+    ok: false,
+    message: reservation === "locksNow" ? MESSAGES.loginLocked : MESSAGES.badLogin,
+  };
 }

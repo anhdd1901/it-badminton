@@ -23,7 +23,12 @@ export async function createSession(
 
 export async function resolveSession(db: Db, token: string, now: Date): Promise<Actor | null> {
   const [row] = await db
-    .select({ sessionId: authSessions.id, memberId: members.id, role: members.role, active: members.active })
+    .select({
+      sessionId: authSessions.id,
+      memberId: members.id,
+      role: members.role,
+      active: members.active,
+    })
     .from(authSessions)
     .innerJoin(members, eq(members.id, authSessions.memberId))
     .where(eq(authSessions.tokenHash, hashToken(token)));
@@ -32,7 +37,11 @@ export async function resolveSession(db: Db, token: string, now: Date): Promise<
   return { memberId: row.memberId, role: row.role, sessionId: row.sessionId };
 }
 
-export async function revokeSessions(db: Db | Tx, memberId: string, exceptSessionId?: string): Promise<void> {
+export async function revokeSessions(
+  db: Db | Tx,
+  memberId: string,
+  exceptSessionId?: string,
+): Promise<void> {
   await db
     .delete(authSessions)
     .where(

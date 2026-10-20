@@ -19,7 +19,12 @@ const SINGLE_ADMIN_INDEX = "members_single_admin";
 /** `memberId` must already be parsed with parseMemberId. */
 async function loadMember(db: Db, memberId: string) {
   const [row] = await db
-    .select({ id: members.id, role: members.role, active: members.active, passwordHash: members.passwordHash })
+    .select({
+      id: members.id,
+      role: members.role,
+      active: members.active,
+      passwordHash: members.passwordHash,
+    })
     .from(members)
     .where(eq(members.id, memberId));
   if (!row) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
@@ -71,7 +76,12 @@ export async function setActive(
   });
 }
 
-export async function setSubadmin(db: Db, actor: Actor, memberId: string, isSubadmin: boolean): Promise<void> {
+export async function setSubadmin(
+  db: Db,
+  actor: Actor,
+  memberId: string,
+  isSubadmin: boolean,
+): Promise<void> {
   requireRole(actor, "admin");
   const target = await loadMember(db, parseMemberId(memberId));
   if (!target.active || target.role === "admin") {
@@ -111,7 +121,8 @@ export async function transferAdmin(
       await tx.update(members).set({ role: "admin" }).where(eq(members.id, target.id));
     });
   } catch (e) {
-    if (isUniqueViolation(e, SINGLE_ADMIN_INDEX)) throw new AppError("CONFLICT", MESSAGES.adminChanged);
+    if (isUniqueViolation(e, SINGLE_ADMIN_INDEX))
+      throw new AppError("CONFLICT", MESSAGES.adminChanged);
     throw e;
   }
 }
@@ -126,5 +137,7 @@ export async function adjustElo(
   const memberId = parseMemberId(input.memberId);
   const eloTenths = parseEloInput(input.elo);
   await loadMember(db, memberId);
-  await db.insert(eloAdjustments).values({ memberId, eloTenths, adjustedBy: actor.memberId, at: now });
+  await db
+    .insert(eloAdjustments)
+    .values({ memberId, eloTenths, adjustedBy: actor.memberId, at: now });
 }

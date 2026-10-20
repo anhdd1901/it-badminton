@@ -155,6 +155,13 @@ export async function refreshDraft(tx: Tx, matchDayId: string, rng: Rng): Promis
   const { diagramId, assignments, matches } = result.schedule;
   await tx
     .insert(draftSchedules)
-    .values({ matchDayId, attendeeKey: key, diagramId, assignments, matches, createdAt: sql`now()` })
+    .values({
+      matchDayId,
+      attendeeKey: key,
+      diagramId,
+      assignments,
+      matches,
+      createdAt: sql`now()`,
+    })
     .onConflictDoNothing({ target: [draftSchedules.matchDayId, draftSchedules.attendeeKey] });
 }

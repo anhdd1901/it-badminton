@@ -28,7 +28,9 @@ export function isSeasonEnded(season: SeasonId, lastDay: LastDayResults, now: Da
 export type Podium = { first: number; second: number; third: number; fourth: number };
 
 /** Counts how often each member finished 1st–4th across ended seasons (ties count for everyone tied). */
-export function podiumCounts(endedSeasonStandings: readonly Ranked<MemberId>[][]): Map<MemberId, Podium> {
+export function podiumCounts(
+  endedSeasonStandings: readonly Ranked<MemberId>[][],
+): Map<MemberId, Podium> {
   const counts = new Map<MemberId, Podium>();
   for (const standings of endedSeasonStandings) {
     for (const row of standings) {
@@ -42,4 +44,9 @@ export function podiumCounts(endedSeasonStandings: readonly Ranked<MemberId>[][]
   return counts;
 }
 
-const PODIUM_FIELDS: Record<number, keyof Podium> = { 1: "first", 2: "second", 3: "third", 4: "fourth" };
+const PODIUM_FIELDS: Record<number, keyof Podium> = {
+  1: "first",
+  2: "second",
+  3: "third",
+  4: "fourth",
+};

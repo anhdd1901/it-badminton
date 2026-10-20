@@ -19,7 +19,8 @@ describe("validation", () => {
     expect(parseEloInput("1012.5")).toBe(10125);
     expect(parseEloInput(1000)).toBe(10000);
     expect(parseEloInput("5000")).toBe(50000);
-    for (const bad of ["0", "5000,1", "1012,55", "abc", -5]) expect(() => parseEloInput(bad)).toThrow(/ELO phải là số/);
+    for (const bad of ["0", "5000,1", "1012,55", "abc", -5])
+      expect(() => parseEloInput(bad)).toThrow(/ELO phải là số/);
   });
   it("ngày thi đấu phải là thứ 7 có thật", () => {
     expect(parseLocalDate("2026-10-17")).toBe("2026-10-17");
@@ -34,7 +35,9 @@ describe("validation", () => {
     const id = "3f2b8c1e-9a4d-4e7b-8c2a-1d5e6f7a8b9c";
     expect(parseMemberId(id)).toBe(id);
     for (const bad of ["not-a-uuid", "", "3f2b8c1e-9a4d-4e7b-8c2a"])
-      expect(() => parseMemberId(bad)).toThrow(expect.objectContaining({ code: "NOT_FOUND", message: "Không tìm thấy mem" }));
+      expect(() => parseMemberId(bad)).toThrow(
+        expect.objectContaining({ code: "NOT_FOUND", message: "Không tìm thấy mem" }),
+      );
   });
   it("tên hiển thị và mật khẩu", () => {
     expect(parseDisplayName("  Đức  ")).toBe("Đức");

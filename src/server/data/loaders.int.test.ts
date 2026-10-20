@@ -49,15 +49,13 @@ describe("loaders", () => {
       .returning({ id: scheduledMatches.id, number: scheduledMatches.number });
     const one = rows.find((r) => r.number === 1);
     if (!one) throw new Error("fixture");
-    await t.db
-      .insert(matchResults)
-      .values({
-        scheduledMatchId: one.id,
-        scoreA: 21,
-        scoreB: 15,
-        enteredBy: a.id,
-        enteredAt: now,
-      });
+    await t.db.insert(matchResults).values({
+      scheduledMatchId: one.id,
+      scoreA: 21,
+      scoreB: 15,
+      enteredBy: a.id,
+      enteredAt: now,
+    });
     await t.db
       .insert(eloAdjustments)
       .values({ memberId: e.id, eloTenths: 12000, adjustedBy: a.id, at: vn("2026-10-12T09:00") });

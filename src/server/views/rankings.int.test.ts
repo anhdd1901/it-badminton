@@ -11,7 +11,11 @@ import { endedSeasons, getEloView, getSeasonView, getStatsView } from "./ranking
 
 describe("rankings views", () => {
   const t = useTestDb();
-  const as = (m: { id: string; role: Actor["role"] }): Actor => ({ memberId: m.id, role: m.role, sessionId: "s" });
+  const as = (m: { id: string; role: Actor["role"] }): Actor => ({
+    memberId: m.id,
+    role: m.role,
+    sessionId: "s",
+  });
 
   async function setup() {
     const ms = await Promise.all(
@@ -23,9 +27,22 @@ describe("rankings views", () => {
       ["2026-10-03", "2026-09-30T10:00", "2026-10-03T09:00"],
     ]) {
       for (const m of ms) {
-        await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), { rng: seededRng(1) });
+        await setAttendance(t.db, as(m), { memberId: m.id, attending: true }, vn(wed), {
+          rng: seededRng(1),
+        });
       }
-      await enterResult(t.db, as(ms[0]), { day, scheduleKey: attendeeKey(ms.map((m) => m.id)), matchNumber: 1, scoreA: 21, scoreB: 15 }, vn(sat));
+      await enterResult(
+        t.db,
+        as(ms[0]),
+        {
+          day,
+          scheduleKey: attendeeKey(ms.map((m) => m.id)),
+          matchNumber: 1,
+          scoreA: 21,
+          scoreB: 15,
+        },
+        vn(sat),
+      );
     }
     return { ms, idle };
   }
@@ -39,7 +56,9 @@ describe("rankings views", () => {
     expect(sep.rows[0].member.id).toBe(direct[0].key);
     expect((await getSeasonView(t.db, "2026-10", vn("2026-10-04T08:00"))).ended).toBe(false);
     expect(await endedSeasons(t.db, vn("2026-10-01T08:00"))).toEqual(new Set(["2026-09"]));
-    await expect(getSeasonView(t.db, "abc", vn("2026-10-01T08:00"))).rejects.toMatchObject({ code: "VALIDATION" });
+    await expect(getSeasonView(t.db, "abc", vn("2026-10-01T08:00"))).rejects.toMatchObject({
+      code: "VALIDATION",
+    });
   });
 
   it("getEloView: bỏ mem ngưng, người không đánh có delta null", async () => {
@@ -51,7 +70,9 @@ describe("rankings views", () => {
     for (let i = 1; i < v.rows.length; i++) {
       expect(v.rows[i - 1].eloTenths).toBeGreaterThanOrEqual(v.rows[i].eloTenths);
     }
-    expect(v.rows.filter((r) => r.lastMatchDayDelta === null).map((r) => r.member.id)).toEqual([bench.id]);
+    expect(v.rows.filter((r) => r.lastMatchDayDelta === null).map((r) => r.member.id)).toEqual([
+      bench.id,
+    ]);
     expect(v.rows.map((r) => r.member.id).sort()).toEqual([...ms, bench].map((m) => m.id).sort());
   });
 
@@ -64,6 +85,8 @@ describe("rankings views", () => {
     expect(f.members).toHaveLength(1);
     expect(f.members[0].podium).toEqual(all.members[0].podium);
     expect(f.pairs.every((p) => p.members.some((m) => m.id === one))).toBe(true);
-    await expect(getStatsView(t.db, { fromSeason: "x" }, now)).rejects.toMatchObject({ code: "VALIDATION" });
+    await expect(getStatsView(t.db, { fromSeason: "x" }, now)).rejects.toMatchObject({
+      code: "VALIDATION",
+    });
   });
 });

@@ -9,7 +9,12 @@ describe("schema", () => {
   it("tạo được mem", async () => {
     const m = await makeMember(t.db, { username: "minh.nt" });
     const rows = await t.db.select().from(members).where(eq(members.id, m.id));
-    expect(rows[0]).toMatchObject({ username: "minh.nt", role: "member", active: true, initialEloTenths: 10000 });
+    expect(rows[0]).toMatchObject({
+      username: "minh.nt",
+      role: "member",
+      active: true,
+      initialEloTenths: 10000,
+    });
   });
   it("chỉ có một admin", async () => {
     await makeMember(t.db, { role: "admin" });
@@ -19,5 +24,6 @@ describe("schema", () => {
     await makeMember(t.db, { username: "a.b" });
     await expect(makeMember(t.db, { username: "a.b" })).rejects.toThrow();
   });
-  it("vn() hiểu là giờ Việt Nam", () => expect(vn("2026-10-17T12:00").toISOString()).toBe("2026-10-17T05:00:00.000Z"));
+  it("vn() hiểu là giờ Việt Nam", () =>
+    expect(vn("2026-10-17T12:00").toISOString()).toBe("2026-10-17T05:00:00.000Z"));
 });

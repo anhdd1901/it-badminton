@@ -9,12 +9,7 @@ import { lockMatchDay } from "../db/lock";
 import { attendances, members } from "../db/schema";
 import { AppError, MESSAGES } from "../errors";
 import { parseMemberId } from "../validation";
-import {
-  finalizeDue,
-  getOrCreateMatchDay,
-  officialResultCount,
-  refreshDraft,
-} from "./schedule";
+import { finalizeDue, getOrCreateMatchDay, officialResultCount, refreshDraft } from "./schedule";
 
 export async function setAttendance(
   db: Db,
@@ -32,7 +27,10 @@ export async function setAttendance(
   await db.transaction(async (tx) => {
     await lockMatchDay(tx, day);
     // Read under the lock: setActive(false) deactivates inside the same lock.
-    const [target] = await tx.select({ active: members.active }).from(members).where(eq(members.id, memberId));
+    const [target] = await tx
+      .select({ active: members.active })
+      .from(members)
+      .where(eq(members.id, memberId));
     if (!target) throw new AppError("NOT_FOUND", MESSAGES.memberNotFound);
     // An inactive member left in the list (deactivated while the day was locked) may only be taken out by a manager.
     if (!target.active && (input.attending || !manager)) {

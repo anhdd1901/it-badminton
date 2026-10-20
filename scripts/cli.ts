@@ -23,7 +23,11 @@ export function createPrompter() {
       cb();
     },
   });
-  const rl = createInterface({ input: process.stdin, output, terminal: process.stdin.isTTY === true });
+  const rl = createInterface({
+    input: process.stdin,
+    output,
+    terminal: process.stdin.isTTY === true,
+  });
   const queue: string[] = [];
   const waiters: Array<(line: string | null) => void> = [];
   let ended = false;
@@ -42,7 +46,11 @@ export function createPrompter() {
     muted = secret;
     const queued = queue.shift();
     const line =
-      queued !== undefined ? queued : ended ? null : await new Promise<string | null>((r) => waiters.push(r));
+      queued !== undefined
+        ? queued
+        : ended
+          ? null
+          : await new Promise<string | null>((r) => waiters.push(r));
     muted = false;
     if (secret) process.stdout.write("\n");
     if (line === null) throw new Error("Không đọc được dữ liệu nhập");

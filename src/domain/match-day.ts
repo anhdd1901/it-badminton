@@ -1,10 +1,4 @@
-import {
-  checkInClosesAt,
-  isPastMatchDay,
-  matchDayOfWeek,
-  matchDayStart,
-  weekStart,
-} from "./time";
+import { checkInClosesAt, isPastMatchDay, matchDayOfWeek, matchDayStart, weekStart } from "./time";
 import type { LocalDate, Role } from "./types";
 
 export type { Role };

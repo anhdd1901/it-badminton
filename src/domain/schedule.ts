@@ -42,7 +42,11 @@ export function generateSchedule(attendees: readonly Attendee[], rng: Rng): Sche
 
   let assignments: SlotAssignment[];
   if (unique.length === 5) {
-    assignments = shuffle(unique, rng).map((a, i) => ({ memberId: a.id, slot: i + 1, seed: a.seed }));
+    assignments = shuffle(unique, rng).map((a, i) => ({
+      memberId: a.id,
+      slot: i + 1,
+      seed: a.seed,
+    }));
   } else {
     assignments = [
       ...shuffle(seed1, rng).map((a, i) => ({ memberId: a.id, slot: 1 + i, seed: a.seed })),

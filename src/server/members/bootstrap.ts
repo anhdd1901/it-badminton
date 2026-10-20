@@ -10,11 +10,19 @@ import { isUniqueViolation, type NewMember, usernameExists } from "./profile";
 const ADMIN_EXISTS = "Đã có admin, dùng chức năng chuyển quyền trong app";
 
 async function adminExists(db: Db): Promise<boolean> {
-  const rows = await db.select({ id: members.id }).from(members).where(eq(members.role, "admin")).limit(1);
+  const rows = await db
+    .select({ id: members.id })
+    .from(members)
+    .where(eq(members.role, "admin"))
+    .limit(1);
   return rows.length > 0;
 }
 
-export async function createFirstAdmin(db: Db, input: NewMember, now: Date): Promise<{ id: string }> {
+export async function createFirstAdmin(
+  db: Db,
+  input: NewMember,
+  now: Date,
+): Promise<{ id: string }> {
   const username = parseUsername(input.username);
   const displayName = parseDisplayName(input.displayName);
   const password = parsePassword(input.password);
@@ -25,7 +33,15 @@ export async function createFirstAdmin(db: Db, input: NewMember, now: Date): Pro
   try {
     const [row] = await db
       .insert(members)
-      .values({ username, displayName, passwordHash, role: "admin", active: true, initialEloTenths, createdAt: now })
+      .values({
+        username,
+        displayName,
+        passwordHash,
+        role: "admin",
+        active: true,
+        initialEloTenths,
+        createdAt: now,
+      })
       .returning({ id: members.id });
     return { id: row.id };
   } catch (e) {
@@ -37,7 +53,11 @@ export async function createFirstAdmin(db: Db, input: NewMember, now: Date): Pro
   }
 }
 
-export async function resetPasswordByUsername(db: Db, username: string, newPassword: string): Promise<void> {
+export async function resetPasswordByUsername(
+  db: Db,
+  username: string,
+  newPassword: string,
+): Promise<void> {
   const passwordHash = await hashPassword(parsePassword(newPassword));
   const normalized = username.trim().toLowerCase();
   await db.transaction(async (tx) => {

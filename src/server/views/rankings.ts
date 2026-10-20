@@ -1,18 +1,39 @@
 import { eq, inArray } from "drizzle-orm";
 import { isSeasonEnded, type LastDayResults } from "@/domain/season";
-import { memberStats, type MemberStatRow, pairStats, seasonStandings, type StatsFilter } from "@/domain/stats";
+import {
+  memberStats,
+  type MemberStatRow,
+  pairStats,
+  seasonStandings,
+  type StatsFilter,
+} from "@/domain/stats";
 import { pairMembers, type Ranked } from "@/domain/standings";
 import { lastMatchDayOfSeason, seasonOf } from "@/domain/time";
 import type { SeasonId } from "@/domain/types";
 import { loadCurrentSeeds, loadEloState, loadResultMatches } from "../data/loaders";
 import type { Db, Tx } from "../db/client";
-import { matchDays, matchResults, members, officialSchedules, scheduledMatches } from "../db/schema";
+import {
+  matchDays,
+  matchResults,
+  members,
+  officialSchedules,
+  scheduledMatches,
+} from "../db/schema";
 import { finalizeDue } from "../match-days/schedule";
 import { parseSeasonId } from "../validation";
 
-export type MemberRef = { id: string; displayName: string; username: string; avatarUrl: string | null; active: boolean };
+export type MemberRef = {
+  id: string;
+  displayName: string;
+  username: string;
+  avatarUrl: string | null;
+  active: boolean;
+};
 
-export async function loadMemberRefs(db: Db | Tx, ids: readonly string[]): Promise<Map<string, MemberRef>> {
+export async function loadMemberRefs(
+  db: Db | Tx,
+  ids: readonly string[],
+): Promise<Map<string, MemberRef>> {
   if (ids.length === 0) return new Map();
   const rows = await db
     .select({
@@ -67,7 +88,10 @@ export async function getSeasonView(
   await finalizeDue(db, now);
   const standings = seasonStandings(await loadResultMatches(db), id);
   const [refs, ended] = await Promise.all([
-    loadMemberRefs(db, standings.map((r) => r.key)),
+    loadMemberRefs(
+      db,
+      standings.map((r) => r.key),
+    ),
     endedSeasons(db, now),
   ]);
   return {
@@ -80,7 +104,9 @@ export async function getSeasonView(
 export async function getEloView(
   db: Db,
   now: Date,
-): Promise<{ rows: { member: MemberRef; eloTenths: number; seed: 1 | 2; lastMatchDayDelta: number | null }[] }> {
+): Promise<{
+  rows: { member: MemberRef; eloTenths: number; seed: 1 | 2; lastMatchDayDelta: number | null }[];
+}> {
   await finalizeDue(db, now);
   const [state, seeds, active] = await Promise.all([
     loadEloState(db),
@@ -99,7 +125,13 @@ export async function getEloView(
       .where(eq(members.active, true)),
   ]);
   const rows = active.map((m) => ({
-    member: { id: m.id, displayName: m.displayName, username: m.username, avatarUrl: m.avatarUrl, active: m.active },
+    member: {
+      id: m.id,
+      displayName: m.displayName,
+      username: m.username,
+      avatarUrl: m.avatarUrl,
+      active: m.active,
+    },
     eloTenths: state.current.get(m.id) ?? m.initial,
     seed: (seeds.get(m.id) ?? 2) as 1 | 2,
     lastMatchDayDelta: state.lastMatchDayDelta.get(m.id) ?? null,
@@ -111,7 +143,14 @@ export async function getEloView(
       a.createdAt - b.createdAt ||
       (a.member.id < b.member.id ? -1 : a.member.id > b.member.id ? 1 : 0),
   );
-  return { rows: rows.map((r) => ({ member: r.member, eloTenths: r.eloTenths, seed: r.seed, lastMatchDayDelta: r.lastMatchDayDelta })) };
+  return {
+    rows: rows.map((r) => ({
+      member: r.member,
+      eloTenths: r.eloTenths,
+      seed: r.seed,
+      lastMatchDayDelta: r.lastMatchDayDelta,
+    })),
+  };
 }
 
 export async function getStatsView(

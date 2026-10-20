@@ -19,7 +19,13 @@ import {
 } from "./schedule";
 
 /** `scheduleKey`: attendee key of the schedule (draft or official) the client saw. */
-export type ResultInput = { day: string; scheduleKey: string; matchNumber: number; scoreA: number; scoreB: number };
+export type ResultInput = {
+  day: string;
+  scheduleKey: string;
+  matchNumber: number;
+  scoreA: number;
+  scoreB: number;
+};
 type MatchDayRow = { id: string; finalizedAt: Date | null };
 
 async function prepare(db: Db, actor: Actor, rawDay: string, now: Date): Promise<LocalDate> {
@@ -44,7 +50,11 @@ function requireKey(actual: string, seen: string): void {
 }
 
 /** Id of the official schedule, which must be the one the client saw. */
-async function findOfficialId(tx: Tx, matchDayId: string, scheduleKey: string): Promise<string | null> {
+async function findOfficialId(
+  tx: Tx,
+  matchDayId: string,
+  scheduleKey: string,
+): Promise<string | null> {
   const [row] = await tx
     .select({ id: officialSchedules.id, attendeeKey: officialSchedules.attendeeKey })
     .from(officialSchedules)
@@ -70,7 +80,12 @@ async function findMatch(tx: Tx, officialId: string, matchNumber: number) {
     })
     .from(scheduledMatches)
     .leftJoin(matchResults, eq(matchResults.scheduledMatchId, scheduledMatches.id))
-    .where(and(eq(scheduledMatches.officialScheduleId, officialId), eq(scheduledMatches.number, matchNumber)));
+    .where(
+      and(
+        eq(scheduledMatches.officialScheduleId, officialId),
+        eq(scheduledMatches.number, matchNumber),
+      ),
+    );
   if (!row) throw new AppError("NOT_FOUND", MESSAGES.matchNotFound);
   return row;
 }
@@ -80,7 +95,12 @@ function validateScore(scoreA: number, scoreB: number): void {
   if (!check.ok) throw new AppError("VALIDATION", check.reason);
 }
 
-export async function enterResult(db: Db, actor: Actor, input: ResultInput, now: Date): Promise<void> {
+export async function enterResult(
+  db: Db,
+  actor: Actor,
+  input: ResultInput,
+  now: Date,
+): Promise<void> {
   const day = await prepare(db, actor, input.day, now);
   validateScore(input.scoreA, input.scoreB);
   await db.transaction(async (tx) => {
@@ -88,14 +108,20 @@ export async function enterResult(db: Db, actor: Actor, input: ResultInput, now:
     const matchDay = await requireMatchDay(tx, day);
     let officialId = await findOfficialId(tx, matchDay.id, input.scheduleKey);
     if (!officialId) {
-      if (isClosed(day, matchDay.finalizedAt, now)) throw new AppError("NOT_FOUND", MESSAGES.noSchedule);
-      const draft = await findDraft(tx, matchDay.id, attendeeKey(await activeAttendeeIds(tx, matchDay.id)));
+      if (isClosed(day, matchDay.finalizedAt, now))
+        throw new AppError("NOT_FOUND", MESSAGES.noSchedule);
+      const draft = await findDraft(
+        tx,
+        matchDay.id,
+        attendeeKey(await activeAttendeeIds(tx, matchDay.id)),
+      );
       if (!draft) throw new AppError("NOT_FOUND", MESSAGES.noSchedule);
       requireKey(draft.attendeeKey, input.scheduleKey);
       officialId = await promoteDraft(tx, matchDay.id, draft, now);
     }
     const match = await findMatch(tx, officialId, input.matchNumber);
-    if (match.version !== null) throw new AppError("CONFLICT", resultConflict(match.scoreA!, match.scoreB!));
+    if (match.version !== null)
+      throw new AppError("CONFLICT", resultConflict(match.scoreA!, match.scoreB!));
     await tx.insert(matchResults).values({
       scheduledMatchId: match.id,
       scoreA: input.scoreA,
@@ -117,7 +143,11 @@ export async function updateResult(
   validateScore(input.scoreA, input.scoreB);
   await db.transaction(async (tx) => {
     await lockMatchDay(tx, day);
-    const officialId = await requireOfficialId(tx, (await requireMatchDay(tx, day)).id, input.scheduleKey);
+    const officialId = await requireOfficialId(
+      tx,
+      (await requireMatchDay(tx, day)).id,
+      input.scheduleKey,
+    );
     const match = await findMatch(tx, officialId, input.matchNumber);
     if (match.version === null) throw new AppError("NOT_FOUND", MESSAGES.matchNotFound);
     if (match.version !== input.expectedVersion) {
@@ -137,7 +167,12 @@ export async function updateResult(
 }
 
 /** Before check-in closes, an official schedule left without results is dropped so the day reopens. */
-async function dropEmptyScheduleIfOpen(tx: Tx, matchDay: MatchDayRow, day: LocalDate, now: Date): Promise<void> {
+async function dropEmptyScheduleIfOpen(
+  tx: Tx,
+  matchDay: MatchDayRow,
+  day: LocalDate,
+  now: Date,
+): Promise<void> {
   if (isClosed(day, matchDay.finalizedAt, now)) return;
   if ((await officialResultCount(tx, matchDay.id)) > 0) return;
   await tx.delete(officialSchedules).where(eq(officialSchedules.matchDayId, matchDay.id));
@@ -153,7 +188,11 @@ export async function deleteResult(
   await db.transaction(async (tx) => {
     await lockMatchDay(tx, day);
     const matchDay = await requireMatchDay(tx, day);
-    const match = await findMatch(tx, await requireOfficialId(tx, matchDay.id, input.scheduleKey), input.matchNumber);
+    const match = await findMatch(
+      tx,
+      await requireOfficialId(tx, matchDay.id, input.scheduleKey),
+      input.matchNumber,
+    );
     if (match.version === null) throw new AppError("NOT_FOUND", MESSAGES.matchNotFound);
     await tx.delete(matchResults).where(eq(matchResults.scheduledMatchId, match.id));
     await dropEmptyScheduleIfOpen(tx, matchDay, day, now);

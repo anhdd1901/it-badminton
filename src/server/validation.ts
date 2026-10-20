@@ -8,7 +8,8 @@ function parse<T>(schema: z.ZodType<T>, raw: unknown, message: string): T {
   return r.data;
 }
 
-const USERNAME_MESSAGE = "Tên đăng nhập gồm 3–30 ký tự: chữ thường không dấu, số, dấu chấm hoặc gạch dưới";
+const USERNAME_MESSAGE =
+  "Tên đăng nhập gồm 3–30 ký tự: chữ thường không dấu, số, dấu chấm hoặc gạch dưới";
 const DISPLAY_NAME_MESSAGE = "Tên hiển thị dài 1–50 ký tự";
 const PASSWORD_MESSAGE = "Mật khẩu tối thiểu 8 ký tự";
 const ELO_MESSAGE = "ELO phải là số lớn hơn 0 và không quá 5000, tối đa 1 chữ số thập phân";
@@ -35,7 +36,8 @@ const memberIdSchema = z.uuid();
 const seasonSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 
 export const parseUsername = (raw: string): string => parse(usernameSchema, raw, USERNAME_MESSAGE);
-export const parseDisplayName = (raw: string): string => parse(displayNameSchema, raw, DISPLAY_NAME_MESSAGE);
+export const parseDisplayName = (raw: string): string =>
+  parse(displayNameSchema, raw, DISPLAY_NAME_MESSAGE);
 export const parsePassword = (raw: string): string => parse(passwordSchema, raw, PASSWORD_MESSAGE);
 
 /** "1012,5" / "1012.5" / number to integer tenths. */
@@ -45,7 +47,8 @@ export function parseLocalDate(raw: string): LocalDate {
   const s = parse(dateSchema, raw, DATE_MESSAGE);
   const [y, m, d] = s.split("-").map(Number);
   const date = new Date(Date.UTC(y, m - 1, d));
-  const real = date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+  const real =
+    date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
   if (!real || date.getUTCDay() !== 6) throw new AppError("VALIDATION", DATE_MESSAGE);
   return s;
 }

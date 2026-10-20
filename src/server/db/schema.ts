@@ -18,7 +18,10 @@ import type { Pair } from "@/domain/types";
 
 type ScheduledMatchJson = { number: number; teamA: Pair; teamB: Pair };
 
-const id = () => uuid("id").primaryKey().default(sql`gen_random_uuid()`);
+const id = () =>
+  uuid("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`);
 const tstz = (name: string) => timestamp(name, { withTimezone: true });
 const memberRef = (name: string) =>
   uuid(name)
@@ -40,7 +43,11 @@ export const members = pgTable(
     avatarUrl: text("avatar_url"),
     createdAt: tstz("created_at").notNull(),
   },
-  (t) => [uniqueIndex("members_single_admin").on(t.role).where(sql`${t.role} = 'admin'`)],
+  (t) => [
+    uniqueIndex("members_single_admin")
+      .on(t.role)
+      .where(sql`${t.role} = 'admin'`),
+  ],
 );
 
 export const authSessions = pgTable("auth_sessions", {

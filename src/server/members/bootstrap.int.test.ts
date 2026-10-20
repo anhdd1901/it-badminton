@@ -18,10 +18,22 @@ describe("admin bootstrap", () => {
       now,
     );
     const [row] = await t.db.select().from(members).where(eq(members.id, id));
-    expect(row).toMatchObject({ username: "boss", role: "admin", active: true, initialEloTenths: 11005 });
+    expect(row).toMatchObject({
+      username: "boss",
+      role: "admin",
+      active: true,
+      initialEloTenths: 11005,
+    });
     await expect(
-      createFirstAdmin(t.db, { username: "boss2", displayName: "B", password: "matkhau123", initialElo: 1000 }, now),
-    ).rejects.toMatchObject({ code: "VALIDATION", message: "Đã có admin, dùng chức năng chuyển quyền trong app" });
+      createFirstAdmin(
+        t.db,
+        { username: "boss2", displayName: "B", password: "matkhau123", initialElo: 1000 },
+        now,
+      ),
+    ).rejects.toMatchObject({
+      code: "VALIDATION",
+      message: "Đã có admin, dùng chức năng chuyển quyền trong app",
+    });
   });
 
   it("đặt lại mật khẩu: đăng nhập được bằng mật khẩu mới, phiên cũ bị thu hồi", async () => {
@@ -29,8 +41,12 @@ describe("admin bootstrap", () => {
     const { token } = await createSession(t.db, m.id, now);
     await resetPasswordByUsername(t.db, "Minh.NT", "matkhaumoi99");
     expect(await resolveSession(t.db, token, now)).toBeNull();
-    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi99" }, now)).ok).toBe(true);
-    expect((await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).ok).toBe(false);
+    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi99" }, now)).ok).toBe(
+      true,
+    );
+    expect((await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).ok).toBe(
+      false,
+    );
   });
 
   it("username không tồn tại → NOT_FOUND; mật khẩu ngắn → VALIDATION", async () => {
@@ -39,14 +55,22 @@ describe("admin bootstrap", () => {
       message: MESSAGES.memberNotFound,
     });
     await makeMember(t.db, { username: "a.b" });
-    await expect(resetPasswordByUsername(t.db, "a.b", "ngan")).rejects.toMatchObject({ code: "VALIDATION" });
+    await expect(resetPasswordByUsername(t.db, "a.b", "ngan")).rejects.toMatchObject({
+      code: "VALIDATION",
+    });
   });
 
   it("đặt lại mật khẩu bằng lệnh gỡ khóa đăng nhập", async () => {
     await makeMember(t.db, { username: "minh.nt" });
-    for (let i = 0; i < 5; i++) await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
-    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({ ok: false, message: MESSAGES.loginLocked });
+    for (let i = 0; i < 5; i++)
+      await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
+    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({
+      ok: false,
+      message: MESSAGES.loginLocked,
+    });
     await resetPasswordByUsername(t.db, "Minh.NT", "matkhaumoi99");
-    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi99" }, now)).ok).toBe(true);
+    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi99" }, now)).ok).toBe(
+      true,
+    );
   });
 });

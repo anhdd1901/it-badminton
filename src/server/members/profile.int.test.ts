@@ -7,11 +7,21 @@ import { createSession, resolveSession } from "../auth/sessions";
 import { members } from "../db/schema";
 import { MESSAGES } from "../errors";
 import { makeMember, TEST_PASSWORD, useTestDb, vn } from "../test/db";
-import { changeOwnPassword, changeUsername, createMember, resetPassword, updateDisplayName } from "./profile";
+import {
+  changeOwnPassword,
+  changeUsername,
+  createMember,
+  resetPassword,
+  updateDisplayName,
+} from "./profile";
 
 describe("member profile", () => {
   const t = useTestDb();
-  const actorOf = (m: { id: string; role: Role }): Actor => ({ memberId: m.id, role: m.role, sessionId: "s" });
+  const actorOf = (m: { id: string; role: Role }): Actor => ({
+    memberId: m.id,
+    role: m.role,
+    sessionId: "s",
+  });
 
   it("admin tạo mem; username trùng bị chặn không phân biệt hoa thường", async () => {
     const admin = actorOf(await makeMember(t.db, { role: "admin" }));
@@ -22,7 +32,12 @@ describe("member profile", () => {
       vn("2026-10-14T10:00"),
     );
     const row = (await t.db.select().from(members).where(eq(members.username, "minh.nt")))[0];
-    expect(row).toMatchObject({ displayName: "Minh", initialEloTenths: 10125, role: "member", active: true });
+    expect(row).toMatchObject({
+      displayName: "Minh",
+      initialEloTenths: 10125,
+      role: "member",
+      active: true,
+    });
     await expect(
       createMember(
         t.db,
@@ -35,7 +50,12 @@ describe("member profile", () => {
 
   it("hai lần tạo đồng thời cùng username: một thành công, một CONFLICT", async () => {
     const admin = actorOf(await makeMember(t.db, { role: "admin" }));
-    const input = { username: "dong.thoi", displayName: "X", password: "matkhau123", initialElo: 1000 };
+    const input = {
+      username: "dong.thoi",
+      displayName: "X",
+      password: "matkhau123",
+      initialElo: 1000,
+    };
     const results = await Promise.allSettled([
       createMember(t.db, admin, input, vn("2026-10-14T10:00")),
       createMember(t.db, admin, input, vn("2026-10-14T10:00")),
@@ -61,8 +81,12 @@ describe("member profile", () => {
     const a = await makeMember(t.db);
     const b = await makeMember(t.db);
     await updateDisplayName(t.db, actorOf(a), a.id, "Tuấn");
-    await expect(updateDisplayName(t.db, actorOf(a), b.id, "X")).rejects.toMatchObject({ code: "FORBIDDEN" });
-    await expect(changeUsername(t.db, actorOf(a), a.id, "moi.ten")).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(updateDisplayName(t.db, actorOf(a), b.id, "X")).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
+    await expect(changeUsername(t.db, actorOf(a), a.id, "moi.ten")).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
   });
 
   it("admin đổi username (chuẩn hóa, chặn trùng); mem không tồn tại báo NOT_FOUND", async () => {
@@ -70,13 +94,17 @@ describe("member profile", () => {
     const a = await makeMember(t.db);
     await makeMember(t.db, { username: "da.co" });
     await changeUsername(t.db, admin, a.id, " Moi.Ten ");
-    expect((await t.db.select().from(members).where(eq(members.id, a.id)))[0].username).toBe("moi.ten");
+    expect((await t.db.select().from(members).where(eq(members.id, a.id)))[0].username).toBe(
+      "moi.ten",
+    );
     await expect(changeUsername(t.db, admin, a.id, "DA.CO")).rejects.toMatchObject({
       code: "CONFLICT",
       message: MESSAGES.usernameTaken,
     });
     await expect(changeUsername(t.db, admin, a.id, "moi.ten")).resolves.toBeUndefined();
-    await expect(updateDisplayName(t.db, admin, "00000000-0000-0000-0000-000000000000", "X")).rejects.toMatchObject({
+    await expect(
+      updateDisplayName(t.db, admin, "00000000-0000-0000-0000-000000000000", "X"),
+    ).rejects.toMatchObject({
       code: "NOT_FOUND",
       message: MESSAGES.memberNotFound,
     });
@@ -107,17 +135,27 @@ describe("member profile", () => {
     const m = await makeMember(t.db, { username: "minh.nt" });
     const admin = actorOf(await makeMember(t.db, { role: "admin" }));
     const now = vn("2026-10-14T10:00");
-    for (let i = 0; i < 5; i++) await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
-    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({ ok: false, message: MESSAGES.loginLocked });
+    for (let i = 0; i < 5; i++)
+      await login(t.db, { username: "minh.nt", password: "sai-mat-khau" }, now);
+    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, now)).toEqual({
+      ok: false,
+      message: MESSAGES.loginLocked,
+    });
     await resetPassword(t.db, admin, m.id, "matkhaumoi2");
-    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi2" }, now)).ok).toBe(true);
+    expect((await login(t.db, { username: "minh.nt", password: "matkhaumoi2" }, now)).ok).toBe(
+      true,
+    );
   });
 
   it("mã mem sai định dạng: NOT_FOUND", async () => {
     const admin = actorOf(await makeMember(t.db, { role: "admin" }));
     const notFound = { code: "NOT_FOUND", message: MESSAGES.memberNotFound };
     await expect(updateDisplayName(t.db, admin, "not-a-uuid", "X")).rejects.toMatchObject(notFound);
-    await expect(changeUsername(t.db, admin, "not-a-uuid", "moi.ten")).rejects.toMatchObject(notFound);
-    await expect(resetPassword(t.db, admin, "not-a-uuid", "matkhaumoi2")).rejects.toMatchObject(notFound);
+    await expect(changeUsername(t.db, admin, "not-a-uuid", "moi.ten")).rejects.toMatchObject(
+      notFound,
+    );
+    await expect(resetPassword(t.db, admin, "not-a-uuid", "matkhaumoi2")).rejects.toMatchObject(
+      notFound,
+    );
   });
 });

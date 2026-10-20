@@ -1,7 +1,9 @@
 import { hash, verify } from "@node-rs/argon2";
 
 export function hashPassword(plain: string): Promise<string> {
-  return hash(plain, { algorithm: 2 /* Argon2id; the const enum cannot be imported under isolatedModules */ });
+  return hash(plain, {
+    algorithm: 2 /* Argon2id; the const enum cannot be imported under isolatedModules */,
+  });
 }
 
 export async function verifyPassword(hashed: string, plain: string): Promise<boolean> {

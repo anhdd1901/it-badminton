@@ -1,5 +1,10 @@
 import { asc, eq, inArray, sql } from "drizzle-orm";
-import { canChangeAttendance, canEditResults, type MatchDayStatus, matchDayStatus } from "@/domain/match-day";
+import {
+  canChangeAttendance,
+  canEditResults,
+  type MatchDayStatus,
+  matchDayStatus,
+} from "@/domain/match-day";
 import { attendeeKey } from "@/domain/schedule";
 import { checkInClosesAt, matchDayOfWeek } from "@/domain/time";
 import type { LocalDate } from "@/domain/types";
@@ -16,7 +21,12 @@ import {
 } from "../db/schema";
 import { finalizeDue, findDraft, officialResultCount } from "../match-days/schedule";
 
-export type PlayerRef = { id: string; displayName: string; avatarUrl: string | null; seed: 1 | 2 | null };
+export type PlayerRef = {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  seed: 1 | 2 | null;
+};
 export type WeekMatch = {
   number: number;
   teamA: [PlayerRef, PlayerRef];
@@ -57,7 +67,10 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     .where(eq(members.active, true));
   const activeMemberCount = activeRow.n;
 
-  const [dayRow] = await db.select({ id: matchDays.id }).from(matchDays).where(eq(matchDays.day, day));
+  const [dayRow] = await db
+    .select({ id: matchDays.id })
+    .from(matchDays)
+    .where(eq(matchDays.day, day));
   if (!dayRow) {
     return {
       day,
@@ -139,12 +152,18 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
   } else {
     // Drafts cover active attendees only (see refreshDraft).
     const activeIds = ids.filter((id) => currentSeeds.has(id));
-    const draft = activeIds.length >= 5 ? await findDraft(db, dayRow.id, attendeeKey(activeIds)) : null;
+    const draft =
+      activeIds.length >= 5 ? await findDraft(db, dayRow.id, attendeeKey(activeIds)) : null;
     if (draft) {
       source = "draft";
       key = draft.attendeeKey;
       seedOf = new Map(draft.assignments.map((a) => [a.memberId, a.seed]));
-      rawMatches = draft.matches.map((m) => ({ number: m.number, teamA: m.teamA, teamB: m.teamB, result: null }));
+      rawMatches = draft.matches.map((m) => ({
+        number: m.number,
+        teamA: m.teamA,
+        teamB: m.teamB,
+        result: null,
+      }));
     }
   }
 
@@ -154,7 +173,9 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     const info = new Map<string, { displayName: string; avatarUrl: string | null }>(
       attendees.map((a) => [a.member.id, a.member]),
     );
-    const missing = [...new Set(rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]))].filter((id) => !info.has(id));
+    const missing = [...new Set(rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]))].filter(
+      (id) => !info.has(id),
+    );
     if (missing.length > 0) {
       const extra = await db
         .select({ id: members.id, displayName: members.displayName, avatarUrl: members.avatarUrl })
@@ -164,7 +185,12 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     }
     const ref = (id: string): PlayerRef => {
       const m = info.get(id);
-      return { id, displayName: m?.displayName ?? "", avatarUrl: m?.avatarUrl ?? null, seed: seedOf.get(id) ?? null };
+      return {
+        id,
+        displayName: m?.displayName ?? "",
+        avatarUrl: m?.avatarUrl ?? null,
+        seed: seedOf.get(id) ?? null,
+      };
     };
     schedule = {
       source,
@@ -201,7 +227,12 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
   };
 }
 
-function permissions(day: LocalDate, now: Date, resultCount: number, actor: Actor): WeekView["can"] {
+function permissions(
+  day: LocalDate,
+  now: Date,
+  resultCount: number,
+  actor: Actor,
+): WeekView["can"] {
   const changeable = canChangeAttendance(day, now, resultCount);
   return {
     changeOwnAttendance: changeable,

@@ -7,7 +7,17 @@ describe("diagrams", () => {
     expect(validateDiagram(d)).toEqual([]),
   );
   it("validateDiagram bắt lỗi", () => {
-    const bad: Diagram = { id: "x", seed1: null, seed2: null, matches: [[[1, 1], [2, 3]]] };
+    const bad: Diagram = {
+      id: "x",
+      seed1: null,
+      seed2: null,
+      matches: [
+        [
+          [1, 1],
+          [2, 3],
+        ],
+      ],
+    };
     expect(validateDiagram(bad).length).toBeGreaterThan(0);
   });
   it("findDiagram", () => {
@@ -17,5 +27,8 @@ describe("diagrams", () => {
     expect(findDiagram(4, 2, 2)).toBeNull();
   });
   it("trận 1 của 10-4-6 là 1+3 / 2+4", () =>
-    expect(findDiagram(10, 4, 6)?.matches[0]).toEqual([[1, 3], [2, 4]]));
+    expect(findDiagram(10, 4, 6)?.matches[0]).toEqual([
+      [1, 3],
+      [2, 4],
+    ]));
 });

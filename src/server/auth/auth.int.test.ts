@@ -11,23 +11,38 @@ describe("auth", () => {
 
   it("đăng nhập đúng tạo phiên dùng được", async () => {
     await makeMember(t.db, { username: "minh.nt" });
-    const r = await login(t.db, { username: " Minh.NT ", password: TEST_PASSWORD }, vn("2026-10-14T10:00"));
+    const r = await login(
+      t.db,
+      { username: " Minh.NT ", password: TEST_PASSWORD },
+      vn("2026-10-14T10:00"),
+    );
     if (!r.ok) throw new Error(r.message);
-    expect((await resolveSession(t.db, r.token, vn("2026-10-14T10:01")))?.memberId).toBe(r.actor.memberId);
+    expect((await resolveSession(t.db, r.token, vn("2026-10-14T10:01")))?.memberId).toBe(
+      r.actor.memberId,
+    );
   });
   it("sai mật khẩu và khóa sau 5 lần", async () => {
     await makeMember(t.db, { username: "minh.nt" });
     const bad = { username: "minh.nt", password: "sai-mat-khau" };
     for (let i = 0; i < 4; i++)
-      expect(await login(t.db, bad, vn("2026-10-14T10:00"))).toEqual({ ok: false, message: MESSAGES.badLogin });
-    expect(await login(t.db, bad, vn("2026-10-14T10:00"))).toEqual({ ok: false, message: MESSAGES.loginLocked });
-    expect(await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, vn("2026-10-14T10:14"))).toEqual({
+      expect(await login(t.db, bad, vn("2026-10-14T10:00"))).toEqual({
+        ok: false,
+        message: MESSAGES.badLogin,
+      });
+    expect(await login(t.db, bad, vn("2026-10-14T10:00"))).toEqual({
       ok: false,
       message: MESSAGES.loginLocked,
     });
-    expect((await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, vn("2026-10-14T10:15"))).ok).toBe(
-      true,
-    );
+    expect(
+      await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, vn("2026-10-14T10:14")),
+    ).toEqual({
+      ok: false,
+      message: MESSAGES.loginLocked,
+    });
+    expect(
+      (await login(t.db, { username: "minh.nt", password: TEST_PASSWORD }, vn("2026-10-14T10:15")))
+        .ok,
+    ).toBe(true);
   });
   it("khóa không bị vượt qua khi đăng nhập song song", async () => {
     await makeMember(t.db, { username: "minh.nt" });
@@ -44,11 +59,17 @@ describe("auth", () => {
   });
   it("mem đã ngưng không đăng nhập được và phiên cũ vô hiệu", async () => {
     const m = await makeMember(t.db, { username: "a.b" });
-    const r = await login(t.db, { username: "a.b", password: TEST_PASSWORD }, vn("2026-10-14T10:00"));
+    const r = await login(
+      t.db,
+      { username: "a.b", password: TEST_PASSWORD },
+      vn("2026-10-14T10:00"),
+    );
     await t.db.update(members).set({ active: false }).where(eq(members.id, m.id));
     if (!r.ok) throw new Error();
     expect(await resolveSession(t.db, r.token, vn("2026-10-14T10:01"))).toBeNull();
-    expect(await login(t.db, { username: "a.b", password: TEST_PASSWORD }, vn("2026-10-14T10:02"))).toEqual({
+    expect(
+      await login(t.db, { username: "a.b", password: TEST_PASSWORD }, vn("2026-10-14T10:02")),
+    ).toEqual({
       ok: false,
       message: MESSAGES.badLogin,
     });
@@ -68,10 +89,13 @@ describe("auth", () => {
     expect(rows[0].tokenHash).not.toBe(s.token);
     expect(rows[0].tokenHash).toMatch(/^[0-9a-f]{64}$/);
   });
-  it("resultConflict", () => expect(resultConflict(21, 17)).toBe("Trận này vừa được nhập 21–17, hãy tải lại"));
+  it("resultConflict", () =>
+    expect(resultConflict(21, 17)).toBe("Trận này vừa được nhập 21–17, hãy tải lại"));
   it("username sai định dạng: báo sai, không ghi bảng login_attempts", async () => {
     for (const username of ["ab", "đức", "x y", "a".repeat(31)])
-      expect(await login(t.db, { username, password: "sai-mat-khau" }, vn("2026-10-14T10:00"))).toEqual({
+      expect(
+        await login(t.db, { username, password: "sai-mat-khau" }, vn("2026-10-14T10:00")),
+      ).toEqual({
         ok: false,
         message: MESSAGES.badLogin,
       });

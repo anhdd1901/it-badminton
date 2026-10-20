@@ -10,11 +10,18 @@ import type { PlayerRef, WeekMatch } from "./week";
 
 type HistoryDay = { day: LocalDate; playerCount: number; matchCount: number; resultCount: number };
 
-export async function getHistory(db: Db, now: Date): Promise<{ season: SeasonId; days: HistoryDay[] }[]> {
+export async function getHistory(
+  db: Db,
+  now: Date,
+): Promise<{ season: SeasonId; days: HistoryDay[] }[]> {
   await finalizeDue(db, now);
   const [days, counts] = await Promise.all([
     db
-      .select({ id: officialSchedules.id, day: matchDays.day, assignments: officialSchedules.assignments })
+      .select({
+        id: officialSchedules.id,
+        day: matchDays.day,
+        assignments: officialSchedules.assignments,
+      })
       .from(officialSchedules)
       .innerJoin(matchDays, eq(officialSchedules.matchDayId, matchDays.id))
       .orderBy(desc(matchDays.day)),
@@ -52,11 +59,20 @@ export async function getMatchDayDetail(
   db: Db,
   day: string,
   now: Date,
-): Promise<{ day: LocalDate; key: string; participants: MemberRef[]; matches: WeekMatch[] } | null> {
+): Promise<{
+  day: LocalDate;
+  key: string;
+  participants: MemberRef[];
+  matches: WeekMatch[];
+} | null> {
   const localDay = parseLocalDate(day);
   await finalizeDue(db, now);
   const [official] = await db
-    .select({ id: officialSchedules.id, key: officialSchedules.attendeeKey, assignments: officialSchedules.assignments })
+    .select({
+      id: officialSchedules.id,
+      key: officialSchedules.attendeeKey,
+      assignments: officialSchedules.assignments,
+    })
     .from(officialSchedules)
     .innerJoin(matchDays, eq(officialSchedules.matchDayId, matchDays.id))
     .where(eq(matchDays.day, localDay));
@@ -84,7 +100,12 @@ export async function getMatchDayDetail(
   const seedOf = new Map(official.assignments.map((a) => [a.memberId, a.seed]));
   const player = (id: string): PlayerRef => {
     const m = refs.get(id);
-    return { id, displayName: m?.displayName ?? "", avatarUrl: m?.avatarUrl ?? null, seed: seedOf.get(id) ?? null };
+    return {
+      id,
+      displayName: m?.displayName ?? "",
+      avatarUrl: m?.avatarUrl ?? null,
+      seed: seedOf.get(id) ?? null,
+    };
   };
   return {
     day: localDay,
