@@ -76,4 +76,16 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   }
   await expect(page.getByText("22").first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Xóa hết kết quả buổi này" })).toBeVisible();
+
+  // Xếp hạng (Task 9): 5 mem có mặt trong bảng mùa và bảng ELO.
+  await page.goto("/xep-hang");
+  const table = page.getByRole("table");
+  for (const name of ["Quản trị", "An", "Bình", "Chi", "Dũng"]) {
+    await expect(table.getByRole("rowheader", { name, exact: true })).toBeVisible();
+  }
+  expect(await table.getByRole("row").count()).toBeGreaterThanOrEqual(6);
+  await page.goto("/xep-hang?bang=elo");
+  await expect(page.getByText(/▲/).nth(1)).toBeVisible();
+  await page.goto("/xep-hang?mua=abc");
+  await expect(page.getByText("Tháng 10/2026")).toBeVisible();
 });
