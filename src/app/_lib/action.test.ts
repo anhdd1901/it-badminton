@@ -71,6 +71,7 @@ describe("runAction", () => {
   it("rethrows notFound", async () => {
     getActor.mockResolvedValue({ memberId: "m", role: "member", sessionId: "s" });
     await expect(runAction(async () => notFound())).rejects.toBeDefined();
+    expect(revalidatePath).not.toHaveBeenCalled();
   });
   it("still maps a plain Error to UNEXPECTED", async () => {
     getActor.mockResolvedValue({ memberId: "m", role: "member", sessionId: "s" });
