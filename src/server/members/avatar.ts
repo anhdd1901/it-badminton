@@ -7,7 +7,9 @@ import { AppError, MESSAGES, safeErrorSummary } from "../errors";
 import { parseMemberId } from "../validation";
 import type { AvatarStore } from "./avatar-store";
 
-export const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+import { MAX_AVATAR_BYTES } from "@/ui/avatar";
+
+export { MAX_AVATAR_BYTES };
 const MAX_INPUT_PIXELS = 40_000_000;
 const ALLOWED_FORMATS = new Set(["jpeg", "png", "webp"]);
 

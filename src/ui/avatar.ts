@@ -24,3 +24,6 @@ export function avatarColor(memberId: string): string {
   }
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
+
+/** Upload limit shared by the client pre-check and the server (single source). */
+export const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
