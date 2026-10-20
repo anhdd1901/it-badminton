@@ -1,26 +1,97 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* Bảng màu theo spec 8.1: light-dark(<sáng>, <tối>). Thành phần chỉ dùng các biến này. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light dark;
+  --bg: light-dark(#f4f4f5, #111111);
+  --surface: light-dark(#ffffff, #1c1c1c);
+  --surface-2: light-dark(#ededed, #222222);
+  --border: light-dark(#e0e0e0, #333333);
+  --text: light-dark(#111111, #fdfdfd);
+  --text-2: light-dark(#5c5c5c, #aaaaaa);
+  --accent: light-dark(#ff6b00, #ff6b00);
+  --on-accent: light-dark(#111111, #111111);
+  --accent-text: light-dark(#b34800, #ff6b00);
+  --seed-1: light-dark(#1f5bd0, #6ea0ff);
+  --seed-2: light-dark(#13804b, #4cc98a);
+  --win: light-dark(#111111, #fdfdfd);
+  --loss: light-dark(#6b6b6b, #8a8a8a);
+  --danger: light-dark(#c62828, #ff5c5c);
+
+  /* shadcn/ui trỏ về token ở trên */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--accent);
+  --primary-foreground: var(--on-accent);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--text);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-2);
+  --destructive: var(--danger);
+  --input: var(--border);
+  --ring: var(--accent-text);
+  --radius: 0.625rem;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-seed-1: var(--seed-1);
+  --color-seed-2: var(--seed-2);
+  --color-win: var(--win);
+  --color-loss: var(--loss);
+  --color-danger: var(--danger);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-be-vietnam-pro);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-bg text-text font-sans;
+  }
 }
