@@ -85,7 +85,10 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   }
   expect(await table.getByRole("row").count()).toBeGreaterThanOrEqual(6);
   await page.goto("/xep-hang?bang=elo");
-  await expect(page.getByText(/▲/).nth(1)).toBeVisible();
+  // Tổng thay đổi ELO bằng 0, nên sau khi có kết quả phải có cả ▲ lẫn ▼ (không phụ thuộc lịch ngẫu nhiên).
+  const eloTable = page.getByRole("table");
+  await expect(eloTable.getByText(/▲/).first()).toBeVisible();
+  await expect(eloTable.getByText(/▼/).first()).toBeVisible();
   await page.goto("/xep-hang?mua=abc");
   await expect(page.getByText("Tháng 10/2026")).toBeVisible();
 
