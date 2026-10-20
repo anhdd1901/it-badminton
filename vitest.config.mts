@@ -15,5 +15,6 @@ export default defineConfig({
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     exclude: ["**/node_modules/**", "src/server/**/*.int.test.ts"],
     env: { TZ: "America/Los_Angeles" },
+    setupFiles: ["src/test/setup-dom.ts"],
   },
 });
