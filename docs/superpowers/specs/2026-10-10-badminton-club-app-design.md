@@ -218,6 +218,32 @@ Mọi vai trò đều là mem thi đấu. Luôn có đúng một admin.
 - **Chuyển quyền admin:** chỉ cho mem đang hoạt động (mem thường hoặc subadmin); admin phải nhập lại mật khẩu. Sau đó người nhận là admin (mất vai trò subadmin nếu có), người chuyển thành mem thường.
 - Mọi kiểm tra quyền thực hiện ở server; giao diện chỉ ẩn những nút không có quyền.
 
+### 5.4 Yêu cầu bảo mật
+
+Danh sách kiểm tra khi làm và khi chạy `security-review`. Không thay thế các quy tắc ở 5.1–5.3; chỉ ghi những điểm dễ sót khi viết giao diện và server action.
+
+- **Phân quyền:**
+  - Mỗi Server Action và route handler tự đọc phiên và kiểm tra quyền ở đầu hàm, kể cả khi trang chứa nó đã kiểm tra. Server Action là endpoint công khai, gọi được mà không cần qua trang.
+  - Id nhận từ client (mem, trận, buổi) luôn được kiểm tra lại quyền với chính đối tượng đó: mem thường chỉ sửa hồ sơ của mình; subadmin chỉ thao tác buổi tuần này.
+  - Không nhận vai trò, id người đang đăng nhập hay ngày giờ từ client; server tự lấy từ phiên và đồng hồ server.
+- **Đăng nhập và phiên:**
+  - Đăng nhập với username không tồn tại vẫn chạy argon2 trên một hash giả, để thời gian phản hồi không lộ username nào có thật. Thông báo lỗi giống nhau cho sai username và sai mật khẩu.
+  - Bản ghi khóa đăng nhập cũ được dọn định kỳ hoặc khi đăng nhập thành công.
+  - Cookie phiên theo 5.2; không đưa token ra JavaScript, URL hay log.
+- **CSRF:** dựa vào kiểm tra `Origin` có sẵn của Server Actions và cookie `SameSite=Lax`. Không mở `serverActions.allowedOrigins` nếu không có proxy đứng trước. Route handler nhận `POST` (nếu có) tự kiểm tra `Origin`. Không có thao tác ghi qua `GET`.
+- **Upload avatar:**
+  - Kiểm tra định dạng bằng nội dung file (sharp đọc được và là JPG/PNG/WEBP), không tin đuôi file hay `Content-Type`.
+  - Giới hạn 5 MB ở server: đặt `serverActions.bodySizeLimit` vừa đủ (mặc định 1 MB) và kiểm tra lại kích thước trong action. Sharp đặt `limitInputPixels` để chặn ảnh nén có kích thước điểm ảnh khổng lồ.
+  - Luôn mã hóa lại ảnh (bỏ metadata EXIF, gồm vị trí GPS) trước khi lưu. Tên file trên Blob do server sinh ngẫu nhiên. Xóa file cũ khi đổi hoặc xóa avatar.
+- **Rò rỉ dữ liệu:**
+  - Code đụng database, hash mật khẩu, token hay biến môi trường bí mật nằm trong module có `import "server-only"`.
+  - Dữ liệu truyền xuống Client Component chỉ gồm trường cần hiển thị; không truyền nguyên bản ghi mem (có hash mật khẩu).
+  - Lỗi không lường trước: người dùng chỉ thấy thông báo chung (9); log ở server không ghi mật khẩu, hash, token, tham số SQL hay chuỗi kết nối. Áp dụng cả cho lệnh quản trị ở `scripts/`.
+- **Header:** Content-Security-Policy dùng nonce sinh trong `proxy.ts` (`script-src 'self' 'nonce-…' 'strict-dynamic'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`; `img-src` cho phép miền Vercel Blob). Chấp nhận việc nonce buộc mọi trang render động, vì trang nào cũng phụ thuộc người đang đăng nhập. Thêm `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`; HTTPS và HSTS do Vercel lo.
+- **Đồng thời:** thao tác đọc-rồi-ghi có điều kiện (điểm danh khi gần 12:00, chuyển quyền admin, ngưng mem, nhập kết quả) đọc và ghi trong cùng một transaction, hoặc dùng ràng buộc của database, để hai request cùng lúc không phá quy tắc (ví dụ hai admin).
+- **Phụ thuộc:** chạy `pnpm audit --prod` trước khi deploy; không thêm thư viện chỉ để làm một việc nhỏ.
+- **Sao lưu (6.5):** repo sao lưu luôn riêng tư vì file dump chứa hash mật khẩu; secrets chỉ nằm trong GitHub Secrets, không in ra log của workflow.
+
 ## 6. Kiến trúc và công nghệ
 
 ### 6.1 Thư viện và công cụ

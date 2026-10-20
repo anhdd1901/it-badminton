@@ -68,6 +68,7 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - **ELO:** công thức đội với chia trong đội theo độ chênh; tính lại từ đầu theo (ngày, số trận), có mốc điều chỉnh của admin. Có bảng ví dụ kiểm chứng. (4.9)
 - **Quyền:** subadmin chỉ điểm danh hộ và nhập kết quả buổi tuần này; mọi việc quản lý chỉ admin. Đúng một admin, chuyển quyền được. (5.3)
 - **Phiên đăng nhập:** không hết hạn; vô hiệu ở server khi ngưng mem hoặc đổi mật khẩu; giao diện tự đăng xuất khi gặp 401. (5.2)
+- **Bảo mật:** mỗi Server Action tự kiểm tra phiên và quyền; module server dùng `server-only`; avatar kiểm tra nội dung, bỏ EXIF; CSP nonce trong `proxy.ts`; log không chứa hash/token. Danh sách đầy đủ ở spec 5.4, dùng khi `security-review`.
 
 ## Lưu ý
 
