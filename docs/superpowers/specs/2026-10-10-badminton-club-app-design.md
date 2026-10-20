@@ -188,7 +188,7 @@ Chỉ tính thắng/thua, không tính cách biệt tỷ số.
   - mem tự đổi mật khẩu: mọi phiên khác phiên hiện tại;
   - admin đặt lại mật khẩu: mọi phiên của mem đó.
 - Phiên bị vô hiệu không bị đẩy ra real-time: request tiếp theo trả 401, giao diện xóa trạng thái và về màn đăng nhập.
-- **Chống dò mật khẩu:** sai 5 lần liên tiếp với một username thì username đó tạm khóa đăng nhập 15 phút. Chấp nhận rủi ro người khác cố tình nhập sai để khóa một username, vì app dùng nội bộ, username không công khai và khóa chỉ 15 phút.
+- **Chống dò mật khẩu:** sai 5 lần liên tiếp với một username thì username đó tạm khóa đăng nhập 15 phút. Số lần sai được quên khi đã quá 24 giờ không sai thêm (bản ghi được dọn lúc có lượt đăng nhập tiếp theo). Chấp nhận rủi ro người khác cố tình nhập sai để khóa một username, vì app dùng nội bộ, username không công khai và khóa chỉ 15 phút.
 - **Lệnh quản trị** (chạy trên máy có quyền truy cập database, không có giao diện):
   - `pnpm admin:create`: tạo admin đầu tiên, chạy một lần.
   - `pnpm admin:reset-password <username>`: đặt lại mật khẩu, dùng khi admin quên mật khẩu của chính mình.
