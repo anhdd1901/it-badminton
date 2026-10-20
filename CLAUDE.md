@@ -30,6 +30,7 @@ Node 22, pnpm, TypeScript strict. Next.js 16 (App Router) + React 19, Tailwind 4
 - `pnpm typecheck`: kiểm tra kiểu TypeScript (Vitest không kiểm tra kiểu, nên luôn chạy lệnh này)
 - `pnpm lint`, `pnpm build` · `pnpm format` / `pnpm format:check`: Prettier (bỏ qua các đường dẫn trong `.prettierignore`)
 - `pnpm db:up`: bật PostgreSQL (Docker) · `pnpm db:generate`: sinh migration từ `src/server/db/schema.ts` · `pnpm db:migrate`: chạy migration lên database dev
+- `pnpm test:e2e`: Playwright (cần `pnpm db:up`; tự tạo database `anh_em_it_e2e` từ `DATABASE_URL_E2E` trong `.env`; build rồi chạy app ở cổng 3100 với đồng hồ giả sáng thứ 7 17/10/2026)
 - `pnpm test:int`: test tích hợp với PostgreSQL thật (`*.int.test.ts`, database test, chạy tuần tự)
 - `graphify query "..."` / `graphify path A B` / `graphify explain X`: tra đồ thị code · `graphify update .`: dựng lại đồ thị (chỉ code, không tốn token) · `/graphify .` trong Claude Code: dựng lần đầu
 - `pnpm admin:create`: tạo admin đầu tiên · `pnpm admin:reset-password <username>`: đặt lại mật khẩu (cũng mở khóa đăng nhập)
@@ -42,7 +43,11 @@ GLOSSARY.md             thuật ngữ nghiệp vụ
 AGENTS.md               quy tắc của Next.js 16 cho agent (do `next dev` tạo lại)
 src/domain/             quy tắc nghiệp vụ thuần (không import Next, DB, React)
 src/server/              lớp nghiệp vụ: db/ (schema, client, lock), auth/, members/, match-days/, data/ (loaders), views/ (dữ liệu cho màn hình)
-src/app/                giao diện Next.js (App Router)
+src/app/                giao diện Next.js (App Router): (app)/ màn cần đăng nhập, _lib/ nối với src/server (server-only), _actions/ Server Action
+src/components/         thành phần giao diện (ui/ là shadcn)
+src/ui/                 logic thuần cho giao diện (token, định dạng, CSP, ActionResult)
+src/proxy.ts            CSP nonce, gia hạn cookie phiên
+e2e/                    test Playwright (seed, global-setup)
 scripts/                lệnh quản trị (tsx)
 drizzle/                migration
 docs/superpowers/specs/ spec
