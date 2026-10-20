@@ -34,7 +34,13 @@ export function ScoreInput({
       const r = await call();
       if (!r.ok) {
         setError(r.message);
-        if (r.code === "CONFLICT" || r.code === "LOCKED") router.refresh();
+        if (r.code === "CONFLICT" || r.code === "LOCKED") {
+          // Drop the typed values: after the refresh the version is fresh, so a
+          // retry must be a deliberate re-entry, never a silent overwrite.
+          setA("");
+          setB("");
+          router.refresh();
+        }
       }
     } finally {
       setBusy(false);
@@ -65,6 +71,8 @@ export function ScoreInput({
           id="score-a"
           inputMode="numeric"
           className="tabular-nums"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "score-error" : undefined}
           value={a}
           onChange={(e) => setA(e.target.value)}
         />
@@ -75,12 +83,14 @@ export function ScoreInput({
           id="score-b"
           inputMode="numeric"
           className="tabular-nums"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "score-error" : undefined}
           value={b}
           onChange={(e) => setB(e.target.value)}
         />
       </div>
       {error ? (
-        <p role="alert" className="text-sm text-danger">
+        <p id="score-error" role="alert" className="text-sm text-danger">
           {error}
         </p>
       ) : null}

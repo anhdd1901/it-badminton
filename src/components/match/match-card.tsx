@@ -21,6 +21,7 @@ function Player({ p }: { p: PlayerRef }) {
       <span className="truncate">{p.displayName}</span>
       {p.seed ? (
         <span
+          role="img"
           aria-label={`Hạt giống ${p.seed}`}
           className={`shrink-0 ${p.seed === 1 ? "text-seed-1" : "text-seed-2"}`}
         >

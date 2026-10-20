@@ -31,6 +31,8 @@ describe("ScoreInput", () => {
 
   it.each([
     ["abc", "5", "Tỷ số phải là số nguyên từ 0 trở lên"],
+    ["-3", "5", "Tỷ số phải là số nguyên từ 0 trở lên"],
+    ["21.5", "5", "Tỷ số phải là số nguyên từ 0 trở lên"],
     ["21", "20", "Tỷ số 21–20 không hợp lệ: chưa cách 2 điểm, phải đánh tiếp"],
     ["30", "30", "Không có tỷ số hòa"],
   ])("%s/%s → %s", (a, b, msg) => {
@@ -55,5 +57,26 @@ describe("ScoreInput", () => {
     fill("21", "15");
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe(message));
     expect(refresh).toHaveBeenCalled();
+  });
+
+  it("sau CONFLICT không gửi lại giá trị cũ khi chưa nhập lại", async () => {
+    const message = "Trận này vừa được nhập 21–19, hãy tải lại";
+    onSave.mockResolvedValue({ ok: false, code: "CONFLICT", message });
+    setup();
+    fill("21", "15");
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toBe(message));
+    expect((screen.getByLabelText("An & Bình") as HTMLInputElement).value).toBe("");
+    fireEvent.click(screen.getByRole("button", { name: "Lưu tỷ số" }));
+    expect(screen.getByRole("alert").textContent).toBe("Nhập tỷ số cho cả hai cặp");
+    expect(onSave).toHaveBeenCalledTimes(1);
+  });
+
+  it("lỗi được gắn với hai ô nhập", () => {
+    setup();
+    fill("21", "");
+    const alert = screen.getByRole("alert");
+    const a = screen.getByLabelText("An & Bình");
+    expect(a.getAttribute("aria-invalid")).toBe("true");
+    expect(a.getAttribute("aria-describedby")).toBe(alert.id);
   });
 });
