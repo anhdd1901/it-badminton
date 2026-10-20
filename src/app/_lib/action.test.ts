@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { notFound, redirect } from "next/navigation";
 import { AppError, MESSAGES } from "@/server/errors";
 
 vi.mock("server-only", () => ({}));
@@ -59,5 +60,24 @@ describe("runAction", () => {
     });
     expect(r).toMatchObject({ ok: false, code: "FORBIDDEN" });
     expect(revalidatePath).not.toHaveBeenCalled();
+  });
+  it("rethrows redirect after revalidating", async () => {
+    getActor.mockResolvedValue({ memberId: "m", role: "member", sessionId: "s" });
+    await expect(runAction(async () => redirect("/toi"))).rejects.toMatchObject({
+      digest: expect.stringContaining("NEXT_REDIRECT"),
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
+  });
+  it("rethrows notFound", async () => {
+    getActor.mockResolvedValue({ memberId: "m", role: "member", sessionId: "s" });
+    await expect(runAction(async () => notFound())).rejects.toBeDefined();
+  });
+  it("still maps a plain Error to UNEXPECTED", async () => {
+    getActor.mockResolvedValue({ memberId: "m", role: "member", sessionId: "s" });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const r = await runAction(async () => {
+      throw new Error("boom");
+    });
+    expect(r).toMatchObject({ ok: false, code: "UNEXPECTED" });
   });
 });

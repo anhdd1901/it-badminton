@@ -1,5 +1,6 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
 import type { Actor } from "@/server/actor";
 import type { Db } from "@/server/db/client";
 import { AppError, safeErrorSummary } from "@/server/errors";
@@ -30,6 +31,12 @@ export async function runAction<T>(
     revalidatePath("/", "layout");
     return { ok: true, data };
   } catch (e) {
+    // A successful action may end with redirect(): still refresh cached data first.
+    const digest = (e as { digest?: unknown } | null)?.digest;
+    if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) {
+      revalidatePath("/", "layout");
+    }
+    unstable_rethrow(e);
     return toActionResult(e);
   }
 }
