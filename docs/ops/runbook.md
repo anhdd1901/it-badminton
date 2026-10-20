@@ -22,7 +22,7 @@ Các bước làm trên Vercel, Neon và GitHub để đưa app lên production,
 
 1. Tab **Storage** → **Create Database** → **Blob** → **Continue**, đặt tên, ví dụ `anh-em-it-avatars`. Nếu được hỏi chế độ truy cập, chọn **Public** (avatar là ảnh công khai).
 2. Nối vào project, chỉ tick **Production**.
-3. Kiểm tra: **Environment Variables** có `BLOB_READ_WRITE_TOKEN`.
+3. Kiểm tra: **Environment Variables** có `BLOB_STORE_ID` (kho nối qua Marketplace xác thực bằng OIDC, không cần token) hoặc `BLOB_READ_WRITE_TOKEN`. Thiếu cả hai thì tải avatar báo lỗi cấu hình.
 
 ## 4. Deploy lại để chạy migration
 
@@ -80,4 +80,4 @@ Chỉ làm khi dữ liệu production bị hỏng, ví dụ xóa nhầm hoặc b
 2. Kiểm tra `DATABASE_URL`/`DATABASE_URL_UNPOOLED` trên Vercel đã mang mật khẩu mới (tích hợp Neon thường tự cập nhật; nếu không, sửa tay), rồi **Redeploy** và đăng nhập app để chắc chắn.
 3. Sửa hoặc xóa file `.env.prod-admin` ở máy.
 4. Cập nhật secret `DATABASE_URL` của repo `it-badminton-backup` (mục 6.2) và chạy tay workflow để kiểm tra.
-5. Lộ `BLOB_READ_WRITE_TOKEN`: Vercel → Storage → Blob store → **Settings** → tạo token mới, rồi Redeploy.
+5. Nếu có dùng `BLOB_READ_WRITE_TOKEN` và token bị lộ: Vercel → Storage → Blob store → **Settings** → tạo token mới, rồi Redeploy. Kho chỉ có `BLOB_STORE_ID` (OIDC) không có token để lộ.

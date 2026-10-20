@@ -9,18 +9,20 @@ export interface AvatarStore {
   remove(url: string): Promise<void>;
 }
 
-export function blobAvatarStore(token: string): AvatarStore {
+/** `token` is optional: on Vercel the SDK can authenticate with OIDC when `BLOB_STORE_ID` is set. */
+export function blobAvatarStore(token?: string): AvatarStore {
+  const auth = token ? { token } : {};
   return {
     async put(bytes) {
       const blob = await put(`avatars/${randomUUID()}.webp`, bytes, {
         access: "public",
         contentType: "image/webp",
-        token,
+        ...auth,
       });
       return blob.url;
     },
     async remove(url) {
-      await del(url, { token });
+      await del(url, { ...auth });
     },
   };
 }

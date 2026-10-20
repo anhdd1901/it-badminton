@@ -291,7 +291,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | `DATABASE_URL_UNPOOLED` | kết nối trực tiếp tới Neon, dùng cho migration, sao lưu, khôi phục và lệnh quản trị; để trống ở local |
 | `DATABASE_URL_TEST` | database dành riêng cho test tích hợp |
 | `DATABASE_URL_E2E` | database dành riêng cho test đầu cuối (tên phải kết thúc bằng `_e2e`) |
-| `BLOB_READ_WRITE_TOKEN` | quyền ghi Vercel Blob |
+| `BLOB_READ_WRITE_TOKEN` hoặc `BLOB_STORE_ID` | quyền ghi Vercel Blob: có token thì dùng token; kho nối qua Vercel Marketplace có thể chỉ có `BLOB_STORE_ID`, khi đó SDK tự xác thực bằng OIDC của deployment; cả hai trống thì lưu avatar trên đĩa (chỉ ở máy) |
 
 GitHub Secrets cho sao lưu: xem 6.5.
 
