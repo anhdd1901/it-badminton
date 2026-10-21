@@ -258,7 +258,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | Framework | Next.js (App Router, Server Components, Server Actions) | 16.x | giao diện + server trong một dự án |
 | UI | React | 19.x | |
 | CSS | Tailwind CSS | 4.x | giao diện responsive |
-| Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, chọn tháng, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế |
+| Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, select, popover, chọn tháng (calendar), form, thông báo: chép mã vào dự án, tùy biến theo thiết kế; select và chọn tháng/ngày luôn dùng component shadcn (8.2) |
 | Icon | lucide-react | 1.x | |
 | Font | Be Vietnam Pro qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/be-vietnam-pro/` (8.1) |
 | Database | PostgreSQL | 17 (local), 18 (Neon, production) | Neon tạo qua Vercel Marketplace, region AWS `ap-southeast-1` (Singapore) |
@@ -388,12 +388,20 @@ Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám
 |---|---|
 | **Đăng nhập** | tên app "ANH EM IT", username, mật khẩu |
 | **Buổi tuần này** (trang chủ) | ngày, trạng thái (đang mở / đã khóa / đã đóng lúc 12:00); "đã điểm danh / tổng mem đang hoạt động", bấm vào mở popup danh sách (avatar + tên; admin và subadmin điểm danh hoặc hủy hộ tại đây); nút điểm danh hoặc hủy; lịch các trận (số trận, hai cặp, tỷ số, ô trống nếu chưa nhập); admin và subadmin nhập hoặc sửa tỷ số ngay tại trận, có nút "Xóa hết kết quả buổi này". Dưới 5 người: "Chưa đủ người để xếp lịch (cần ít nhất 5, hiện có N)". Không có sơ đồ: thông báo ở 4.4. |
-| **Bảng xếp hạng** | chọn tháng (mặc định tháng hiện tại); nhãn "Đang diễn ra" / "Đã kết thúc"; các cột ở 4.7 |
+| **Bảng xếp hạng** | chọn tháng (mặc định tháng hiện tại; bấm vào tháng/năm ở giữa để mở bộ chọn tháng, 8.2); nhãn "Đang diễn ra" / "Đã kết thúc"; các cột ở 4.7 |
 | **ELO** | 4.9 |
 | **Thống kê** | tab Theo mem / Theo cặp; bộ lọc 4.10 |
 | **Lịch sử** | danh sách buổi theo tháng; chi tiết buổi: người tham gia, lịch, kết quả; admin sửa kết quả tại đây |
 | **Cá nhân** | đổi tên hiển thị, avatar, mật khẩu; chọn giao diện (Theo thiết bị / Sáng / Tối); đăng xuất |
 | **Quản lý mem** (admin) | danh sách (lọc đang hoạt động / đã ngưng); thêm; sửa; ngưng / kích hoạt; đặt lại mật khẩu; sửa ELO; đặt / gỡ subadmin; chuyển quyền admin |
+
+### 8.2 Tương tác dùng chung (Tuần này, Xếp hạng, Thống kê, Lịch sử)
+
+- **Menu bên (máy tính):** icon mỗi mục nằm trong ô cố định 40px, căn giữa, nên tâm icon trùng tâm avatar. Label nằm ngay sau ô icon với cùng khoảng cách giữa avatar và tên, nên label thẳng cột, căn trái với tên mem. Thanh đáy điện thoại không đổi.
+- **Select và chọn ngày/tháng:** dùng component shadcn (`Select`, `Popover`, `Calendar`), đồng bộ token theme ở 8.1; không dùng `<select>` hay `<input type="month|date">` gốc. Biến `--accent` của shadcn không được là màu cam (hover dùng `--surface-2`). Chỗ chỉ cần chọn tháng dùng một `MonthPicker` chung (lưới 12 tháng, nút đổi năm), có thể vô hiệu tháng ngoài khoảng.
+- **Chọn mùa ở Xếp hạng:** bấm tháng/năm ở giữa mở `MonthPicker` trong popover, chọn tháng thì đổi mùa. Nút ◀ ▶ vẫn giữ. Chỉ chọn được từ mùa có dữ liệu sớm nhất đến mùa hiện tại; nút ◀ dừng ở mùa sớm nhất.
+- **Highlight khi rê vào tên mem:** ở mọi nơi hiện trận (lịch hoặc kết quả), rê chuột hoặc focus bàn phím vào tên một mem thì mọi vị trí của mem đó trong các trận cùng màn được tô sáng bằng token theme. Xử lý ở client, không gọi server; mỗi màn có phạm vi riêng; màn cảm ứng không highlight.
+- **Popup thông tin mem:** bấm tên mem (Tuần này kể cả danh sách điểm danh, Xếp hạng mùa và ELO, Thống kê, Lịch sử) mở popup: avatar, tên, ELO, Hạt giống, icon chevron lên/xuống cho thay đổi ELO buổi gần nhất (chỉ icon và màu: `--seed-2` khi lên, `--danger` khi xuống, ẩn khi chưa có; có `aria-label` ghi số), các cột 4.7 của mùa đang xem, và thống kê toàn thời gian theo 4.10 gồm số lần hạng 1–4. Dữ liệu lấy bằng Server Action chỉ đọc khi mở popup; action tự kiểm phiên; mọi mem đăng nhập đều xem được, không lộ username hay thông tin tài khoản.
 
 ## 9. Xử lý lỗi
 
