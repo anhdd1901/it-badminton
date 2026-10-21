@@ -34,3 +34,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Hoàn thiện giao diện (plan-5/task-10, minor):** test bảng ELO chưa kiểm `getMemberProfileAction` được gọi với mùa hiện tại; fixture test các bảng dùng `as any`.
 - **Hoàn thiện giao diện (plan-5/task-11, minor):** nền `--highlight` rất nhạt vì chỉ phủ đúng khung chữ của tên; đóng popup bằng Esc thì tên vẫn được tô (focus bàn phím trả về nút tên, đúng spec 8.2); tên dòng cặp ở bảng Theo cặp được đọc là "Bình Dũng" (dấu & bị `aria-hidden`); `agent-browser eval` bị sandbox chặn trong worktree, đo bằng script Playwright.
 - **Hoàn thiện giao diện (plan-5/task-11, minor):** e2e chọn mem bằng Select chưa kiểm bảng đã lọc đúng mem; e2e Tuần này dùng `innerText` của nút tên làm tên tiêu đề.
+- **Hoàn thiện giao diện (plan-5, review cuối, minor):** Xếp hạng và Thống kê gọi thêm `firstSeasonWithResults` (thêm một lần `finalizeDue` + tải hết trận mỗi lần render).
