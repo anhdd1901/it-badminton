@@ -407,6 +407,10 @@ Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám
   - **Toàn thời gian** không theo bộ lọc của màn Thống kê.
   - **Mem đã ngưng** vẫn bấm được, có nhãn "Đã ngưng"; Hạt giống và chevron hiện "–" (chỉ mem đang hoạt động mới có Hạt giống, 4.2), ELO vẫn hiện. Dữ liệu lấy bằng Server Action chỉ đọc khi mở popup; action tự kiểm phiên; mọi mem đăng nhập đều xem được, không lộ username hay thông tin tài khoản.
 
+**Bố cục popup mem:** điện thoại là sheet từ đáy, máy tính là popup giữa màn rộng tối đa 24rem (`dialog` shadcn). Căn trái hết. Đầu popup: avatar 56px, tên, chấm màu Hạt giống (kèm nhãn "Đã ngưng" nếu có), nút đóng. Nét nhấn duy nhất là ELO cỡ lớn kèm chevron ngay cạnh. Hai nhóm số liệu, mỗi nhóm có tiêu đề ("Mùa MM/YYYY", "Toàn thời gian") và ngăn bằng đường `--border`: lưới 3 cột gồm Thắng, Hiệu số, Cầu thắng, Cầu thua, Số trận, Hạng; nhóm toàn thời gian thêm hàng số lần hạng 1, 2, 3, 4. Ô số liệu nền `--surface-2`, không viền, nhãn `--text-2`, số `tabular-nums`. Đang tải: khung xương cùng kích thước. Lỗi: "Không tải được thông tin mem" kèm nút thử lại. Không thêm biểu đồ hay huy hiệu.
+
+**Bố cục `MonthPicker`:** popover rộng 16rem; hàng đầu là năm với nút ‹ › (dừng ở năm có dữ liệu); lưới 4 cột × 3 hàng, nhãn "T1"…"T12", ô cao 44px; tháng đang chọn là viên thuốc `--accent` chữ `--on-accent`, tháng khác nền `--surface-2`, tháng ngoài khoảng bị vô hiệu và mờ; nút "Xóa" chỉ có ở bộ lọc Thống kê. Ở Xếp hạng, nút mở là chữ tháng/năm kèm chevron xuống nhỏ. Bàn phím: mũi tên di chuyển giữa các tháng, Enter chọn, Esc đóng.
+
 ## 9. Xử lý lỗi
 
 - Lỗi nhập liệu: thông báo cụ thể bằng tiếng Việt ngay tại ô nhập (ví dụ "Tỷ số 23–20 không hợp lệ: từ 22 điểm trở lên phải thắng cách đúng 2"; "Username đã có người dùng").
