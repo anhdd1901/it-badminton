@@ -23,3 +23,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Phiên bản PostgreSQL (plan-4):** Neon production chạy 18.6 còn Docker dev/test chạy 17 (`docker-compose.yml`, spec 6.1); nên nâng dev/test lên 18 cho khớp (volume dữ liệu cũ phải xóa: `docker compose down -v`). Khôi phục dump 18 vào dev 17 đã kiểm là chạy được.
 - **Hoàn thiện giao diện (plan-5, minor):** test menu bên tìm khối user qua `getByText(...).parentElement.parentElement` (giòn khi đổi markup).
 - **Hoàn thiện giao diện (plan-5/task-2, minor):** test chặn `bg-accent` chỉ quét `select.tsx`/`popover.tsx`, component shadcn thêm sau không được kiểm; `select.tsx` còn vài dòng CLI chưa gọn (`position === "popper" && ""`).
+- **Hoàn thiện giao diện (plan-5/task-3, minor):** `MonthPicker` chỉ giữ focus khi nút năm bị vô hiệu do bấm (không khi `min`/`max` đổi lúc đang mở); chưa có test Enter/Esc.
