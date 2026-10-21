@@ -37,7 +37,13 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           { href: "/thong-ke?xem=cap", label: "Theo cặp", active: params.view === "cap" },
         ]}
       />
-      <StatsFilter value={params} members={options} bounds={bounds} />
+      {/* Keyed by the params: client navigation (Bỏ lọc, tabs) does not remount the page. */}
+      <StatsFilter
+        key={`${params.view}|${params.from ?? ""}|${params.to ?? ""}|${params.memberId ?? ""}`}
+        value={params}
+        members={options.map(({ id, displayName, active }) => ({ id, displayName, active }))}
+        bounds={bounds}
+      />
       {params.view === "cap" ? (
         <PairStatsTable rows={view.pairs} season={current} />
       ) : (

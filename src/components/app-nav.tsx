@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MemberAvatar } from "@/components/member-avatar";
 import { cn } from "@/lib/utils";
-import type { Me } from "@/server/views/members";
+import type { AvatarMember } from "@/components/member-avatar";
 
 const ITEMS = [
   { href: "/", label: "Tuần này", Icon: CalendarDays },
@@ -18,7 +18,8 @@ function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppNav({ me }: { me: Me }) {
+// Serialized to the browser: avatar fields only, no username (spec 8.2).
+export function AppNav({ me }: { me: AvatarMember & { username?: never } }) {
   const pathname = usePathname();
   const link = (item: (typeof ITEMS)[number], layout: "bottom" | "side") => {
     const active = isActive(pathname, item.href);

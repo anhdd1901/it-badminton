@@ -8,7 +8,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   const me = await getMe(getDb(), actor);
   return (
     <div className="flex flex-1 flex-col bg-bg text-text md:pl-56">
-      <AppNav me={me} />
+      <AppNav me={{ id: me.id, displayName: me.displayName, avatarUrl: me.avatarUrl }} />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col pb-20 md:pb-6">{children}</div>
     </div>
   );

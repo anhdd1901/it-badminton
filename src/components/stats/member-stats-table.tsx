@@ -43,7 +43,7 @@ export function MemberStatsTable({ rows, season }: { rows: Row[]; season: Season
                   <MemberAvatar member={r.member} size={24} />
                   <span className="min-w-0" title={r.member.displayName}>
                     <PlayerName
-                      player={r.member}
+                      player={{ id: r.member.id, displayName: r.member.displayName }}
                       season={season}
                       className="block max-w-[9rem] truncate text-left"
                     />

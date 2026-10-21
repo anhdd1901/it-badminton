@@ -33,13 +33,13 @@ export function PairStatsTable({ rows, season }: { rows: Row[]; season: SeasonId
                     title={`${r.members[0].displayName} & ${r.members[1].displayName}`}
                   >
                     <PlayerName
-                      player={r.members[0]}
+                      player={{ id: r.members[0].id, displayName: r.members[0].displayName }}
                       season={season}
                       className="block min-w-0 truncate text-left"
                     />
                     <span aria-hidden="true">&amp;</span>
                     <PlayerName
-                      player={r.members[1]}
+                      player={{ id: r.members[1].id, displayName: r.members[1].displayName }}
                       season={season}
                       className="block min-w-0 truncate text-left"
                     />

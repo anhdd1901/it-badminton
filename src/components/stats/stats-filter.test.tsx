@@ -5,8 +5,8 @@ import type { SeasonId } from "@/domain/types";
 import { StatsFilter } from "./stats-filter";
 
 const members = [
-  { id: "m1", displayName: "An", username: "an", avatarUrl: null, active: true },
-  { id: "m2", displayName: "Bình", username: "binh", avatarUrl: null, active: false },
+  { id: "m1", displayName: "An", active: true },
+  { id: "m2", displayName: "Bình", active: false },
 ];
 const bounds = { min: "2026-01" as SeasonId, max: "2026-10" as SeasonId };
 const hidden = (c: HTMLElement, name: string) =>

@@ -74,13 +74,13 @@ test("Thống kê: chọn mem bằng Select và lọc, URL có mem=", async ({ p
   await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText("Chi");
 });
 
-test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem đó có data-focused", async ({
+test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem đó trong các trận có data-focused", async ({
   page,
 }) => {
   await login(page, "anh");
   await page.goto("/lich-su/2026-10-10");
   await expect(page.getByRole("heading", { name: "Thứ 7, 10/10/2026" })).toBeVisible();
-  const all = page.getByRole("button", { name: "Chi", exact: true });
+  const all = page.locator("main section").getByRole("button", { name: "Chi", exact: true });
   const count = await all.count();
   expect(count).toBeGreaterThan(1);
   await expect(page.locator("button[data-focused]")).toHaveCount(0);
@@ -88,6 +88,15 @@ test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem
   await page.getByTestId("team-a").first().scrollIntoViewIfNeeded();
   await all.first().hover();
   for (let i = 0; i < count; i++) await expect(all.nth(i)).toHaveAttribute("data-focused", "");
+  await expect(page.locator("button[data-focused]")).toHaveCount(count);
+  // Spec 8.2: highlight applies to matches only, not the participants list.
+  const chip = page
+    .getByRole("list", { name: "Người tham gia" })
+    .getByRole("button", { name: "Chi", exact: true });
+  await expect(chip).not.toHaveAttribute("data-focused", "");
+  await chip.hover();
+  await expect(page.locator("button[data-focused]")).toHaveCount(0);
+  await all.first().hover();
   await expect(page.locator("button[data-focused]")).toHaveCount(count);
 
   await page.getByRole("heading", { name: "Thứ 7, 10/10/2026" }).hover();
@@ -107,4 +116,50 @@ test("Tuần này (admin): nút Nhập tỷ số vẫn mở, bấm tên mem mở
   const name = (await firstName.innerText()).trim();
   await firstName.click();
   await expectMemberPopup(page, name);
+});
+
+test("Thống kê: Bỏ lọc đưa bộ lọc về mặc định, Lọc ngay sau đó không còn giá trị cũ", async ({
+  page,
+}) => {
+  await login(page, "anh");
+  await page.goto("/thong-ke");
+  await page.getByRole("button", { name: "Từ tháng" }).click();
+  await page.getByRole("button", { name: "Tháng 9/2026" }).click();
+  await page.getByRole("combobox", { name: "Mem" }).click();
+  await page.getByRole("option", { name: "Chi", exact: true }).click();
+  await page.getByRole("button", { name: "Lọc" }).click();
+  await expect(page).toHaveURL(/[?&]tu=2026-09/);
+  await expect(page).toHaveURL(/[?&]mem=[^&]+/);
+
+  await page.getByRole("link", { name: "Bỏ lọc" }).click();
+  await expect(page).toHaveURL(/\/thong-ke\?xem=mem$/);
+  await expect(page.getByRole("button", { name: "Từ tháng" })).toHaveText("Toàn bộ");
+  await expect(page.getByRole("button", { name: "Đến tháng" })).toHaveText("Toàn bộ");
+  await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText("Tất cả mem");
+
+  await page.getByRole("button", { name: "Lọc" }).click();
+  await expect(page).toHaveURL(/[?&]tu=(&|$)/);
+  await expect(page).toHaveURL(/[?&]den=(&|$)/);
+  await expect(page).toHaveURL(/[?&]mem=(&|$)/);
+});
+
+test("Mem thường: HTML trang xếp hạng, thống kê, lịch sử không chứa username của mem khác", async ({
+  page,
+}) => {
+  // "binh"/"dung" are not substrings of their display names ("Bình"/"Dũng"), so any hit is a leak.
+  const others = ["binh", "dung"];
+  await login(page, "anh");
+  for (const path of [
+    "/xep-hang",
+    "/xep-hang?bang=elo",
+    "/thong-ke",
+    "/thong-ke?xem=cap",
+    "/lich-su/2026-10-10",
+  ]) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    const html = await page.content();
+    for (const u of others) expect(html, `${path} chứa username "${u}"`).not.toContain(u);
+    expect(html, `${path} chứa trường username`).not.toContain("username");
+  }
 });

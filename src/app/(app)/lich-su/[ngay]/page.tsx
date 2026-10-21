@@ -31,18 +31,23 @@ export default async function MatchDayDetailPage({ params }: PageProps<"/lich-su
   return (
     <main className="flex flex-col gap-4 p-4">
       <h1 className="text-xl font-semibold">{formatDay(detail.day)}</h1>
+      <ul className="flex flex-wrap gap-2" aria-label="Người tham gia">
+        {detail.participants.map((p) => (
+          <li
+            key={p.id}
+            className="flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm"
+          >
+            <MemberAvatar member={p} size={24} />
+            <PlayerName
+              player={{ id: p.id, displayName: p.displayName }}
+              season={season}
+              className="block min-w-0 truncate text-left"
+            />
+          </li>
+        ))}
+      </ul>
+      {/* Spec 8.2: name highlight applies to matches only. */}
       <PlayerFocusProvider>
-        <ul className="flex flex-wrap gap-2" aria-label="Người tham gia">
-          {detail.participants.map((p) => (
-            <li
-              key={p.id}
-              className="flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm"
-            >
-              <MemberAvatar member={p} size={24} />
-              <PlayerName player={p} season={season} className="min-w-0 truncate" />
-            </li>
-          ))}
-        </ul>
         <section className="flex flex-col gap-2">
           {detail.matches.map((m) => (
             <MatchCard

@@ -12,10 +12,7 @@ vi.mock("next/navigation", () => ({
 const me = {
   id: "m1",
   displayName: "Đức",
-  username: "duc",
   avatarUrl: null,
-  active: true,
-  role: "member" as const,
 };
 
 describe("AppNav", () => {

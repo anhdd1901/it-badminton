@@ -15,7 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatSeason } from "@/ui/format";
-import type { MemberRef } from "@/server/views/rankings";
+export type StatsFilterMember = {
+  id: string;
+  displayName: string;
+  active: boolean;
+  username?: never;
+};
 
 export type StatsFilterValue = {
   view: "mem" | "cap";
@@ -36,7 +41,8 @@ export function StatsFilter({
   bounds,
 }: {
   value: StatsFilterValue;
-  members: MemberRef[];
+  // Serialized to the browser: no username (spec 8.2).
+  members: StatsFilterMember[];
   bounds: { min: SeasonId; max: SeasonId };
 }) {
   const [from, setFrom] = useState<SeasonId | null>((value.from as SeasonId | undefined) ?? null);

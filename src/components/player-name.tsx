@@ -21,7 +21,8 @@ export function PlayerName({
   className,
   children,
 }: {
-  player: { id: string; displayName: string };
+  // Props are serialized to the browser: never pass a whole MemberRef (username, spec 8.2).
+  player: { id: string; displayName: string; username?: never };
   season: SeasonId;
   className?: string;
   children?: ReactNode;
