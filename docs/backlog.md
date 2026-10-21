@@ -27,3 +27,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Hoàn thiện giao diện (plan-5/task-4, minor):** nút ◀/▶ bị vô hiệu là `<span aria-disabled>` không có `role`, một số trình đọc màn hình đọc yếu.
 - **Hoàn thiện giao diện (plan-5/task-5, minor):** hai `MonthPopover` trong `StatsFilter` gần như lặp nhau; `StatsFilterValue.from/to` kiểu `string` nên phải ép `as SeasonId`.
 - **Hoàn thiện giao diện (plan-5/task-6, minor):** `getMemberProfileView` tải trận và chạy `finalizeDue` hai lần (một lần trong `endedSeasons`).
+- **Hoàn thiện giao diện (plan-5/task-7, minor):** `MemberDialog` bắt lỗi trong `load` mà không `unstable_rethrow` (nuốt redirect nếu action ném); lỗi FORBIDDEN/UNEXPECTED vừa toast vừa hiện trong popup; đóng popup thì đặt lại về khung xương ngay (nháy trong animation đóng); câu lỗi của action hiện cả khi trùng tiêu đề; chưa test mở lại cùng mem khi lượt cũ còn chờ.
