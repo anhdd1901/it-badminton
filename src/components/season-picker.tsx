@@ -1,41 +1,81 @@
+"use client";
+
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
+import { MonthPopover } from "@/components/month-picker";
 import type { SeasonId } from "@/domain/types";
 import { formatSeason } from "@/ui/format";
 
 function shift(season: SeasonId, by: number): SeasonId {
   const [y, m] = season.split("-").map(Number);
   const idx = y * 12 + (m - 1) + by;
-  return `${Math.floor(idx / 12)}-${String((idx % 12) + 1).padStart(2, "0")}`;
+  return `${Math.floor(idx / 12)}-${String((idx % 12) + 1).padStart(2, "0")}` as SeasonId;
 }
 
 const btn = "inline-flex size-11 items-center justify-center rounded-full border border-border";
 
 export function SeasonPicker({
   value,
+  min,
   max,
-  hrefFor,
+  hrefBase,
 }: {
   value: SeasonId;
+  min: SeasonId;
   max: SeasonId;
-  hrefFor: (season: SeasonId) => string;
+  hrefBase: string;
 }) {
-  const canNext = value < max;
+  const router = useRouter();
   return (
     <div className="flex items-center justify-between gap-2">
-      <Link href={hrefFor(shift(value, -1))} aria-label="Tháng trước" className={btn}>
-        <ChevronLeft aria-hidden="true" className="size-5" />
-      </Link>
-      <span className="font-semibold">{formatSeason(value)}</span>
-      {canNext ? (
-        <Link href={hrefFor(shift(value, 1))} aria-label="Tháng sau" className={btn}>
-          <ChevronRight aria-hidden="true" className="size-5" />
-        </Link>
-      ) : (
-        <span aria-hidden="true" className={`${btn} opacity-30`}>
-          <ChevronRight className="size-5" />
-        </span>
-      )}
+      <Step
+        enabled={value > min}
+        href={`${hrefBase}${shift(value, -1)}`}
+        label="Tháng trước"
+        icon={<ChevronLeft aria-hidden="true" className="size-5" />}
+      />
+      <MonthPopover
+        value={value}
+        min={min}
+        max={max}
+        onChange={(s) => {
+          if (s) router.push(`${hrefBase}${s}`);
+        }}
+        triggerClassName="inline-flex min-h-11 items-center gap-1 rounded-md px-2 font-semibold"
+      >
+        {formatSeason(value)}
+        <ChevronDown aria-hidden="true" className="size-4" />
+      </MonthPopover>
+      <Step
+        enabled={value < max}
+        href={`${hrefBase}${shift(value, 1)}`}
+        label="Tháng sau"
+        icon={<ChevronRight aria-hidden="true" className="size-5" />}
+      />
     </div>
+  );
+}
+
+function Step({
+  enabled,
+  href,
+  label,
+  icon,
+}: {
+  enabled: boolean;
+  href: string;
+  label: string;
+  icon: ReactNode;
+}) {
+  return enabled ? (
+    <Link href={href} aria-label={label} className={btn}>
+      {icon}
+    </Link>
+  ) : (
+    <span aria-label={label} aria-disabled="true" className={`${btn} opacity-30`}>
+      {icon}
+    </span>
   );
 }

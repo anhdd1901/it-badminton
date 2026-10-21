@@ -79,6 +79,17 @@ export async function endedSeasons(db: Db, now: Date): Promise<Set<SeasonId>> {
   return ended;
 }
 
+export async function firstSeasonWithResults(db: Db, now: Date): Promise<SeasonId | null> {
+  await finalizeDue(db, now);
+  const matches = await loadResultMatches(db);
+  let first: SeasonId | null = null;
+  for (const m of matches) {
+    const s = seasonOf(m.matchDay);
+    if (first === null || s < first) first = s;
+  }
+  return first;
+}
+
 export async function getSeasonView(
   db: Db,
   season: string,

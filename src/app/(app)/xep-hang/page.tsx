@@ -6,7 +6,7 @@ import { EloTable } from "@/components/ranking/elo-table";
 import { SeasonTable } from "@/components/ranking/season-table";
 import { SeasonPicker } from "@/components/season-picker";
 import { matchDayOfWeek, seasonOf } from "@/domain/time";
-import { getEloView, getSeasonView } from "@/server/views/rankings";
+import { firstSeasonWithResults, getEloView, getSeasonView } from "@/server/views/rankings";
 import { parseRankingParams, type SearchParams } from "@/ui/params";
 
 export default async function RankingPage({
@@ -48,10 +48,19 @@ async function SeasonSection({
   current: string;
   at: Date;
 }) {
-  const view = await getSeasonView(getDb(), season, at);
+  const db = getDb();
+  const [view, first] = await Promise.all([
+    getSeasonView(db, season, at),
+    firstSeasonWithResults(db, at),
+  ]);
   return (
     <>
-      <SeasonPicker value={view.season} max={current} hrefFor={(s) => `/xep-hang?mua=${s}`} />
+      <SeasonPicker
+        value={view.season}
+        min={first ?? current}
+        max={current}
+        hrefBase="/xep-hang?mua="
+      />
       <p className="text-sm text-text-2">{view.ended ? "Đã kết thúc" : "Đang diễn ra"}</p>
       <SeasonTable rows={view.rows} />
     </>

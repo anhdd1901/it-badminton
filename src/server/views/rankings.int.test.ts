@@ -7,7 +7,13 @@ import { loadResultMatches } from "../data/loaders";
 import { setAttendance } from "../match-days/attendance";
 import { enterResult } from "../match-days/results";
 import { makeMember, useTestDb, vn } from "../test/db";
-import { endedSeasons, getEloView, getSeasonView, getStatsView } from "./rankings";
+import {
+  endedSeasons,
+  firstSeasonWithResults,
+  getEloView,
+  getSeasonView,
+  getStatsView,
+} from "./rankings";
 
 describe("rankings views", () => {
   const t = useTestDb();
@@ -74,6 +80,12 @@ describe("rankings views", () => {
       bench.id,
     ]);
     expect(v.rows.map((r) => r.member.id).sort()).toEqual([...ms, bench].map((m) => m.id).sort());
+  });
+
+  it("firstSeasonWithResults: rỗng thì null, có kết quả thì trả tháng sớm nhất", async () => {
+    expect(await firstSeasonWithResults(t.db, vn("2026-10-04T08:00"))).toBeNull();
+    await setup();
+    expect(await firstSeasonWithResults(t.db, vn("2026-10-04T08:00"))).toBe("2026-09");
   });
 
   it("getStatsView: lọc theo mem", async () => {

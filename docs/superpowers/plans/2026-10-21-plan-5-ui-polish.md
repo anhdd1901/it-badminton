@@ -120,11 +120,11 @@
   - `firstSeasonWithResults(db: Db, now: Date): Promise<SeasonId | null>` (`rankings.ts`): mùa sớm nhất có trận có kết quả; `finalizeDue` chạy trước.
   - `SeasonPicker({ value, min, max, hrefBase }: { value: SeasonId; min: SeasonId; max: SeasonId; hrefBase: string })` thành client component (`"use client"`, dùng `useRouter().push`). Đường dẫn của một mùa là `${hrefBase}${season}`; trang truyền `hrefBase="/xep-hang?mua="` (không truyền hàm từ server xuống client).
 
-- [ ] **Step 1: Write the failing tests**: int test `firstSeasonWithResults` — database rỗng → `null`; sau khi nhập kết quả ở hai buổi thuộc hai tháng → trả tháng sớm hơn. `season-picker.test.tsx` (mock `next/navigation`): `"bấm tháng/năm mở bộ chọn, chọn tháng gọi push(hrefBase + mùa)"` (hrefBase `/xep-hang?mua=`, value `2026-10`, min `2026-08`, click nút "Tháng 10/2026", click "Tháng 9/2026" → `push("/xep-hang?mua=2026-09")`); `"◀ vô hiệu khi value <= min"` (hiện dạng không phải link, có `aria-disabled`); `"▶ vô hiệu khi value >= max"`; `"value ngoài [min, max] không làm vỡ"` (value `2026-05`, min `2026-08` → render, ◀ vô hiệu).
-- [ ] **Step 2: Run** `pnpm vitest run src/components/season-picker.test.tsx` và `pnpm test:int -- rankings` → FAIL.
-- [ ] **Step 3: Implement** `firstSeasonWithResults` bằng `loadResultMatches` + `seasonOf`; viết lại `SeasonPicker` theo Interfaces (giữ hai nút ◀ ▶ là `Link` khi còn đi được, chữ giữa là `MonthPopover` kèm icon `ChevronDown` nhỏ); trang Xếp hạng truyền `hrefBase="/xep-hang?mua="`, `min={(await firstSeasonWithResults(db, at)) ?? current}` và `max={current}`.
-- [ ] **Step 4: Run** cả hai lệnh trên → PASS; `pnpm typecheck`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-4): pick ranking season from a month picker`
+- [x] **Step 1: Write the failing tests**: int test `firstSeasonWithResults` — database rỗng → `null`; sau khi nhập kết quả ở hai buổi thuộc hai tháng → trả tháng sớm hơn. `season-picker.test.tsx` (mock `next/navigation`): `"bấm tháng/năm mở bộ chọn, chọn tháng gọi push(hrefBase + mùa)"` (hrefBase `/xep-hang?mua=`, value `2026-10`, min `2026-08`, click nút "Tháng 10/2026", click "Tháng 9/2026" → `push("/xep-hang?mua=2026-09")`); `"◀ vô hiệu khi value <= min"` (hiện dạng không phải link, có `aria-disabled`); `"▶ vô hiệu khi value >= max"`; `"value ngoài [min, max] không làm vỡ"` (value `2026-05`, min `2026-08` → render, ◀ vô hiệu).
+- [x] **Step 2: Run** `pnpm vitest run src/components/season-picker.test.tsx` và `pnpm test:int -- rankings` → FAIL.
+- [x] **Step 3: Implement** `firstSeasonWithResults` bằng `loadResultMatches` + `seasonOf`; viết lại `SeasonPicker` theo Interfaces (giữ hai nút ◀ ▶ là `Link` khi còn đi được, chữ giữa là `MonthPopover` kèm icon `ChevronDown` nhỏ); trang Xếp hạng truyền `hrefBase="/xep-hang?mua="`, `min={(await firstSeasonWithResults(db, at)) ?? current}` và `max={current}`.
+- [x] **Step 4: Run** cả hai lệnh trên → PASS; `pnpm typecheck`.
+- [x] **Step 5: Commit** `feat(plan-5/task-4): pick ranking season from a month picker`
 
 ---
 
