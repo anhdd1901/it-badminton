@@ -1,10 +1,12 @@
 import { MemberAvatar } from "@/components/member-avatar";
+import { PlayerName } from "@/components/player-name";
+import type { SeasonId } from "@/domain/types";
 import type { getStatsView } from "@/server/views/rankings";
 import { EmptyStats, th, TotalsCells, TotalsHead } from "./stats-cells";
 
 type Row = Awaited<ReturnType<typeof getStatsView>>["members"][number];
 
-export function MemberStatsTable({ rows }: { rows: Row[] }) {
+export function MemberStatsTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
   if (rows.length === 0) return <EmptyStats />;
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
@@ -39,8 +41,12 @@ export function MemberStatsTable({ rows }: { rows: Row[] }) {
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
                   <MemberAvatar member={r.member} size={24} />
-                  <span className="block max-w-[9rem] truncate" title={r.member.displayName}>
-                    {r.member.displayName}
+                  <span className="min-w-0" title={r.member.displayName}>
+                    <PlayerName
+                      player={r.member}
+                      season={season}
+                      className="block max-w-[9rem] truncate text-left"
+                    />
                   </span>
                 </span>
               </th>

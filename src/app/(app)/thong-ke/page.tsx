@@ -39,9 +39,9 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
       />
       <StatsFilter value={params} members={options} bounds={bounds} />
       {params.view === "cap" ? (
-        <PairStatsTable rows={view.pairs} />
+        <PairStatsTable rows={view.pairs} season={current} />
       ) : (
-        <MemberStatsTable rows={view.members} />
+        <MemberStatsTable rows={view.members} season={current} />
       )}
     </main>
   );

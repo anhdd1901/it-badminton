@@ -31,7 +31,7 @@ export default async function RankingPage({
         ]}
       />
       {board === "elo" ? (
-        <EloTable rows={(await getEloView(db, at)).rows} />
+        <EloTable rows={(await getEloView(db, at)).rows} season={current} />
       ) : (
         <SeasonSection season={season} current={current} at={at} />
       )}
@@ -62,7 +62,7 @@ async function SeasonSection({
         hrefBase="/xep-hang?mua="
       />
       <p className="text-sm text-text-2">{view.ended ? "Đã kết thúc" : "Đang diễn ra"}</p>
-      <SeasonTable rows={view.rows} />
+      <SeasonTable rows={view.rows} season={view.season} />
     </>
   );
 }

@@ -1,12 +1,14 @@
 import type { getSeasonView } from "@/server/views/rankings";
 import { MemberAvatar } from "@/components/member-avatar";
+import { PlayerName } from "@/components/player-name";
+import type { SeasonId } from "@/domain/types";
 import { formatDiff } from "@/ui/format";
 
 type Row = Awaited<ReturnType<typeof getSeasonView>>["rows"][number];
 
 const th = "p-2 text-right font-medium";
 
-export function SeasonTable({ rows }: { rows: Row[] }) {
+export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
   if (rows.length === 0) {
     return (
       <p className="rounded-lg border border-border p-4 text-center text-text-2">
@@ -49,8 +51,12 @@ export function SeasonTable({ rows }: { rows: Row[] }) {
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
                   <MemberAvatar member={r.member} size={24} />
-                  <span className="block max-w-[9rem] truncate" title={r.member.displayName}>
-                    {r.member.displayName}
+                  <span className="min-w-0" title={r.member.displayName}>
+                    <PlayerName
+                      player={r.member}
+                      season={season}
+                      className="block max-w-[9rem] truncate text-left"
+                    />
                   </span>
                 </span>
               </th>

@@ -245,11 +245,11 @@
 - Consumes: `PlayerName` (Task 8). Mỗi bảng thêm prop `season: SeasonId`; trang Xếp hạng truyền `view.season` cho bảng mùa và `current` cho bảng ELO; trang Thống kê truyền `current` (`seasonOf(matchDayOfWeek(at))`).
 - Produces: tên mem trong cả bốn bảng là `PlayerName` (không bọc provider nên không highlight). Bảng cặp: hai `PlayerName` cách nhau " & ", mỗi tên là nút riêng. Cột Hạng, avatar và `title` rút gọn giữ nguyên. Danh sách điểm danh (`RosterDialog`) **không** đổi.
 
-- [ ] **Step 1: Write the failing tests**: `elo-table.test.tsx` thêm `"tên mem là nút mở popup"` (mock action; click tên → `findByRole("dialog")`); thêm `season-table.test.tsx`, `member-stats-table.test.tsx`, `pair-stats-table.test.tsx` mỗi file một test tương tự (bảng cặp: hai nút, click nút thứ hai mở popup của mem thứ hai: kiểm `getMemberProfileAction` gọi với id mem thứ hai và `season` truyền vào).
-- [ ] **Step 2: Run** `pnpm vitest run src/components/ranking src/components/stats` → FAIL.
-- [ ] **Step 3: Implement** theo Interfaces.
-- [ ] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
-- [ ] **Step 5: Commit** `feat(plan-5/task-10): rankings and stats tables open the member popup`
+- [x] **Step 1: Write the failing tests**: `elo-table.test.tsx` thêm `"tên mem là nút mở popup"` (mock action; click tên → `findByRole("dialog")`); thêm `season-table.test.tsx`, `member-stats-table.test.tsx`, `pair-stats-table.test.tsx` mỗi file một test tương tự (bảng cặp: hai nút, click nút thứ hai mở popup của mem thứ hai: kiểm `getMemberProfileAction` gọi với id mem thứ hai và `season` truyền vào).
+- [x] **Step 2: Run** `pnpm vitest run src/components/ranking src/components/stats` → FAIL.
+- [x] **Step 3: Implement** theo Interfaces.
+- [x] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
+- [x] **Step 5: Commit** `feat(plan-5/task-10): rankings and stats tables open the member popup`
 
 ---
 

@@ -1,11 +1,13 @@
 import type { getEloView } from "@/server/views/rankings";
 import { MemberAvatar } from "@/components/member-avatar";
+import { PlayerName } from "@/components/player-name";
+import type { SeasonId } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { formatElo, formatEloDelta } from "@/ui/format";
 
 type Row = Awaited<ReturnType<typeof getEloView>>["rows"][number];
 
-export function EloTable({ rows }: { rows: Row[] }) {
+export function EloTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full min-w-[22rem] border-collapse text-sm">
@@ -33,8 +35,12 @@ export function EloTable({ rows }: { rows: Row[] }) {
                 <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                   <span className="flex items-center gap-2">
                     <MemberAvatar member={r.member} size={24} />
-                    <span className="block max-w-[9rem] truncate" title={r.member.displayName}>
-                      {r.member.displayName}
+                    <span className="min-w-0" title={r.member.displayName}>
+                      <PlayerName
+                        player={r.member}
+                        season={season}
+                        className="block max-w-[9rem] truncate text-left"
+                      />
                     </span>
                   </span>
                 </th>
