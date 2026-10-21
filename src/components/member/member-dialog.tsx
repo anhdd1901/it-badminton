@@ -79,7 +79,7 @@ export function MemberDialog({
           {children}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-sm:top-auto max-sm:bottom-0 max-sm:max-w-full max-sm:translate-y-0 max-sm:rounded-b-none sm:max-w-sm">
+      <DialogContent className="max-sm:top-auto max-sm:bottom-0 max-sm:max-w-full max-sm:translate-y-0 max-sm:rounded-b-none max-sm:max-h-[90dvh] max-sm:overflow-y-auto sm:max-w-sm">
         <DialogDescription className="sr-only">Thông tin mem</DialogDescription>
         {ready ? (
           <Ready view={ready} />
@@ -109,9 +109,11 @@ export function MemberDialog({
   );
 }
 
+const CELL_BOX = "flex flex-col gap-1 rounded-md bg-surface-2 p-3";
+
 function Cell({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 rounded-md bg-surface-2 p-3">
+    <div data-slot="stat-cell" className={CELL_BOX}>
       <span className="text-xs text-text-2">{label}</span>
       <span className="text-lg font-semibold tabular-nums">{value}</span>
     </div>
@@ -189,25 +191,46 @@ function Ready({ view }: { view: MemberProfileView }) {
   );
 }
 
+function SkeletonCell() {
+  return (
+    <div data-slot="stat-cell" className={CELL_BOX}>
+      <span className="h-4 w-12 animate-pulse rounded bg-border" />
+      <span className="h-7 w-10 animate-pulse rounded bg-border" />
+    </div>
+  );
+}
+
 function Skeleton() {
-  const block = "animate-pulse rounded-md bg-surface-2";
+  const bar = "animate-pulse rounded bg-surface-2";
+  const group = (cells: number, podium: boolean, key: number) => (
+    <section key={key} className="flex flex-col gap-2 border-t border-border pt-3">
+      <div className={cn(bar, "h-5 w-24")} />
+      <div className="grid grid-cols-3 gap-2">
+        {Array.from({ length: cells }, (_, j) => (
+          <SkeletonCell key={j} />
+        ))}
+      </div>
+      {podium ? (
+        <div className="grid grid-cols-4 gap-2">
+          {Array.from({ length: 4 }, (_, j) => (
+            <SkeletonCell key={j} />
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
   return (
     <div role="status" aria-label="Đang tải" className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <div className="size-14 animate-pulse rounded-full bg-surface-2" />
-        <div className={cn(block, "h-10 w-32")} />
-      </div>
-      <div className={cn(block, "h-9 w-28")} />
-      {[0, 1].map((i) => (
-        <div key={i} className="flex flex-col gap-2 border-t border-border pt-3">
-          <div className={cn(block, "h-4 w-24")} />
-          <div className="grid grid-cols-3 gap-2">
-            {Array.from({ length: i === 0 ? 6 : 5 }, (_, j) => (
-              <div key={j} className={cn(block, "h-16")} />
-            ))}
-          </div>
+      <div className="flex items-center gap-3 pr-10">
+        <div className="size-14 shrink-0 animate-pulse rounded-full bg-surface-2" />
+        <div className="flex flex-col gap-1">
+          <div className={cn(bar, "h-[22px] w-32")} />
+          <div className={cn(bar, "h-5 w-20")} />
         </div>
-      ))}
+      </div>
+      <div className={cn(bar, "h-9 w-28")} />
+      {group(6, false, 0)}
+      {group(5, true, 1)}
     </div>
   );
 }

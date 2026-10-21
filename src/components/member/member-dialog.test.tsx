@@ -134,6 +134,18 @@ describe("MemberDialog", () => {
     expect(screen.getByText("Hạng").nextElementSibling?.textContent).toBe("–");
   });
 
+  it("khung xương có cùng số ô số liệu với trạng thái đã tải", async () => {
+    let resolve: (r: ActionResult<MemberProfileView>) => void = () => {};
+    action.mockImplementationOnce(() => new Promise((res) => (resolve = res)));
+    renderDialog();
+    const cells = () => document.querySelectorAll('[data-slot="stat-cell"]').length;
+    const skeletonCount = cells();
+    expect(skeletonCount).toBe(15);
+    resolve({ ok: true, data: view() });
+    await screen.findByText("Toàn thời gian");
+    expect(cells()).toBe(skeletonCount);
+  });
+
   it("lỗi: hiện thông báo và nút 'Thử lại' gọi lại action", async () => {
     action.mockResolvedValueOnce({ ok: false, code: "NOT_FOUND", message: "Không tìm thấy mem" });
     renderDialog();
