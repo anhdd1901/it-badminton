@@ -100,11 +100,11 @@
   - `MonthPicker({ value: SeasonId | null, onChange: (s: SeasonId | null) => void, max: SeasonId, min?: SeasonId, clearable?: boolean })`: hàng năm có nút `aria-label="Năm trước"` / `"Năm sau"` và lưới 4×3. Mỗi ô là `<button aria-label="Tháng M/YYYY" aria-pressed>` hiện "TM", cao 44px, `disabled` khi ngoài `[min, max]`. Năm hiển thị ban đầu là năm của `value ?? max`; nút năm bị vô hiệu ở năm của `min` / `max`. Có `clearable` thì thêm nút "Xóa" gọi `onChange(null)`.
   - `MonthPopover(props: MonthPickerProps & { children: ReactNode; id?: string; triggerClassName?: string; "aria-label"?: string })`: `PopoverTrigger asChild` bọc `<button type="button">` chứa `children`; chọn tháng hoặc xóa thì đóng popover.
 
-- [ ] **Step 1: Write the failing tests** (`month-picker.test.tsx`): `"tháng ngoài khoảng bị vô hiệu"` (min `2026-03`, max `2026-10`: "Tháng 2/2026" và "Tháng 11/2026" có `disabled`, "Tháng 3/2026" không); `"chọn tháng gọi onChange với SeasonId"` (click "Tháng 5/2026" → `onChange("2026-05")`); `"tháng đang chọn có aria-pressed"`; `"nút năm dừng ở năm của min và max"` (min `2025-11`, max `2026-10`: "Năm trước" bấm được một lần rồi `disabled`; "Năm sau" `disabled` khi đang ở 2026); `"Xóa chỉ có khi clearable và gọi onChange(null)"`; `"mũi tên phải/xuống chuyển focus sang ô kế (+1 / +4)"`; `"MonthPopover đóng sau khi chọn"` (mở bằng nút, chọn, `queryByRole("dialog")` null).
-- [ ] **Step 2: Run** `pnpm vitest run src/components/month-picker.test.tsx` → FAIL.
-- [ ] **Step 3: Implement** theo Interfaces; rộng popover `w-64`; ô đang chọn `bg-accent text-on-accent rounded-full`, ô khác `bg-surface-2`, ô disabled `opacity-40`; điều hướng mũi tên bằng handler `onKeyDown` trên lưới, nhảy qua ô disabled. Radix lo Esc.
-- [ ] **Step 4: Run** test → PASS; `pnpm typecheck`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-3): add MonthPicker and MonthPopover`
+- [x] **Step 1: Write the failing tests** (`month-picker.test.tsx`): `"tháng ngoài khoảng bị vô hiệu"` (min `2026-03`, max `2026-10`: "Tháng 2/2026" và "Tháng 11/2026" có `disabled`, "Tháng 3/2026" không); `"chọn tháng gọi onChange với SeasonId"` (click "Tháng 5/2026" → `onChange("2026-05")`); `"tháng đang chọn có aria-pressed"`; `"nút năm dừng ở năm của min và max"` (min `2025-11`, max `2026-10`: "Năm trước" bấm được một lần rồi `disabled`; "Năm sau" `disabled` khi đang ở 2026); `"Xóa chỉ có khi clearable và gọi onChange(null)"`; `"mũi tên phải/xuống chuyển focus sang ô kế (+1 / +4)"`; `"MonthPopover đóng sau khi chọn"` (mở bằng nút, chọn, `queryByRole("dialog")` null).
+- [x] **Step 2: Run** `pnpm vitest run src/components/month-picker.test.tsx` → FAIL.
+- [x] **Step 3: Implement** theo Interfaces; rộng popover `w-64`; ô đang chọn `bg-accent text-on-accent rounded-full`, ô khác `bg-surface-2`, ô disabled `opacity-40`; điều hướng mũi tên bằng handler `onKeyDown` trên lưới, nhảy qua ô disabled. Radix lo Esc.
+- [x] **Step 4: Run** test → PASS; `pnpm typecheck`.
+- [x] **Step 5: Commit** `feat(plan-5/task-3): add MonthPicker and MonthPopover`
 
 ---
 
