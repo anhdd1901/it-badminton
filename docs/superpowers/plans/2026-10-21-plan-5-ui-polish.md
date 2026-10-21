@@ -170,11 +170,11 @@
   // action: getMemberProfileAction(memberId: string, season: string): Promise<ActionResult<MemberProfileView>>
   ```
 
-- [ ] **Step 1: Write the failing tests** (`member-profile.int.test.ts`, cùng cách dựng dữ liệu như `rankings.int.test.ts`): `"khớp getSeasonView và getStatsView"` (mem có trận: `season.rank/totals/diff` bằng dòng của `getSeasonView`, `allTime` bằng dòng của `getStatsView({})`, `eloTenths/seed/lastMatchDayDelta` bằng dòng của `getEloView`); `"mem chưa có trận: tổng bằng 0, hạng null, podium toàn 0, ELO là ELO ban đầu"`; `"mem đã ngưng: seed null, ELO vẫn có"`; `"id không phải uuid → AppError VALIDATION"`; `"uuid không tồn tại → AppError NOT_FOUND với MESSAGES.memberNotFound"`; `"mùa sai định dạng → VALIDATION"`.
-- [ ] **Step 2: Run** `pnpm test:int -- member-profile` → FAIL.
-- [ ] **Step 3: Implement** `getMemberProfileView` (validate → `finalizeDue` → tải trận một lần cho phần mùa; `endedSeasons` + `memberStats(matches, ended, { memberId })` cho `allTime`; thiếu dòng thì dùng số 0) và action (file có `"use server"`, `runAction(({ db, now }) => getMemberProfileView(db, memberId, season, now), { revalidate: false })`; action tự có kiểm phiên nhờ `runAction`).
-- [ ] **Step 4: Run** `pnpm test:int -- member-profile` → PASS; `pnpm typecheck`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-6): member profile view and read-only action`
+- [x] **Step 1: Write the failing tests** (`member-profile.int.test.ts`, cùng cách dựng dữ liệu như `rankings.int.test.ts`): `"khớp getSeasonView và getStatsView"` (mem có trận: `season.rank/totals/diff` bằng dòng của `getSeasonView`, `allTime` bằng dòng của `getStatsView({})`, `eloTenths/seed/lastMatchDayDelta` bằng dòng của `getEloView`); `"mem chưa có trận: tổng bằng 0, hạng null, podium toàn 0, ELO là ELO ban đầu"`; `"mem đã ngưng: seed null, ELO vẫn có"`; `"id không phải uuid → AppError VALIDATION"`; `"uuid không tồn tại → AppError NOT_FOUND với MESSAGES.memberNotFound"`; `"mùa sai định dạng → VALIDATION"`.
+- [x] **Step 2: Run** `pnpm test:int -- member-profile` → FAIL.
+- [x] **Step 3: Implement** `getMemberProfileView` (validate → `finalizeDue` → tải trận một lần cho phần mùa; `endedSeasons` + `memberStats(matches, ended, { memberId })` cho `allTime`; thiếu dòng thì dùng số 0) và action (file có `"use server"`, `runAction(({ db, now }) => getMemberProfileView(db, memberId, season, now), { revalidate: false })`; action tự có kiểm phiên nhờ `runAction`).
+- [x] **Step 4: Run** `pnpm test:int -- member-profile` → PASS; `pnpm typecheck`.
+- [x] **Step 5: Commit** `feat(plan-5/task-6): member profile view and read-only action`
 
 ---
 
