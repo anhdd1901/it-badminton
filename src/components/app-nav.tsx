@@ -28,13 +28,21 @@ export function AppNav({ me }: { me: Me }) {
         href={item.href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex min-h-11 items-center justify-center rounded-md text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          layout === "bottom" ? "flex-1 flex-col gap-0.5 py-1" : "gap-3 px-3 text-sm",
+          "flex min-h-11 items-center rounded-md text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          layout === "bottom"
+            ? "flex-1 flex-col justify-center gap-0.5 py-1"
+            : "justify-start gap-2 px-1 text-sm",
           active ? "text-accent-text" : "text-text-2",
           layout === "side" && active && "bg-surface-2",
         )}
       >
-        <item.Icon className="size-5" aria-hidden="true" />
+        {layout === "side" ? (
+          <span data-slot="nav-icon" className="flex size-10 shrink-0 items-center justify-center">
+            <item.Icon className="size-5" aria-hidden="true" />
+          </span>
+        ) : (
+          <item.Icon className="size-5" aria-hidden="true" />
+        )}
         <span>{item.label}</span>
       </Link>
     );

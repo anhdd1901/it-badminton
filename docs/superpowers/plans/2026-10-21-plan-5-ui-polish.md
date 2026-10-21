@@ -63,11 +63,11 @@
 - Consumes: `AppNav({ me: Me })` hiện có.
 - Produces: không đổi chữ ký. Ở layout `side`, mỗi link có `justify-start px-1 gap-2` và icon nằm trong `<span data-slot="nav-icon" class="… size-10 …">` căn giữa; khối user dùng cùng `px-1` và `gap-2`.
 
-- [ ] **Step 1: Write the failing test** — trong `app-nav.test.tsx`, test `"menu bên: ô icon cùng cỡ avatar, link căn trái cùng lề khối user"`: lấy `aside`; mọi link trong `aside` có class `justify-start` và `px-1`, không có `justify-center`; phần tử `[data-slot="nav-icon"]` của từng link có class `size-10`; khối user (cha của avatar) có `px-1` và `gap-2`. Test `"thanh đáy giữ nguyên"`: link trong `nav` đầu tiên (đáy) vẫn có `flex-col`.
-- [ ] **Step 2: Run** `pnpm vitest run src/components/app-nav.test.tsx` → FAIL (chưa có `nav-icon`).
-- [ ] **Step 3: Implement** trong `link()` của `app-nav.tsx`: layout `side` bỏ `justify-center`, dùng `justify-start gap-2 px-1`; bọc `item.Icon` bằng span `data-slot="nav-icon"` `size-10 shrink-0 items-center justify-center` (layout bottom giữ icon trần như cũ). Khối user: `gap-2 px-1`.
-- [ ] **Step 4: Run** lại test → PASS; `pnpm typecheck`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-1): align side menu icons and labels with the user block`
+- [x] **Step 1: Write the failing test** — trong `app-nav.test.tsx`, test `"menu bên: ô icon cùng cỡ avatar, link căn trái cùng lề khối user"`: lấy `aside`; mọi link trong `aside` có class `justify-start` và `px-1`, không có `justify-center`; phần tử `[data-slot="nav-icon"]` của từng link có class `size-10`; khối user (cha của avatar) có `px-1` và `gap-2`. Test `"thanh đáy giữ nguyên"`: link trong `nav` đầu tiên (đáy) vẫn có `flex-col`.
+- [x] **Step 2: Run** `pnpm vitest run src/components/app-nav.test.tsx` → FAIL (chưa có `nav-icon`).
+- [x] **Step 3: Implement** trong `link()` của `app-nav.tsx`: layout `side` bỏ `justify-center`, dùng `justify-start gap-2 px-1`; bọc `item.Icon` bằng span `data-slot="nav-icon"` `size-10 shrink-0 items-center justify-center` (layout bottom giữ icon trần như cũ). Khối user: `gap-2 px-1`.
+- [x] **Step 4: Run** lại test → PASS; `pnpm typecheck`.
+- [x] **Step 5: Commit** `feat(plan-5/task-1): align side menu icons and labels with the user block`
 
 ---
 

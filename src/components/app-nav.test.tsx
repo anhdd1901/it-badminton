@@ -45,4 +45,24 @@ describe("AppNav", () => {
       expect(l).not.toHaveAttribute("aria-current");
     }
   });
+
+  it("menu bên: ô icon cùng cỡ avatar, link căn trái cùng lề khối user", () => {
+    const { container } = render(<AppNav me={me} />);
+    const aside = container.querySelector("aside") as HTMLElement;
+    const links = Array.from(aside.querySelectorAll("a"));
+    expect(links).toHaveLength(5);
+    for (const l of links) {
+      expect(l).toHaveClass("justify-start", "px-1");
+      expect(l).not.toHaveClass("justify-center");
+      expect(l.querySelector('[data-slot="nav-icon"]')).toHaveClass("size-10");
+    }
+    const userBlock = screen.getByText("Đức").parentElement?.parentElement;
+    expect(userBlock).toHaveClass("px-1", "gap-2");
+  });
+
+  it("thanh đáy giữ nguyên", () => {
+    const { container } = render(<AppNav me={me} />);
+    const nav = container.querySelector("nav") as HTMLElement;
+    for (const l of Array.from(nav.querySelectorAll("a"))) expect(l).toHaveClass("flex-col");
+  });
 });
