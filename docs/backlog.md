@@ -26,3 +26,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Hoàn thiện giao diện (plan-5/task-3, minor):** `MonthPicker` chỉ giữ focus khi nút năm bị vô hiệu do bấm (không khi `min`/`max` đổi lúc đang mở); chưa có test Enter/Esc.
 - **Hoàn thiện giao diện (plan-5/task-4, minor):** nút ◀/▶ bị vô hiệu là `<span aria-disabled>` không có `role`, một số trình đọc màn hình đọc yếu.
 - **Hoàn thiện giao diện (plan-5/task-5, minor):** hai `MonthPopover` trong `StatsFilter` gần như lặp nhau; `StatsFilterValue.from/to` kiểu `string` nên phải ép `as SeasonId`.
+- **Hoàn thiện giao diện (plan-5/task-6, minor):** `getMemberProfileView` tải trận và chạy `finalizeDue` hai lần (một lần trong `endedSeasons`).
