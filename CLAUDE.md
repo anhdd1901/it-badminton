@@ -14,7 +14,7 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 
 - **Spec (nguồn chính cho mọi quy tắc):** `docs/superpowers/specs/2026-10-10-badminton-club-app-design.md`
 - **Thuật ngữ:** `GLOSSARY.md`. Dùng đúng thuật ngữ này trong code, test và giao diện.
-- **Kế hoạch:** `docs/superpowers/plans/`. Dự án chia 4 kế hoạch: 1 Nền móng và lõi quy tắc · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành. Kế hoạch đã có file và mọi bước `[x]` là xong.
+- **Kế hoạch:** `docs/superpowers/plans/`. Dự án chia 5 kế hoạch: 1 Nền móng và lõi quy tắc · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành · 5 Hoàn thiện giao diện (spec 8.2). Kế hoạch đã có file và mọi bước `[x]` là xong.
 - **Việc tồn đọng:** `docs/backlog.md`.
 - **Giao diện:** phong cách lấy cảm hứng từ livescore.com, hai theme sáng/tối, font Be Vietnam Pro (spec 8.1). `docs/design/` (prompt Stitch) chỉ để tham khảo, không dùng nữa.
 
@@ -44,7 +44,7 @@ AGENTS.md               quy tắc của Next.js 16 cho agent (do `next dev` tạ
 src/domain/             quy tắc nghiệp vụ thuần (không import Next, DB, React)
 src/server/              lớp nghiệp vụ: db/ (schema, client, lock), auth/, members/, match-days/, data/ (loaders), views/ (dữ liệu cho màn hình)
 src/app/                giao diện Next.js (App Router): (app)/ màn cần đăng nhập, _lib/ nối với src/server (server-only), _actions/ Server Action
-src/components/         thành phần giao diện (ui/ là shadcn)
+src/components/         thành phần giao diện (ui/ là shadcn; member/ popup mem; month-picker, player-name dùng chung)
 src/ui/                 logic thuần cho giao diện (token, định dạng, CSP, ActionResult)
 src/proxy.ts            CSP nonce, gia hạn cookie phiên
 e2e/                    test Playwright (seed, global-setup)
@@ -80,13 +80,16 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - Client component và `src/ui/` chỉ được `import type` từ `@/server/*` và `@/app/_lib/*` (rule ESLint); `src/server/` không có `import "server-only"` vì lệnh quản trị, Vitest và seed e2e cũng dùng nó (spec 5.4).
 - Server Action đi qua `runAction` (`src/app/_lib/action.ts`), trừ `loginAction`/`logoutAction`; action chỉ đọc dữ liệu thì truyền `{ revalidate: false }`.
 - `ALLOW_FAKE_CLOCK=1` + `APP_FAKE_NOW` chỉ dùng cho e2e/local (`src/app/_lib/clock.ts`); không bao giờ đặt ở môi trường production.
-- **Nhánh làm việc:** `main` là nhánh chính (remote `origin` trên GitHub). Mỗi kế hoạch mới: viết → người dùng duyệt → tạo worktree riêng (`using-git-worktrees`) → thực hiện bằng subagent-driven-development → merge về `main`. Worktree mới cần `pnpm install` và chép `.env`.
+- **Nhánh làm việc:** `main` là nhánh chính (remote `origin` trên GitHub). Mỗi kế hoạch mới: viết → người dùng duyệt → tạo worktree riêng (`using-git-worktrees`) → thực hiện bằng subagent-driven-development → merge về `main`. Worktree mới cần `pnpm install`, chép `.env` và chạy `pnpm next typegen` (không có thì typecheck báo thiếu `PageProps`/`LayoutProps`).
 - **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev`, `anh_em_it_test` và `anh_em_it_e2e` (e2e tự tạo). Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
 - **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` ở `src/fonts/be-vietnam-pro/`.
 - **Next.js 16 khác kiến thức cũ:** trước khi viết code Next, đọc hướng dẫn trong `node_modules/next/dist/docs/` (xem `AGENTS.md`).
 - **Ranh giới `src/domain/`:** hàm nhận `now: Date`, không gọi `new Date()`; chỉ import `date-fns`, `@date-fns/tz` và file trong `src/domain/`. ELO lưu bằng số nguyên phần mười. Domain tin dữ liệu vào: lớp nghiệp vụ (kế hoạch 2) phải kiểm tra `LocalDate`/`SeasonId` bằng Zod, chỉ đưa mem đang hoạt động vào xếp hạt giống, và truyền cho `seasonEndsAt` đúng một mốc thời gian cho mỗi trận có kết quả của thứ 7 cuối mùa.
 - **Lớp nghiệp vụ `src/server/`:** hàm nhận `db`, `Actor`, `now`; tự kiểm quyền; lỗi là `AppError` (code + thông báo tiếng Việt trong `errors.ts`, `HTTP_STATUS` để ánh xạ). Mọi thao tác ghi trên một buổi khóa advisory theo ngày (`lockMatchDay`) và gọi `finalizeDue` trước. Khóa lịch (`scheduleKey`) = danh sách mem *đang hoạt động* đã điểm danh; giao diện phải gửi lại `scheduleKey` lấy từ `getWeekView`/`getMatchDayDetail` khi nhập/sửa/xóa kết quả. Id từ client đi qua `parseMemberId`.
 - **Cho kế hoạch 3 (từ review):** cần thêm dữ liệu cho màn Cá nhân, danh sách mem cho admin, chọn mem kèm username, danh sách tháng có dữ liệu; dịch vụ avatar; client `db` dùng chung (cache trên `globalThis`); ẩn "đặt lại mật khẩu" cho chính admin (sẽ tự đăng xuất).
+- **Component shadcn thêm bằng CLI:** token `--accent` của dự án là màu cam, nên thay `bg-accent`/`focus:bg-accent`/`text-accent-foreground` bằng `bg-surface-2`/`text-text`; CLI có thể sinh `import { cn } from "cn"` và thêm gói `cn`: sửa về `@/lib/utils`, bỏ gói. Nút `<button>` tự viết cần `focus-visible:ring-2 focus-visible:ring-ring` (globals.css chỉ có viền focus cho `a`).
+- **Tên mem bấm được:** dùng `PlayerName` (mở popup mem, `MemberDialog`); highlight khi hover chỉ trong `PlayerFocusProvider` (chỉ bọc danh sách trận). Danh sách điểm danh không dùng `PlayerName` (spec 8.2).
+- `pnpm test:int -- <tên>` không lọc file, luôn chạy toàn bộ test tích hợp.
 - **sharp đang bị tắt build** (`pnpm-workspace.yaml`, `allowBuilds`): bật lại khi làm phần thu nhỏ avatar.
 - Người dùng đã có tài khoản GitHub nhưng chưa đưa code lên. Khi tới bước cần GitHub (đẩy code, repo sao lưu riêng tư, GitHub Secrets cho sao lưu ở spec 6.5), nhắc và hướng dẫn người dùng từng bước.
 - Không có tính năng đánh thay: kết quả luôn tính cho người có tên trong lịch (spec 4.6).
