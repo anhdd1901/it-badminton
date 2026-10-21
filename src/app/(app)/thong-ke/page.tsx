@@ -5,7 +5,8 @@ import { PillTabs } from "@/components/pill-tabs";
 import { MemberStatsTable } from "@/components/stats/member-stats-table";
 import { PairStatsTable } from "@/components/stats/pair-stats-table";
 import { StatsFilter } from "@/components/stats/stats-filter";
-import { getStatsView } from "@/server/views/rankings";
+import { matchDayOfWeek, seasonOf } from "@/domain/time";
+import { firstSeasonWithResults, getStatsView, withSelectedMember } from "@/server/views/rankings";
 import { parseStatsParams, type SearchParams } from "@/ui/params";
 
 export default async function StatsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -18,7 +19,13 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   // The member list must not depend on the filter, so the select keeps every option.
   const all = await getStatsView(db, {}, at);
   const view = hasFilter ? await getStatsView(db, filter, at) : all;
-  const options = all.members.map((r) => r.member);
+  const options = await withSelectedMember(
+    db,
+    all.members.map((r) => r.member),
+    params.memberId,
+  );
+  const current = seasonOf(matchDayOfWeek(at));
+  const bounds = { min: (await firstSeasonWithResults(db, at)) ?? current, max: current };
 
   return (
     <main className="flex flex-col gap-4 p-4">
@@ -30,7 +37,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           { href: "/thong-ke?xem=cap", label: "Theo cặp", active: params.view === "cap" },
         ]}
       />
-      <StatsFilter value={params} members={options} />
+      <StatsFilter value={params} members={options} bounds={bounds} />
       {params.view === "cap" ? (
         <PairStatsTable rows={view.pairs} />
       ) : (

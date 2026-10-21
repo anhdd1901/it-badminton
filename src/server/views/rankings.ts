@@ -48,6 +48,16 @@ export async function loadMemberRefs(
   return new Map(rows.map((r) => [r.id, r]));
 }
 
+export async function withSelectedMember(
+  db: Db,
+  options: MemberRef[],
+  memberId: string | undefined,
+): Promise<MemberRef[]> {
+  if (memberId === undefined || options.some((m) => m.id === memberId)) return options;
+  const selected = (await loadMemberRefs(db, [memberId])).get(memberId);
+  return selected ? [...options, selected] : options;
+}
+
 export function ref(refs: Map<string, MemberRef>, id: string): MemberRef {
   const m = refs.get(id);
   if (!m) throw new Error(`Thiếu mem ${id}`);

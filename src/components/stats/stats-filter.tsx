@@ -1,7 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { CalendarDays } from "lucide-react";
+import type { SeasonId } from "@/domain/types";
+import { MonthPopover } from "@/components/month-picker";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { formatSeason } from "@/ui/format";
 import type { MemberRef } from "@/server/views/rankings";
 
 export type StatsFilterValue = {
@@ -11,7 +24,25 @@ export type StatsFilterValue = {
   memberId?: string;
 };
 
-export function StatsFilter({ value, members }: { value: StatsFilterValue; members: MemberRef[] }) {
+const ALL = "all";
+
+// Same height and border as `Input`.
+const TRIGGER_CLASS =
+  "flex h-11 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-2.5 text-left text-base shadow-xs md:text-sm";
+
+export function StatsFilter({
+  value,
+  members,
+  bounds,
+}: {
+  value: StatsFilterValue;
+  members: MemberRef[];
+  bounds: { min: SeasonId; max: SeasonId };
+}) {
+  const [from, setFrom] = useState<SeasonId | null>((value.from as SeasonId | undefined) ?? null);
+  const [to, setTo] = useState<SeasonId | null>((value.to as SeasonId | undefined) ?? null);
+  const [member, setMember] = useState(value.memberId ?? ALL);
+
   return (
     <form
       method="get"
@@ -19,29 +50,54 @@ export function StatsFilter({ value, members }: { value: StatsFilterValue; membe
       className="grid grid-cols-1 gap-3 rounded-lg border border-border p-3 sm:grid-cols-3"
     >
       <input type="hidden" name="xem" value={value.view} />
+      <input type="hidden" name="tu" value={from ?? ""} />
+      <input type="hidden" name="den" value={to ?? ""} />
+      <input type="hidden" name="mem" value={member === ALL ? "" : member} />
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="stats-tu">Từ tháng</Label>
-        <Input id="stats-tu" type="month" name="tu" defaultValue={value.from ?? ""} />
+        <MonthPopover
+          id="stats-tu"
+          value={from}
+          onChange={setFrom}
+          min={bounds.min}
+          max={bounds.max}
+          clearable
+          triggerClassName={TRIGGER_CLASS}
+        >
+          <span>{from ? formatSeason(from) : "Toàn bộ"}</span>
+          <CalendarDays aria-hidden className="size-4 text-text-2" />
+        </MonthPopover>
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="stats-den">Đến tháng</Label>
-        <Input id="stats-den" type="month" name="den" defaultValue={value.to ?? ""} />
+        <MonthPopover
+          id="stats-den"
+          value={to}
+          onChange={setTo}
+          min={bounds.min}
+          max={bounds.max}
+          clearable
+          triggerClassName={TRIGGER_CLASS}
+        >
+          <span>{to ? formatSeason(to) : "Toàn bộ"}</span>
+          <CalendarDays aria-hidden className="size-4 text-text-2" />
+        </MonthPopover>
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="stats-mem">Mem</Label>
-        <select
-          id="stats-mem"
-          name="mem"
-          defaultValue={value.memberId ?? ""}
-          className="h-11 w-full rounded-md border border-input bg-transparent px-2.5 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-        >
-          <option value="">Tất cả mem</option>
-          {members.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.active ? m.displayName : `${m.displayName} (đã ngưng)`}
-            </option>
-          ))}
-        </select>
+        <Select value={member} onValueChange={setMember}>
+          <SelectTrigger id="stats-mem" className="h-11 w-full text-base md:text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>Tất cả mem</SelectItem>
+            {members.map((m) => (
+              <SelectItem key={m.id} value={m.id}>
+                {m.active ? m.displayName : `${m.displayName} (đã ngưng)`}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex items-center gap-2 sm:col-span-3">
         <Button type="submit">Lọc</Button>

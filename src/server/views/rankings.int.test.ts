@@ -13,6 +13,8 @@ import {
   getEloView,
   getSeasonView,
   getStatsView,
+  loadMemberRefs,
+  withSelectedMember,
 } from "./rankings";
 
 describe("rankings views", () => {
@@ -86,6 +88,27 @@ describe("rankings views", () => {
     expect(await firstSeasonWithResults(t.db, vn("2026-10-04T08:00"))).toBeNull();
     await setup();
     expect(await firstSeasonWithResults(t.db, vn("2026-10-04T08:00"))).toBe("2026-09");
+  });
+
+  it("withSelectedMember: thêm mem được chọn nếu thiếu, không lặp, bỏ qua id lạ", async () => {
+    const { ms } = await setup();
+    const bench = await makeMember(t.db);
+    const options = [
+      ...(
+        await loadMemberRefs(
+          t.db,
+          ms.map((m) => m.id),
+        )
+      ).values(),
+    ];
+    const added = await withSelectedMember(t.db, options, bench.id);
+    expect(added).toHaveLength(options.length + 1);
+    expect(added.at(-1)?.id).toBe(bench.id);
+    expect(await withSelectedMember(t.db, options, ms[0].id)).toBe(options);
+    expect(await withSelectedMember(t.db, options, undefined)).toBe(options);
+    expect(await withSelectedMember(t.db, options, "00000000-0000-4000-8000-000000000000")).toBe(
+      options,
+    );
   });
 
   it("getStatsView: lọc theo mem", async () => {

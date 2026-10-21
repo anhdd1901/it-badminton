@@ -140,11 +140,11 @@
   - `withSelectedMember(db: Db, options: MemberRef[], memberId: string | undefined): Promise<MemberRef[]>` (`rankings.ts`): thêm mem được chọn vào cuối `options` nếu thiếu và tồn tại; ngược lại trả `options`.
   - `StatsFilter({ value: StatsFilterValue, members: MemberRef[], bounds: { min: SeasonId; max: SeasonId } })` (client). Form vẫn `method="get"`, gửi `xem`, `tu`, `den`, `mem` như cũ: `tu`/`den`/`mem` là `<input type="hidden">` theo state ("" khi để trống); giá trị "Tất cả mem" nội bộ là `"all"` và gửi `mem=""`.
 
-- [ ] **Step 1: Write the failing tests**: int test `withSelectedMember` — mem chưa có trận được thêm vào cuối; mem đã có trong `options` không bị lặp; `undefined` hoặc id không tồn tại → trả nguyên `options`. Cập nhật `stats-filter.test.tsx`: hidden `tu`/`den` mang giá trị `value.from`/`value.to`; `"nút Xóa đưa ô từ tháng về trống"` (hidden `tu` thành ""); Select hiện "Tất cả mem" khi không có `memberId`, hiện tên (kèm "(đã ngưng)") khi có; hidden `mem` mang id (hoặc "" khi tất cả); "Bỏ lọc" vẫn trỏ `/thong-ke?xem=<view>`; không còn `input[type="month"]` hay `<select>` gốc.
-- [ ] **Step 2: Run** `pnpm vitest run src/components/stats/stats-filter.test.tsx` và `pnpm test:int -- rankings` → FAIL.
-- [ ] **Step 3: Implement** theo Interfaces. Mỗi `MonthPopover` có `clearable`, `triggerClassName` giống chiều cao/viền của `Input`, nội dung nút là "Tháng M/YYYY" (`formatSeason`) hoặc "Toàn bộ" khi trống, `<Label htmlFor>` trỏ id nút. Trang Thống kê: `options = await withSelectedMember(db, all.members.map(r => r.member), params.memberId)` và `bounds = { min: (await firstSeasonWithResults(db, at)) ?? current, max: current }` (`current = seasonOf(matchDayOfWeek(at))`).
-- [ ] **Step 4: Run** hai lệnh trên → PASS; `pnpm typecheck && pnpm lint`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-5): stats filter with shadcn select and month picker`
+- [x] **Step 1: Write the failing tests**: int test `withSelectedMember` — mem chưa có trận được thêm vào cuối; mem đã có trong `options` không bị lặp; `undefined` hoặc id không tồn tại → trả nguyên `options`. Cập nhật `stats-filter.test.tsx`: hidden `tu`/`den` mang giá trị `value.from`/`value.to`; `"nút Xóa đưa ô từ tháng về trống"` (hidden `tu` thành ""); Select hiện "Tất cả mem" khi không có `memberId`, hiện tên (kèm "(đã ngưng)") khi có; hidden `mem` mang id (hoặc "" khi tất cả); "Bỏ lọc" vẫn trỏ `/thong-ke?xem=<view>`; không còn `input[type="month"]` hay `<select>` gốc.
+- [x] **Step 2: Run** `pnpm vitest run src/components/stats/stats-filter.test.tsx` và `pnpm test:int -- rankings` → FAIL.
+- [x] **Step 3: Implement** theo Interfaces. Mỗi `MonthPopover` có `clearable`, `triggerClassName` giống chiều cao/viền của `Input`, nội dung nút là "Tháng M/YYYY" (`formatSeason`) hoặc "Toàn bộ" khi trống, `<Label htmlFor>` trỏ id nút. Trang Thống kê: `options = await withSelectedMember(db, all.members.map(r => r.member), params.memberId)` và `bounds = { min: (await firstSeasonWithResults(db, at)) ?? current, max: current }` (`current = seasonOf(matchDayOfWeek(at))`).
+- [x] **Step 4: Run** hai lệnh trên → PASS; `pnpm typecheck && pnpm lint`.
+- [x] **Step 5: Commit** `feat(plan-5/task-5): stats filter with shadcn select and month picker`
 
 ---
 
