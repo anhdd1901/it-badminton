@@ -24,3 +24,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Hoàn thiện giao diện (plan-5, minor):** test menu bên tìm khối user qua `getByText(...).parentElement.parentElement` (giòn khi đổi markup).
 - **Hoàn thiện giao diện (plan-5/task-2, minor):** test chặn `bg-accent` chỉ quét `select.tsx`/`popover.tsx`, component shadcn thêm sau không được kiểm; `select.tsx` còn vài dòng CLI chưa gọn (`position === "popper" && ""`).
 - **Hoàn thiện giao diện (plan-5/task-3, minor):** `MonthPicker` chỉ giữ focus khi nút năm bị vô hiệu do bấm (không khi `min`/`max` đổi lúc đang mở); chưa có test Enter/Esc.
+- **Hoàn thiện giao diện (plan-5/task-4, minor):** nút ◀/▶ bị vô hiệu là `<span aria-disabled>` không có `role`, một số trình đọc màn hình đọc yếu.
