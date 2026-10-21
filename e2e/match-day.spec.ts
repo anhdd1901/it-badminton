@@ -97,5 +97,7 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   await expect(page.getByRole("heading", { name: "Thống kê" })).toBeVisible();
   await expect(page.getByRole("rowheader", { name: "An", exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Theo cặp" }).click();
-  await expect(page.getByRole("rowheader", { name: /&/ }).first()).toBeVisible();
+  // Mỗi dòng cặp có hai tên mem, mỗi tên là một nút mở popup mem (plan 5).
+  await expect(page).toHaveURL(/xem=cap/);
+  await expect(page.getByRole("rowheader").first().getByRole("button")).toHaveCount(2);
 });
