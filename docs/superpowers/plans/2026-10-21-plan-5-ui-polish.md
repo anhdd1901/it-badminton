@@ -211,11 +211,11 @@
   - `PlayerFocusProvider({ children })` và hook `usePlayerFocus(): { focusedId: string | null; setFocusedId: (id: string | null) => void }` (ngoài provider trả `{ focusedId: null, setFocusedId: () => {} }`).
   - `PlayerName({ player: { id: string; displayName: string }, season: SeasonId, className?: string, children?: ReactNode })`: render `MemberDialog` với `children ?? player.displayName`; trigger có `data-focused` khi `focusedId === player.id`, class `rounded-sm data-focused:bg-highlight`; chuột vào/ra (`onPointerEnter/Leave`, chỉ khi `pointerType === "mouse"`) và focus bàn phím (`onFocus` chỉ khi `:focus-visible`, `onBlur`) đặt/bỏ `focusedId`.
 
-- [ ] **Step 1: Write the failing tests**: `"rê vào một tên thì mọi tên cùng id trong provider có data-focused, rời thì bỏ"` (hai `PlayerName` cùng id, một id khác; `fireEvent.pointerEnter(el, { pointerType: "mouse" })`); `"pointerType touch không highlight"`; `"id khác không highlight"`; `"không có provider vẫn render và bấm được (không lỗi)"`; `"bấm tên mở popup"` (mock action, `findByRole("dialog")`); `"blur bỏ highlight"`.
-- [ ] **Step 2: Run** `pnpm vitest run src/components/player-name.test.tsx` → FAIL.
-- [ ] **Step 3: Implement** theo Interfaces; truyền handler qua `triggerProps` của `MemberDialog`.
-- [ ] **Step 4: Run** test → PASS; `pnpm typecheck`.
-- [ ] **Step 5: Commit** `feat(plan-5/task-8): player focus highlight and PlayerName`
+- [x] **Step 1: Write the failing tests**: `"rê vào một tên thì mọi tên cùng id trong provider có data-focused, rời thì bỏ"` (hai `PlayerName` cùng id, một id khác; `fireEvent.pointerEnter(el, { pointerType: "mouse" })`); `"pointerType touch không highlight"`; `"id khác không highlight"`; `"không có provider vẫn render và bấm được (không lỗi)"`; `"bấm tên mở popup"` (mock action, `findByRole("dialog")`); `"blur bỏ highlight"`.
+- [x] **Step 2: Run** `pnpm vitest run src/components/player-name.test.tsx` → FAIL.
+- [x] **Step 3: Implement** theo Interfaces; truyền handler qua `triggerProps` của `MemberDialog`.
+- [x] **Step 4: Run** test → PASS; `pnpm typecheck`.
+- [x] **Step 5: Commit** `feat(plan-5/task-8): player focus highlight and PlayerName`
 
 ---
 
