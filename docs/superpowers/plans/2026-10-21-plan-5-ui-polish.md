@@ -80,11 +80,11 @@
 **Interfaces:**
 - Produces: token `--highlight` và `--color-highlight` (class `bg-highlight`); `Select, SelectTrigger, SelectValue, SelectContent, SelectItem` và `Popover, PopoverTrigger, PopoverContent` từ `@/components/ui/*`.
 
-- [ ] **Step 1: Write the failing tests** trong `tokens.test.ts`: (a) thêm vào `PAIRS`: `["text","highlight"]`, `["text-2","highlight"]`, `["win","highlight"]`, `["loss","highlight"]` (cả hai theme ≥ 4,5:1); (b) thêm `highlight` vào bảng "giá trị khớp spec 8.1" với giá trị khởi điểm sáng `#FFF0E0`, tối `#2E1D10`; (c) test `"select và popover không dùng token cam của --accent cho hover"`: đọc `src/components/ui/select.tsx` và `popover.tsx`, khẳng định không chứa `bg-accent` hay `text-accent-foreground`.
-- [ ] **Step 2: Run** `pnpm vitest run src/ui/tokens.test.ts` → FAIL.
-- [ ] **Step 3: Implement**: (1) thêm `--highlight: light-dark(#fff0e0, #2e1d10);` vào `:root` và `--color-highlight: var(--highlight);` vào `@theme inline` (giá trị chỉnh nếu cặp nào dưới 4,5:1, cập nhật cả test và bảng spec); (2) `pnpm dlx shadcn@latest add select popover`; (3) trong hai file sinh ra, thay mọi `bg-accent`/`focus:bg-accent`/`text-accent-foreground` bằng `bg-surface-2` và `text-text`; (4) thêm hàng `--highlight` vào bảng token ở spec 8.1 ("tên mem được tô khi hover; nền cam nhạt").
-- [ ] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
-- [ ] **Step 5: Commit** `feat(plan-5/task-2): add highlight token and shadcn select/popover without orange hover`
+- [x] **Step 1: Write the failing tests** trong `tokens.test.ts`: (a) thêm vào `PAIRS`: `["text","highlight"]`, `["text-2","highlight"]`, `["win","highlight"]`, `["loss","highlight"]` (cả hai theme ≥ 4,5:1); (b) thêm `highlight` vào bảng "giá trị khớp spec 8.1" với giá trị khởi điểm sáng `#FFF0E0`, tối `#2E1D10`; (c) test `"select và popover không dùng token cam của --accent cho hover"`: đọc `src/components/ui/select.tsx` và `popover.tsx`, khẳng định không chứa `bg-accent` hay `text-accent-foreground`.
+- [x] **Step 2: Run** `pnpm vitest run src/ui/tokens.test.ts` → FAIL.
+- [x] **Step 3: Implement**: (1) thêm `--highlight: light-dark(#fff0e0, #2e1d10);` vào `:root` và `--color-highlight: var(--highlight);` vào `@theme inline` (giá trị chỉnh nếu cặp nào dưới 4,5:1, cập nhật cả test và bảng spec); (2) `pnpm dlx shadcn@latest add select popover`; (3) trong hai file sinh ra, thay mọi `bg-accent`/`focus:bg-accent`/`text-accent-foreground` bằng `bg-surface-2` và `text-text`; (4) thêm hàng `--highlight` vào bảng token ở spec 8.1 ("tên mem được tô khi hover; nền cam nhạt").
+- [x] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
+- [x] **Step 5: Commit** `feat(plan-5/task-2): add highlight token and shadcn select/popover without orange hover`
 
 ---
 

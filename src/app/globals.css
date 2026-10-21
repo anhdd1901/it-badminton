@@ -19,6 +19,7 @@
   --win: light-dark(#111111, #fdfdfd);
   --loss: light-dark(#6b6b6b, #8a8a8a);
   --danger: light-dark(#c62828, #ff5c5c);
+  --highlight: light-dark(#fff0e0, #2e1d10);
 
   /* shadcn/ui trỏ về token ở trên */
   --background: var(--bg);
@@ -62,6 +63,7 @@
   --color-win: var(--win);
   --color-loss: var(--loss);
   --color-danger: var(--danger);
+  --color-highlight: var(--highlight);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

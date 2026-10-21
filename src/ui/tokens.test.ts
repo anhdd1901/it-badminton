@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { contrastRatio } from "./contrast";
 
@@ -32,6 +32,10 @@ const PAIRS: [fg: string, bg: string][] = [
   ["loss", "surface"],
   ["danger", "bg"],
   ["danger", "surface"],
+  ["text", "highlight"],
+  ["text-2", "highlight"],
+  ["win", "highlight"],
+  ["loss", "highlight"],
 ];
 
 describe("token màu (spec 8.1)", () => {
@@ -59,13 +63,24 @@ describe("token màu (spec 8.1)", () => {
       win: ["#111111", "#FDFDFD"],
       loss: ["#6B6B6B", "#8A8A8A"],
       danger: ["#C62828", "#FF5C5C"],
+      highlight: ["#FFF0E0", "#2E1D10"],
     };
     for (const [name, [light, dark]] of Object.entries(expected)) {
       expect(token(name, "light"), `${name} sáng`).toBe(light);
       expect(token(name, "dark"), `${name} tối`).toBe(dark);
     }
     expect(token("accent-text", "dark")).toBe("#FF6B00");
-    expect(tokens.size).toBe(14);
+    expect(tokens.size).toBe(15);
+  });
+
+  it("select và popover không dùng token cam của --accent cho hover", () => {
+    for (const f of ["select.tsx", "popover.tsx"]) {
+      const path = new URL(`../components/ui/${f}`, import.meta.url);
+      expect(existsSync(path), f).toBe(true);
+      const src = readFileSync(path, "utf8");
+      expect(src, f).not.toContain("bg-accent");
+      expect(src, f).not.toContain("text-accent-foreground");
+    }
   });
 
   it("contrastRatio đúng công thức WCAG", () => {

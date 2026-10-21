@@ -376,6 +376,7 @@ Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám
 | `--win` | tên và điểm cặp thắng (chữ đậm) | `#FDFDFD` | `#111111` |
 | `--loss` | tên và điểm cặp thua | `#8A8A8A` | `#6B6B6B` |
 | `--danger` | lỗi, nút xóa | `#FF5C5C` | `#C62828` |
+| `--highlight` | tên mem được tô khi hover; nền cam nhạt | `#2E1D10` | `#FFF0E0` |
 
 - **Tương phản:** mọi cặp chữ/nền phải đạt tối thiểu 4,5:1, kiểm tra bằng test tự động trên bảng màu. Chữ trắng trên nền cam không đạt, nên nút cam luôn dùng `--on-accent`.
 - **Font:** Be Vietnam Pro (có bộ chữ tiếng Việt), tự host bằng `next/font/local` từ `src/fonts/be-vietnam-pro/`. Số (tỷ số, ELO, điểm) dùng chữ số đều độ rộng (`tabular-nums`) để cột thẳng hàng.
