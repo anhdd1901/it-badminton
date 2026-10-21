@@ -31,3 +31,4 @@ Lỗi nhỏ và việc hoãn lại (`minor (deferred)`) do reviewer nêu. Agent 
 - **Hoàn thiện giao diện (plan-5/task-7, minor):** sheet popup mem trên điện thoại cuộn cả khung nên nút đóng trôi khỏi tầm nhìn khi cuộn xuống (vẫn đóng được bằng nền mờ/Esc).
 - **Hoàn thiện giao diện (plan-5/task-8, minor):** mỗi lần hover đổi context làm mọi `PlayerName` (kèm `MemberDialog`) render lại, ổn với ~10 mem; rời chuột khỏi tên B xóa highlight của A đang có focus bàn phím; test "không có provider" chưa kiểm popup mở.
 - **Hoàn thiện giao diện (plan-5/task-9):** nút tên mem trong thẻ trận (và bảng) cao theo dòng chữ (~20–24px), dưới mức chạm 44px của spec 8.1 — giữ bố cục gọn, chờ người dùng quyết; nút "Nhập tỷ số" trong suốt không có phản hồi hover; cột tỷ số rộng `w-10` khi sửa được, `w-8` khi chỉ xem.
+- **Hoàn thiện giao diện (plan-5/task-10, minor):** test bảng ELO chưa kiểm `getMemberProfileAction` được gọi với mùa hiện tại; fixture test các bảng dùng `as any`.
