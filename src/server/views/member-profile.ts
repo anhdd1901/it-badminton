@@ -12,7 +12,7 @@ import { parseMemberId, parseSeasonId } from "../validation";
 import { endedSeasons, type MemberRef } from "./rankings";
 
 export type MemberProfileView = {
-  member: MemberRef;
+  member: Omit<MemberRef, "username">;
   eloTenths: number;
   seed: 1 | 2 | null; // null when the member is inactive
   lastMatchDayDelta: number | null;
@@ -34,7 +34,6 @@ export async function getMemberProfileView(
     .select({
       id: members.id,
       displayName: members.displayName,
-      username: members.username,
       avatarUrl: members.avatarUrl,
       active: members.active,
       initial: members.initialEloTenths,

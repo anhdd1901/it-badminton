@@ -57,7 +57,10 @@ describe("getMemberProfileView", () => {
       const v = await getMemberProfileView(t.db, row.member.id, "2026-10", NOW);
       const all = stats.members.find((r) => r.key === row.member.id)!;
       const e = elo.rows.find((r) => r.member.id === row.member.id)!;
-      expect(v.member).toEqual(row.member);
+      const publicRef: Record<string, unknown> = { ...row.member };
+      delete publicRef.username;
+      expect(v.member).toEqual(publicRef);
+      expect(v.member).not.toHaveProperty("username");
       expect(v.season).toEqual({
         id: "2026-10",
         rank: row.rank,
@@ -68,6 +71,19 @@ describe("getMemberProfileView", () => {
       expect(v.eloTenths).toBe(e.eloTenths);
       expect(v.seed).toBe(e.seed);
       expect(v.lastMatchDayDelta).toBe(e.lastMatchDayDelta);
+    }
+  });
+
+  it("podium toàn thời gian khớp getStatsView khi đã có mùa kết thúc", async () => {
+    await setup();
+    const later = vn("2026-11-02T08:00");
+    const stats = await getStatsView(t.db, {}, later);
+    const podiumSum = (p: { first: number; second: number; third: number; fourth: number }) =>
+      p.first + p.second + p.third + p.fourth;
+    expect(stats.members.some((r) => podiumSum(r.podium) > 0)).toBe(true);
+    for (const row of stats.members) {
+      const v = await getMemberProfileView(t.db, row.key, "2026-10", later);
+      expect(v.allTime.podium).toEqual(row.podium);
     }
   });
 
