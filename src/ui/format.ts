@@ -31,6 +31,12 @@ export function formatSeason(season: SeasonId): string {
   return `Tháng ${m}/${y}`;
 }
 
+/** "2026-10" → "10/2026". */
+export function formatSeasonShort(season: SeasonId): string {
+  const [y, m] = season.split("-").map(Number);
+  return `${String(m).padStart(2, "0")}/${y}`;
+}
+
 export function formatDiff(n: number): string {
   return n > 0 ? `+${n}` : String(n);
 }

@@ -2,9 +2,21 @@ import { avatarColor, avatarInitial } from "@/ui/avatar";
 
 export type AvatarMember = { id: string; displayName: string; avatarUrl: string | null };
 
-const TEXT_SIZE = { 24: "text-xs", 32: "text-sm", 40: "text-base", 64: "text-2xl" } as const;
+const TEXT_SIZE = {
+  24: "text-xs",
+  32: "text-sm",
+  40: "text-base",
+  56: "text-xl",
+  64: "text-2xl",
+} as const;
 
-export function MemberAvatar({ member, size }: { member: AvatarMember; size: 24 | 32 | 40 | 64 }) {
+export function MemberAvatar({
+  member,
+  size,
+}: {
+  member: AvatarMember;
+  size: 24 | 32 | 40 | 56 | 64;
+}) {
   const box = "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full";
   if (member.avatarUrl) {
     return (

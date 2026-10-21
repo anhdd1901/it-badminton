@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { eloInputValue, formatDay, formatElo, formatEloDelta, formatSeason } from "./format";
+import type { SeasonId } from "@/domain/types";
+import {
+  eloInputValue,
+  formatDay,
+  formatElo,
+  formatEloDelta,
+  formatSeason,
+  formatSeasonShort,
+} from "./format";
 
 describe("format", () => {
   it("formatElo", () => {
@@ -26,5 +34,11 @@ describe("eloInputValue", () => {
   it("không dấu nghìn, dấu phẩy thập phân", () => {
     expect(eloInputValue(10168)).toBe("1016,8");
     expect(eloInputValue(10000)).toBe("1000,0");
+  });
+});
+
+describe("formatSeasonShort", () => {
+  it("2026-10 thành 10/2026", () => {
+    expect(formatSeasonShort("2026-10" as SeasonId)).toBe("10/2026");
   });
 });
