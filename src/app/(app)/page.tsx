@@ -3,6 +3,8 @@ import { getDb } from "@/app/_lib/db";
 import { requireActor } from "@/app/_lib/session";
 import { DeleteAllResults } from "@/components/match/delete-all-results";
 import { MatchCard } from "@/components/match/match-card";
+import { PlayerFocusProvider } from "@/components/player-focus";
+import { seasonOf } from "@/domain/time";
 import { AttendanceButton } from "@/components/week/attendance-button";
 import { RosterDialog } from "@/components/week/roster-dialog";
 import { WeekHeader } from "@/components/week/week-header";
@@ -40,23 +42,26 @@ export default async function ThisWeekPage() {
       ) : null}
       {view.notice ? <WeekNotice notice={view.notice} /> : null}
       {schedule ? (
-        <section className="flex flex-col gap-2">
-          {schedule.source === "draft" ? (
-            <span className="text-xs text-text-2">Lịch nháp</span>
-          ) : null}
-          {schedule.matches.map((m) => (
-            <MatchCard
-              key={m.number}
-              match={m}
-              editable={can.editResults}
-              day={view.day}
-              scheduleKey={schedule.key}
-            />
-          ))}
-          {can.editResults && schedule.matches.some((m) => m.result) ? (
-            <DeleteAllResults day={view.day} scheduleKey={schedule.key} />
-          ) : null}
-        </section>
+        <PlayerFocusProvider>
+          <section className="flex flex-col gap-2">
+            {schedule.source === "draft" ? (
+              <span className="text-xs text-text-2">Lịch nháp</span>
+            ) : null}
+            {schedule.matches.map((m) => (
+              <MatchCard
+                key={m.number}
+                match={m}
+                editable={can.editResults}
+                day={view.day}
+                scheduleKey={schedule.key}
+                season={seasonOf(view.day)}
+              />
+            ))}
+            {can.editResults && schedule.matches.some((m) => m.result) ? (
+              <DeleteAllResults day={view.day} scheduleKey={schedule.key} />
+            ) : null}
+          </section>
+        </PlayerFocusProvider>
       ) : null}
     </main>
   );

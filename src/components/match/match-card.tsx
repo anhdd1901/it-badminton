@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { deleteResultAction, saveResultAction } from "@/app/_actions/results";
 import { MemberAvatar } from "@/components/member-avatar";
+import { PlayerName } from "@/components/player-name";
 import { ScoreInput } from "@/components/match/score-input";
 import {
   Dialog,
@@ -12,13 +13,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAppAction } from "@/components/use-app-action";
+import type { SeasonId } from "@/domain/types";
 import type { PlayerRef, WeekMatch } from "@/server/views/week";
 
-function Player({ p }: { p: PlayerRef }) {
+function Player({ p, season }: { p: PlayerRef; season: SeasonId }) {
   return (
     <span className="flex min-w-0 flex-1 items-center gap-1">
       <MemberAvatar member={p} size={24} />
-      <span className="truncate">{p.displayName}</span>
+      <PlayerName player={p} season={season} className="block min-w-0 truncate text-left" />
       {p.seed ? (
         <span
           role="img"
@@ -37,20 +39,24 @@ function Team({
   players,
   score,
   tone,
+  season,
+  scoreWidth,
 }: {
   testId: string;
   players: [PlayerRef, PlayerRef];
   score: number | null;
   tone: "win" | "loss" | "none";
+  season: SeasonId;
+  scoreWidth: string;
 }) {
   const cls = tone === "win" ? "text-win font-semibold" : tone === "loss" ? "text-loss" : "";
   return (
     <div data-testid={testId} className={`flex items-center gap-2 ${cls}`}>
       <div className="flex min-w-0 flex-1 gap-3">
-        <Player p={players[0]} />
-        <Player p={players[1]} />
+        <Player p={players[0]} season={season} />
+        <Player p={players[1]} season={season} />
       </div>
-      <span className="w-8 shrink-0 text-right tabular-nums">{score ?? "–"}</span>
+      <span className={`${scoreWidth} shrink-0 text-right tabular-nums`}>{score ?? "–"}</span>
     </div>
   );
 }
@@ -62,16 +68,20 @@ export function MatchCard({
   editable,
   day,
   scheduleKey,
+  season,
 }: {
   match: WeekMatch;
   editable: boolean;
   day: string;
   scheduleKey: string;
+  season: SeasonId;
 }) {
   const [open, setOpen] = useState(false);
   const { run: save } = useAppAction(saveResultAction);
   const { run: del } = useAppAction(deleteResultAction);
   const r = match.result;
+  // editable: the score column is covered by the w-14 overlay button, so keep names clear of it
+  const scoreWidth = editable ? "w-10" : "w-8";
   const body = (
     <>
       <span className="w-5 shrink-0 text-xs text-text-2">{match.number}</span>
@@ -81,12 +91,16 @@ export function MatchCard({
           players={match.teamA}
           score={r?.scoreA ?? null}
           tone={!r ? "none" : r.scoreA > r.scoreB ? "win" : "loss"}
+          season={season}
+          scoreWidth={scoreWidth}
         />
         <Team
           testId="team-b"
           players={match.teamB}
           score={r?.scoreB ?? null}
           tone={!r ? "none" : r.scoreB > r.scoreA ? "win" : "loss"}
+          season={season}
+          scoreWidth={scoreWidth}
         />
       </div>
     </>
@@ -98,15 +112,16 @@ export function MatchCard({
   const ref = { day, scheduleKey, matchNumber: match.number };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className={`${box} min-h-11`}
-          aria-label={`Nhập tỷ số trận ${match.number}`}
-        >
-          {body}
-        </button>
-      </DialogTrigger>
+      <div className={`${box} relative min-h-11`}>
+        {body}
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 z-10 w-14 rounded-r-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Nhập tỷ số trận ${match.number}`}
+          />
+        </DialogTrigger>
+      </div>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Trận {match.number}</DialogTitle>

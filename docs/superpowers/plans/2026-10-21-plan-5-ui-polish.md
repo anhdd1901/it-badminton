@@ -228,11 +228,11 @@
 - Consumes: `PlayerName`, `PlayerFocusProvider`; `seasonOf` (`@/domain/time`).
 - Produces: `MatchCard` thêm prop `season: SeasonId`. Thẻ chỉ xem giữ nguyên bố cục, tên là `PlayerName`. Thẻ sửa được là `div` có `relative`; nút "Nhập tỷ số trận N" (`DialogTrigger`) là phần tử `absolute inset-y-0 right-0 w-14` phủ cột tỷ số, trong suốt, có viền focus rõ; `data-testid="team-a"/"team-b"` và `tone` giữ nguyên. Trang Tuần này bọc `<section>` lịch bằng `PlayerFocusProvider` và truyền `season={seasonOf(view.day)}`. Trang chi tiết Lịch sử bọc cả danh sách người tham gia và lịch bằng một provider, người tham gia dùng `PlayerName`, `season={seasonOf(detail.day)}`.
 
-- [ ] **Step 1: Write the failing tests** (cập nhật `match-card.test.tsx`; mock thêm `@/app/_actions/member-profile`): `"tên mem trong thẻ là nút mở popup, kể cả khi thẻ sửa được"`; `"thẻ sửa được: không có nút lồng trong nút"` (không `button` nào chứa `button` khác); `"nút Nhập tỷ số trận N vẫn mở popup nhập tỷ số"`; `"hover tên một mem tô mọi vị trí của mem đó trong các thẻ cùng provider"` (hai thẻ, cùng mem ở hai trận); các test cũ về `text-win`/`text-loss`/hạt giống vẫn qua.
-- [ ] **Step 2: Run** `pnpm vitest run src/components/match` → FAIL.
-- [ ] **Step 3: Implement** theo Interfaces; hạt giống `●` giữ nguyên bên cạnh tên.
-- [ ] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
-- [ ] **Step 5: Commit** `feat(plan-5/task-9): match cards use PlayerName with hover highlight and popup`
+- [x] **Step 1: Write the failing tests** (cập nhật `match-card.test.tsx`; mock thêm `@/app/_actions/member-profile`): `"tên mem trong thẻ là nút mở popup, kể cả khi thẻ sửa được"`; `"thẻ sửa được: không có nút lồng trong nút"` (không `button` nào chứa `button` khác); `"nút Nhập tỷ số trận N vẫn mở popup nhập tỷ số"`; `"hover tên một mem tô mọi vị trí của mem đó trong các thẻ cùng provider"` (hai thẻ, cùng mem ở hai trận); các test cũ về `text-win`/`text-loss`/hạt giống vẫn qua.
+- [x] **Step 2: Run** `pnpm vitest run src/components/match` → FAIL.
+- [x] **Step 3: Implement** theo Interfaces; hạt giống `●` giữ nguyên bên cạnh tên.
+- [x] **Step 4: Run** `pnpm test && pnpm typecheck && pnpm lint` → sạch.
+- [x] **Step 5: Commit** `feat(plan-5/task-9): match cards use PlayerName with hover highlight and popup`
 
 ---
 
