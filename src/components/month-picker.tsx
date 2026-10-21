@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { SeasonId } from "@/domain/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -15,6 +15,8 @@ export type MonthPickerProps = {
   clearable?: boolean;
 };
 
+const FOCUS_RING = "outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 const STEPS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -4, ArrowDown: 4 };
 
 function yearOf(s: SeasonId): number {
@@ -28,8 +30,19 @@ function toSeason(year: number, month: number): SeasonId {
 export function MonthPicker({ value, onChange, max, min, clearable }: MonthPickerProps) {
   const [year, setYear] = useState(() => yearOf(value ?? max));
   const grid = useRef<HTMLDivElement>(null);
+  const prevBtn = useRef<HTMLButtonElement>(null);
+  const nextBtn = useRef<HTMLButtonElement>(null);
+  const yearFocus = useRef<"prev" | "next" | null>(null);
   const minYear = min ? yearOf(min) : null;
   const maxYear = yearOf(max);
+
+  // A year button that becomes disabled while focused would drop focus to body.
+  useEffect(() => {
+    const was = yearFocus.current;
+    yearFocus.current = null;
+    if (was === "prev" && prevBtn.current?.disabled) nextBtn.current?.focus();
+    if (was === "next" && nextBtn.current?.disabled) prevBtn.current?.focus();
+  }, [year]);
 
   const isDisabled = (month: number) => {
     const s = toSeason(year, month);
@@ -56,20 +69,34 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
       <div className="flex items-center justify-between">
         <button
           type="button"
+          ref={prevBtn}
           aria-label="Năm trước"
           disabled={minYear !== null && year <= minYear}
-          onClick={() => setYear((y) => y - 1)}
-          className="flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40"
+          onClick={() => {
+            yearFocus.current = "prev";
+            setYear((y) => y - 1);
+          }}
+          className={cn(
+            "flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40",
+            FOCUS_RING,
+          )}
         >
           <ChevronLeft className="size-5" aria-hidden />
         </button>
         <span className="font-semibold tabular-nums">{year}</span>
         <button
           type="button"
+          ref={nextBtn}
           aria-label="Năm sau"
           disabled={year >= maxYear}
-          onClick={() => setYear((y) => y + 1)}
-          className="flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40"
+          onClick={() => {
+            yearFocus.current = "next";
+            setYear((y) => y + 1);
+          }}
+          className={cn(
+            "flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40",
+            FOCUS_RING,
+          )}
         >
           <ChevronRight className="size-5" aria-hidden />
         </button>
@@ -88,6 +115,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
               onClick={() => onChange(season)}
               className={cn(
                 "h-11 rounded-full text-sm font-medium tabular-nums disabled:opacity-40",
+                FOCUS_RING,
                 selected ? "bg-accent text-on-accent" : "bg-surface-2",
               )}
             >
@@ -100,7 +128,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
         <button
           type="button"
           onClick={() => onChange(null)}
-          className="min-h-11 rounded-md bg-surface-2 text-sm font-medium"
+          className={cn("min-h-11 rounded-md bg-surface-2 text-sm font-medium", FOCUS_RING)}
         >
           Xóa
         </button>
@@ -126,7 +154,12 @@ export function MonthPopover({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" id={id} aria-label={ariaLabel} className={triggerClassName}>
+        <button
+          type="button"
+          id={id}
+          aria-label={ariaLabel}
+          className={cn(FOCUS_RING, triggerClassName)}
+        >
           {children}
         </button>
       </PopoverTrigger>

@@ -39,6 +39,14 @@ describe("MonthPicker", () => {
     expect(btn("Tháng 11/2025").disabled).toBe(false);
   });
 
+  it("focus không rơi về body khi nút năm bị vô hiệu", () => {
+    render(<MonthPicker value="2026-05" onChange={vi.fn()} min="2025-01" max="2026-10" />);
+    btn("Năm trước").focus();
+    fireEvent.click(btn("Năm trước"));
+    expect(btn("Năm trước").disabled).toBe(true);
+    expect(document.activeElement).toBe(btn("Năm sau"));
+  });
+
   it("Xóa chỉ có khi clearable và gọi onChange(null)", () => {
     const onChange = vi.fn();
     const { rerender } = render(<MonthPicker value="2026-05" onChange={onChange} max="2026-10" />);
