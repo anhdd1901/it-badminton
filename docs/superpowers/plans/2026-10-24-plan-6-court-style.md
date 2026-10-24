@@ -325,7 +325,7 @@ git commit -m "feat(plan-6/task-6): display-font numbers in rankings, ELO and me
 **Interfaces:**
 - Consumes: `bg-chrome`, `text-on-chrome` (Task 1); `font-display`, `net` (Task 2).
 
-- [ ] **Step 1: Test**
+- [x] **Step 1: Test**
 
 `page.test.tsx` (jsdom; mock `@/app/_lib/session` cho `getActor` trả `null`, mock `next/navigation`, mock `./login-form` thành `<form aria-label="Đăng nhập" />`): render `await LoginPage()`:
 - `main` (hoặc phần tử bọc ngoài) có `bg-chrome`.
@@ -334,15 +334,15 @@ git commit -m "feat(plan-6/task-6): display-font numbers in rankings, ELO and me
 - Form nằm trong một khối `bg-surface` (chữ của form dùng token thường, đọc được trên nền trắng/xanh thẻ ở cả hai theme).
 Run → FAIL.
 
-- [ ] **Step 2: Sửa trang**
+- [x] **Step 2: Sửa trang**
 
 Bọc ngoài `flex flex-1 bg-chrome`; trong là cột `max-w-sm` như cũ. Heading `font-display italic font-bold text-5xl text-on-chrome text-center`, dưới là `<div aria-hidden="true" className="net" />` (lưới dùng `--line`; trên nền `--chrome` chỉ là trang trí). Form bọc trong `rounded-lg bg-surface p-4`. `LoginForm` không đổi.
 
-- [ ] **Step 3: Chạy test, xác nhận xanh**
+- [x] **Step 3: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/app/dang-nhap` → PASS.
 
-- [ ] **Step 4: Cổng kiểm tra và commit**
+- [x] **Step 4: Cổng kiểm tra và commit**
 
 ```bash
 pnpm test && pnpm typecheck && pnpm lint && pnpm format:check
