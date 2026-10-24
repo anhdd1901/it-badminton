@@ -45,7 +45,7 @@
 **Interfaces:**
 - Produces: token CSS `--line`, `--chrome`, `--on-chrome`, `--chrome-active` và lớp Tailwind `bg-chrome`, `text-on-chrome`, `text-chrome-active`, `bg-chrome-active`, `ring-chrome-active`, `border-line`, `bg-line`, `border-chrome-active` (qua `--color-line`, `--color-chrome`, `--color-on-chrome`, `--color-chrome-active` trong `@theme inline`).
 
-- [ ] **Step 1: Sửa test token cho bảng màu mới**
+- [x] **Step 1: Sửa test token cho bảng màu mới**
 
 Trong `tokens.test.ts`:
 - `expected` thay bằng đúng bảng spec 8.1 (sáng, tối), gồm 19 token: `bg ["#F2F5F0","#0F3D2E"]`, `surface ["#FFFFFF","#164A39"]`, `surface-2 ["#E3ECE5","#1D5644"]`, `border ["#CFDDD4","#2A6450"]`, `text ["#0D2B21","#F7F3E6"]`, `text-2 ["#4A5F55","#B7C8BE"]`, `accent ["#0F3D2E","#E4F23A"]`, `on-accent ["#E4F23A","#0F3D2E"]`, `accent-text ["#0F6B47","#E4F23A"]`, `seed-1 ["#1F5BD0","#9CC8FF"]`, `seed-2 ["#B0306E","#FFA3CF"]`, `win ["#0D2B21","#F7F3E6"]`, `loss ["#5E6E66","#A9BDB2"]`, `danger ["#C62828","#FF9A90"]`, `highlight ["#F1F7CF","#2C4A1C"]`, `line ["#1A6B4B","#DCE6DF"]`, `chrome ["#0F3D2E","#0A2E22"]`, `on-chrome ["#F7F3E6","#F7F3E6"]`, `chrome-active ["#E4F23A","#E4F23A"]`.
@@ -53,21 +53,21 @@ Trong `tokens.test.ts`:
 - `PAIRS` thêm `["on-chrome","chrome"]`, `["chrome-active","chrome"]`, `["line","surface"]`.
 - Đổi tên test `"select và popover không dùng token cam của --accent cho hover"` thành `"select và popover không dùng màu nhấn --accent cho hover"` (nội dung giữ nguyên).
 
-- [ ] **Step 2: Chạy test, xác nhận đỏ**
+- [x] **Step 2: Chạy test, xác nhận đỏ**
 
 Run: `pnpm test src/ui/tokens.test.ts`
 Expected: FAIL ở "giá trị khớp spec 8.1" (`Thiếu token --line` hoặc giá trị cũ).
 
-- [ ] **Step 3: Đổi `:root` và `@theme inline` trong `globals.css`**
+- [x] **Step 3: Đổi `:root` và `@theme inline` trong `globals.css`**
 
 Giá trị lấy từ Step 1, dạng `--x: light-dark(<sáng>, <tối>);` như hiện có. Thêm bốn token mới vào `:root` và bốn dòng `--color-…` vào `@theme inline`. `--radius: 0.375rem`. Sửa chú thích đầu khối nếu nhắc tới cam. Bỏ `shadow-xs` ở biến thể `outline` của `src/components/ui/button.tsx` (spec 8.1: không đổ bóng) và thêm file này vào commit.
 
-- [ ] **Step 4: Chạy test, xác nhận xanh**
+- [x] **Step 4: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/ui/tokens.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Test dải màu avatar**
+- [x] **Step 5: Test dải màu avatar**
 
 Thêm vào `avatar.test.ts`:
 ```ts
@@ -79,16 +79,16 @@ it("dải màu khớp spec 8.1, không có xanh lá hay xanh ngọc", () => {
 ```
 Run: `pnpm test src/ui/avatar.test.ts` → FAIL.
 
-- [ ] **Step 6: Đổi `AVATAR_COLORS` trong `src/ui/avatar.ts`** (thay `#00695C` → `#455A64`, `#2E7D32` → `#B71C1C`, giữ thứ tự để màu của mem khác không đổi). Run lại → PASS.
+- [x] **Step 6: Đổi `AVATAR_COLORS` trong `src/ui/avatar.ts`** (thay `#00695C` → `#455A64`, `#2E7D32` → `#B71C1C`, giữ thứ tự để màu của mem khác không đổi). Run lại → PASS.
 
-- [ ] **Step 7: `manifest.ts`: `background_color` và `theme_color` thành `#0F3D2E`**; nếu `manifest.test.ts` kiểm hai giá trị này thì sửa theo.
+- [x] **Step 7: `manifest.ts`: `background_color` và `theme_color` thành `#0F3D2E`**; nếu `manifest.test.ts` kiểm hai giá trị này thì sửa theo.
 
-- [ ] **Step 8: Chạy toàn bộ cổng kiểm tra**
+- [x] **Step 8: Chạy toàn bộ cổng kiểm tra**
 
 Run: `pnpm test && pnpm typecheck && pnpm lint && pnpm format:check`
 Expected: tất cả sạch.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 graphify update .

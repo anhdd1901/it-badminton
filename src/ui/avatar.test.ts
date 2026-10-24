@@ -3,6 +3,19 @@ import { AVATAR_COLORS, avatarColor, avatarInitial } from "./avatar";
 import { contrastRatio } from "./contrast";
 
 describe("avatar", () => {
+  it("dải màu khớp spec 8.1, không có xanh lá hay xanh ngọc", () => {
+    expect(AVATAR_COLORS).toEqual([
+      "#C2185B",
+      "#7B1FA2",
+      "#4527A0",
+      "#1565C0",
+      "#455A64",
+      "#B71C1C",
+      "#AD4A00",
+      "#5D4037",
+    ]);
+  });
+
   it("lấy chữ cái đầu, viết hoa theo tiếng Việt", () => {
     expect(avatarInitial("đức anh")).toBe("Đ");
     expect(avatarInitial("  ánh")).toBe("Á");

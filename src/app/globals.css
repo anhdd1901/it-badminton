@@ -5,21 +5,25 @@
 /* Bảng màu theo spec 8.1: light-dark(<sáng>, <tối>). Thành phần chỉ dùng các biến này. */
 :root {
   color-scheme: light dark;
-  --bg: light-dark(#f4f4f5, #111111);
-  --surface: light-dark(#ffffff, #1c1c1c);
-  --surface-2: light-dark(#ededed, #222222);
-  --border: light-dark(#e0e0e0, #333333);
-  --text: light-dark(#111111, #fdfdfd);
-  --text-2: light-dark(#5c5c5c, #aaaaaa);
-  --accent: light-dark(#ff6b00, #ff6b00);
-  --on-accent: light-dark(#111111, #111111);
-  --accent-text: light-dark(#b34800, #ff6b00);
-  --seed-1: light-dark(#1f5bd0, #6ea0ff);
-  --seed-2: light-dark(#13804b, #4cc98a);
-  --win: light-dark(#111111, #fdfdfd);
-  --loss: light-dark(#6b6b6b, #8a8a8a);
-  --danger: light-dark(#c62828, #ff5c5c);
-  --highlight: light-dark(#fff0e0, #2e1d10);
+  --bg: light-dark(#f2f5f0, #0f3d2e);
+  --surface: light-dark(#ffffff, #164a39);
+  --surface-2: light-dark(#e3ece5, #1d5644);
+  --border: light-dark(#cfddd4, #2a6450);
+  --text: light-dark(#0d2b21, #f7f3e6);
+  --text-2: light-dark(#4a5f55, #b7c8be);
+  --accent: light-dark(#0f3d2e, #e4f23a);
+  --on-accent: light-dark(#e4f23a, #0f3d2e);
+  --accent-text: light-dark(#0f6b47, #e4f23a);
+  --seed-1: light-dark(#1f5bd0, #9cc8ff);
+  --seed-2: light-dark(#b0306e, #ffa3cf);
+  --win: light-dark(#0d2b21, #f7f3e6);
+  --loss: light-dark(#5e6e66, #a9bdb2);
+  --danger: light-dark(#c62828, #ff9a90);
+  --highlight: light-dark(#f1f7cf, #2c4a1c);
+  --line: light-dark(#1a6b4b, #dce6df);
+  --chrome: light-dark(#0f3d2e, #0a2e22);
+  --on-chrome: light-dark(#f7f3e6, #f7f3e6);
+  --chrome-active: light-dark(#e4f23a, #e4f23a);
 
   /* shadcn/ui trỏ về token ở trên */
   --background: var(--bg);
@@ -37,7 +41,7 @@
   --destructive: var(--danger);
   --input: var(--border);
   --ring: var(--accent-text);
-  --radius: 0.625rem;
+  --radius: 0.375rem;
 }
 
 :root[data-theme="light"] {
@@ -64,6 +68,10 @@
   --color-loss: var(--loss);
   --color-danger: var(--danger);
   --color-highlight: var(--highlight);
+  --color-line: var(--line);
+  --color-chrome: var(--chrome);
+  --color-on-chrome: var(--on-chrome);
+  --color-chrome-active: var(--chrome-active);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

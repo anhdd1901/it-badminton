@@ -5,8 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "ANH EM IT",
     short_name: "ANH EM IT",
     display: "standalone",
-    background_color: "#111111",
-    theme_color: "#111111",
+    background_color: "#0F3D2E",
+    theme_color: "#0F3D2E",
     start_url: "/",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

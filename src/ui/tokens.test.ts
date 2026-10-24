@@ -36,6 +36,9 @@ const PAIRS: [fg: string, bg: string][] = [
   ["text-2", "highlight"],
   ["win", "highlight"],
   ["loss", "highlight"],
+  ["on-chrome", "chrome"],
+  ["chrome-active", "chrome"],
+  ["line", "surface"],
 ];
 
 describe("token màu (spec 8.1)", () => {
@@ -50,30 +53,34 @@ describe("token màu (spec 8.1)", () => {
 
   it("giá trị khớp spec 8.1", () => {
     const expected: Record<string, [light: string, dark: string]> = {
-      bg: ["#F4F4F5", "#111111"],
-      surface: ["#FFFFFF", "#1C1C1C"],
-      "surface-2": ["#EDEDED", "#222222"],
-      border: ["#E0E0E0", "#333333"],
-      text: ["#111111", "#FDFDFD"],
-      "text-2": ["#5C5C5C", "#AAAAAA"],
-      accent: ["#FF6B00", "#FF6B00"],
-      "on-accent": ["#111111", "#111111"],
-      "seed-1": ["#1F5BD0", "#6EA0FF"],
-      "seed-2": ["#13804B", "#4CC98A"],
-      win: ["#111111", "#FDFDFD"],
-      loss: ["#6B6B6B", "#8A8A8A"],
-      danger: ["#C62828", "#FF5C5C"],
-      highlight: ["#FFF0E0", "#2E1D10"],
+      bg: ["#F2F5F0", "#0F3D2E"],
+      surface: ["#FFFFFF", "#164A39"],
+      "surface-2": ["#E3ECE5", "#1D5644"],
+      border: ["#CFDDD4", "#2A6450"],
+      text: ["#0D2B21", "#F7F3E6"],
+      "text-2": ["#4A5F55", "#B7C8BE"],
+      accent: ["#0F3D2E", "#E4F23A"],
+      "on-accent": ["#E4F23A", "#0F3D2E"],
+      "accent-text": ["#0F6B47", "#E4F23A"],
+      "seed-1": ["#1F5BD0", "#9CC8FF"],
+      "seed-2": ["#B0306E", "#FFA3CF"],
+      win: ["#0D2B21", "#F7F3E6"],
+      loss: ["#5E6E66", "#A9BDB2"],
+      danger: ["#C62828", "#FF9A90"],
+      highlight: ["#F1F7CF", "#2C4A1C"],
+      line: ["#1A6B4B", "#DCE6DF"],
+      chrome: ["#0F3D2E", "#0A2E22"],
+      "on-chrome": ["#F7F3E6", "#F7F3E6"],
+      "chrome-active": ["#E4F23A", "#E4F23A"],
     };
     for (const [name, [light, dark]] of Object.entries(expected)) {
       expect(token(name, "light"), `${name} sáng`).toBe(light);
       expect(token(name, "dark"), `${name} tối`).toBe(dark);
     }
-    expect(token("accent-text", "dark")).toBe("#FF6B00");
-    expect(tokens.size).toBe(15);
+    expect(tokens.size).toBe(19);
   });
 
-  it("select và popover không dùng token cam của --accent cho hover", () => {
+  it("select và popover không dùng màu nhấn --accent cho hover", () => {
     for (const f of ["select.tsx", "popover.tsx"]) {
       const path = new URL(`../components/ui/${f}`, import.meta.url);
       expect(existsSync(path), f).toBe(true);

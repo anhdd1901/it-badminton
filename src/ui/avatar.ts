@@ -3,8 +3,8 @@ export const AVATAR_COLORS: readonly string[] = [
   "#7B1FA2",
   "#4527A0",
   "#1565C0",
-  "#00695C",
-  "#2E7D32",
+  "#455A64",
+  "#B71C1C",
   "#AD4A00",
   "#5D4037",
 ];
