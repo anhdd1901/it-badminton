@@ -31,13 +31,19 @@ export function DisplayNameForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="display-name">Tên hiển thị</Label>
-        <Input
-          id="display-name"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          autoComplete="off"
-          required
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            id="display-name"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            autoComplete="off"
+            required
+            className="h-11 flex-1"
+          />
+          <Button type="submit" disabled={pending} className="shrink-0">
+            Lưu tên
+          </Button>
+        </div>
       </div>
       {error ? (
         <p role="alert" className="text-sm text-danger">
@@ -49,9 +55,6 @@ export function DisplayNameForm({
           Đã lưu tên
         </p>
       ) : null}
-      <Button type="submit" disabled={pending} className="self-start">
-        Lưu tên
-      </Button>
     </form>
   );
 }

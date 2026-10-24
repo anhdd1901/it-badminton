@@ -77,7 +77,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
             setYear((y) => y - 1);
           }}
           className={cn(
-            "flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40",
+            "flex size-11 items-center justify-center rounded-[6px] hover:bg-surface-2 disabled:opacity-40",
             FOCUS_RING,
           )}
         >
@@ -94,7 +94,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
             setYear((y) => y + 1);
           }}
           className={cn(
-            "flex size-11 items-center justify-center rounded-md hover:bg-surface-2 disabled:opacity-40",
+            "flex size-11 items-center justify-center rounded-[6px] hover:bg-surface-2 disabled:opacity-40",
             FOCUS_RING,
           )}
         >
@@ -114,7 +114,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
               disabled={isDisabled(month)}
               onClick={() => onChange(season)}
               className={cn(
-                "h-11 rounded-full text-sm font-medium tabular-nums disabled:opacity-40",
+                "h-11 rounded-[6px] text-sm font-medium tabular-nums disabled:opacity-40",
                 FOCUS_RING,
                 selected ? "bg-accent text-on-accent" : "bg-surface-2",
               )}
@@ -128,7 +128,7 @@ export function MonthPicker({ value, onChange, max, min, clearable }: MonthPicke
         <button
           type="button"
           onClick={() => onChange(null)}
-          className={cn("min-h-11 rounded-md bg-surface-2 text-sm font-medium", FOCUS_RING)}
+          className={cn("min-h-11 rounded-[6px] bg-surface-2 text-sm font-medium", FOCUS_RING)}
         >
           Xóa
         </button>

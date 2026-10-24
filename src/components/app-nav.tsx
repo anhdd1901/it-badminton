@@ -29,7 +29,7 @@ export function AppNav({ me }: { me: AvatarMember & { username?: never } }) {
         href={item.href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "relative flex min-h-11 items-center rounded-md text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-chrome-active",
+          "relative flex min-h-11 items-center rounded-[6px] text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-chrome-active",
           layout === "bottom"
             ? "flex-1 flex-col justify-center gap-0.5 py-1"
             : "justify-start gap-2 px-1 text-sm",

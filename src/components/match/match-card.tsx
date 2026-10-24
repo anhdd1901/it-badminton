@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { deleteResultAction, saveResultAction } from "@/app/_actions/results";
-import { MemberAvatar } from "@/components/member-avatar";
-import { PlayerName } from "@/components/player-name";
+import { MemberTag } from "@/components/member-tag";
 import { ScoreInput } from "@/components/match/score-input";
 import {
   Dialog,
@@ -16,56 +15,52 @@ import { useAppAction } from "@/components/use-app-action";
 import type { SeasonId } from "@/domain/types";
 import type { PlayerRef, WeekMatch } from "@/server/views/week";
 
-function Player({ p, season }: { p: PlayerRef; season: SeasonId }) {
-  return (
-    <span className="flex min-w-0 flex-1 items-center gap-1">
-      <MemberAvatar member={p} size={24} />
-      <PlayerName player={p} season={season} className="block min-w-0 truncate text-left" />
-      {p.seed ? (
-        <span
-          role="img"
-          aria-label={`Hạt giống ${p.seed}`}
-          className={`shrink-0 ${p.seed === 1 ? "text-seed-1" : "text-seed-2"}`}
-        >
-          ●
-        </span>
-      ) : null}
-    </span>
-  );
-}
-
 function Team({
   testId,
   players,
-  score,
   tone,
   season,
-  scoreWidth,
+  side,
 }: {
   testId: string;
   players: [PlayerRef, PlayerRef];
-  score: number | null;
   tone: "win" | "loss" | "none";
   season: SeasonId;
-  scoreWidth: string;
+  side: "left" | "right";
 }) {
-  const scoreTone =
-    tone === "win" ? "text-accent-text" : tone === "loss" ? "text-loss" : "text-text-2";
-  const scoreTestId = testId === "team-a" ? "score-a" : "score-b";
   const cls = tone === "win" ? "text-win font-semibold" : tone === "loss" ? "text-loss" : "";
   return (
-    <div data-testid={testId} className={`flex items-center gap-2 ${cls}`}>
-      <div className="flex min-w-0 flex-1 gap-3">
-        <Player p={players[0]} season={season} />
-        <Player p={players[1]} season={season} />
-      </div>
-      <span
-        data-testid={scoreTestId}
-        className={`${scoreWidth} shrink-0 text-right font-display text-[28px] leading-none font-semibold tabular-nums italic ${scoreTone}`}
-      >
-        {score ?? "–"}
-      </span>
+    <div data-testid={testId} className={`flex min-w-0 flex-col gap-2 ${cls}`}>
+      {players.map((p) => (
+        <MemberTag key={p.id} player={p} season={season} seed={p.seed} side={side} />
+      ))}
     </div>
+  );
+}
+
+// Tỷ số hai đội xếp ngang ở giữa thẻ; lưới bị cắt đứt đúng đoạn này.
+const SCORE_W = "w-[4.5rem] sm:w-24";
+
+function ScoreCell({
+  result,
+  tones,
+}: {
+  result: { scoreA: number; scoreB: number } | null;
+  tones: [string, string];
+}) {
+  const num = "font-display text-2xl sm:text-[28px] leading-none font-semibold tabular-nums italic";
+  return (
+    <span className="flex items-center justify-center gap-1 sm:gap-1.5">
+      <span data-testid="score-a" className={`${num} ${tones[0]}`}>
+        {result?.scoreA ?? "–"}
+      </span>
+      <span aria-hidden="true" className="text-text-2">
+        :
+      </span>
+      <span data-testid="score-b" className={`${num} ${tones[1]}`}>
+        {result?.scoreB ?? "–"}
+      </span>
+    </span>
   );
 }
 
@@ -88,56 +83,51 @@ export function MatchCard({
   const { run: save } = useAppAction(saveResultAction);
   const { run: del } = useAppAction(deleteResultAction);
   const r = match.result;
-  // editable: the score column is covered by the w-14 overlay button, so keep names clear of it
-  const scoreWidth = editable ? "w-10" : "w-8";
-  // net margin = score width + gap-2, so the net never runs under the score column
-  const netMargin = editable ? "mr-12" : "mr-10";
+  const toneA = !r ? "none" : r.scoreA > r.scoreB ? "win" : "loss";
+  const toneB = !r ? "none" : r.scoreB > r.scoreA ? "win" : "loss";
+  const scoreTone = (t: string) =>
+    t === "win" ? "text-accent-text" : t === "loss" ? "text-loss" : "text-text-2";
+  const score = <ScoreCell result={r} tones={[scoreTone(toneA), scoreTone(toneB)]} />;
   const body = (
     <>
-      <span
-        data-testid="match-number"
-        className="w-8 shrink-0 self-stretch border-r-2 border-line text-center font-display text-lg font-semibold text-text-2 italic"
-      >
-        {match.number}
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <Team
-          testId="team-a"
-          players={match.teamA}
-          score={r?.scoreA ?? null}
-          tone={!r ? "none" : r.scoreA > r.scoreB ? "win" : "loss"}
-          season={season}
-          scoreWidth={scoreWidth}
-        />
-        <div data-testid="net" aria-hidden="true" className={`net ${netMargin}`} />
-        <Team
-          testId="team-b"
-          players={match.teamB}
-          score={r?.scoreB ?? null}
-          tone={!r ? "none" : r.scoreB > r.scoreA ? "win" : "loss"}
-          season={season}
-          scoreWidth={scoreWidth}
-        />
+      <div className="relative grid min-w-0 flex-1 grid-cols-[1fr_auto_1fr] items-center gap-2">
+        <div
+          data-testid="net"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2"
+        >
+          <span className="net flex-1" />
+          <span className="w-[5.5rem] shrink-0 sm:w-28" />
+          <span className="net flex-1" />
+        </div>
+        <Team testId="team-a" players={match.teamA} tone={toneA} season={season} side="left" />
+        <div className={`${SCORE_W} relative z-10`}>
+          {editable ? (
+            <DialogTrigger asChild>
+              <button
+                type="button"
+                className="flex min-h-11 w-full items-center justify-center rounded-[6px] outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={`Nhập tỷ số trận ${match.number}`}
+              >
+                {score}
+              </button>
+            </DialogTrigger>
+          ) : (
+            score
+          )}
+        </div>
+        <Team testId="team-b" players={match.teamB} tone={toneB} season={season} side="right" />
       </div>
     </>
   );
   const box =
-    "flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left text-sm";
+    "flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-2 text-left text-sm sm:p-3";
   if (!editable) return <div className={box}>{body}</div>;
 
   const ref = { day, scheduleKey, matchNumber: match.number };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className={`${box} relative min-h-11`}>
-        {body}
-        <DialogTrigger asChild>
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 z-10 w-14 rounded-r-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label={`Nhập tỷ số trận ${match.number}`}
-          />
-        </DialogTrigger>
-      </div>
+      <div className={`${box} min-h-11`}>{body}</div>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Trận {match.number}</DialogTitle>

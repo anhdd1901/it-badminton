@@ -2,6 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { createDb } from "../src/server/db/client";
 import { PASSWORD, resetAndSeed, seedPastMatchDay } from "./seed";
 
+// A ranking rowheader is the name plus the top-4 medal ("Hạng N").
+const rankedName = (name: string) => new RegExp(`^${name}( Hạng \\d)?$`);
+
 // Seeds a finished match day (2026-10-10) and restores the seeded state around the spec.
 async function reset(withPastDay: boolean) {
   const url = process.env.DATABASE_URL_E2E;
@@ -36,10 +39,13 @@ test("admin sửa kết quả buổi đã qua, bảng xếp hạng đổi theo",
   await login(page, "admin");
   await page.goto("/lich-su");
   await expect(page.getByText("Tháng 10/2026")).toBeVisible();
-  const row = page.getByRole("link", { name: /Thứ 7, 10\/10\/2026/ });
+  const row = page.getByRole("button", { name: /Thứ 7, 10\/10\/2026/ });
   await expect(row).toContainText("5 người · đã nhập 5/5 trận");
+  await expect(row).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByTestId("team-a")).toHaveCount(0);
   await row.click();
-  await expect(page.getByRole("heading", { name: "Thứ 7, 10/10/2026" })).toBeVisible();
+  await expect(row).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByTestId("team-a")).toHaveCount(5);
 
   const firstWinner = (
     await page.getByTestId("team-a").first().locator(".truncate").first().innerText()
@@ -50,7 +56,7 @@ test("admin sửa kết quả buổi đã qua, bảng xếp hạng đổi theo",
       .getByRole("table")
       .getByRole("row")
       .filter({
-        has: page.getByRole("rowheader", { name, exact: true }),
+        has: page.getByRole("rowheader", { name: rankedName(name) }),
       });
   const before = await rowOf(firstWinner).innerText();
 
@@ -69,8 +75,9 @@ test("admin sửa kết quả buổi đã qua, bảng xếp hạng đổi theo",
 
 test("subadmin không sửa được buổi đã qua", async ({ page }) => {
   await login(page, "phu");
+  // The old per-day link redirects to the month with that day expanded.
   await page.goto("/lich-su/2026-10-10");
-  await expect(page.getByRole("heading", { name: "Thứ 7, 10/10/2026" })).toBeVisible();
+  await expect(page).toHaveURL(/\/lich-su\?mua=2026-10&ngay=2026-10-10$/);
   await expect(page.getByTestId("team-a").first()).toBeVisible();
   await expect(page.getByRole("button", { name: /^Nhập tỷ số trận/ })).toHaveCount(0);
 });

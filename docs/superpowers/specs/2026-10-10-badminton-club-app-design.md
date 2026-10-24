@@ -356,31 +356,31 @@ Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn �
 
 ### 8.1 Phong cách giao diện
 
-Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Nền xanh sân, vạch trắng ngà như vạch sân và lông quả cầu, một màu nhấn vàng chanh. Điểm nhấn duy nhất là thẻ trận có **lưới** chia hai cặp; các phần khác giữ gọn và yên. Không đổ bóng, không gradient, không thêm chuyển động tự chạy.
+Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Theo bảng màu của livescore.com: nền xám than, thẻ xám đậm, một màu nhấn cam. Điểm nhấn duy nhất là thẻ trận có **lưới** chia hai cặp; các phần khác giữ gọn và yên. Không đổ bóng, không gradient, không thêm chuyển động tự chạy.
 
-**Theme sáng và tối:** có cả hai. Mặc định theo cài đặt của thiết bị; mem đổi được ở màn "Tôi" (Theo thiết bị / Sáng / Tối), lựa chọn lưu trên thiết bị đó. Tối là sân xanh; sáng là nền trắng ánh xanh, còn đầu trang và điều hướng vẫn xanh sân (`--chrome`), nên hai theme nhận ra là cùng một app. Mọi màu định nghĩa thành biến CSS dùng chung; thành phần không viết màu cứng.
+**Theme sáng và tối:** có cả hai. Mặc định theo cài đặt của thiết bị; mem đổi được ở màn "Tôi" (Theo thiết bị / Sáng / Tối), lựa chọn lưu trên thiết bị đó. Tối là nền than; sáng là nền xám nhạt thẻ trắng, còn đầu trang và điều hướng vẫn tối (`--chrome`), nên hai theme nhận ra là cùng một app. Mọi màu định nghĩa thành biến CSS dùng chung; thành phần không viết màu cứng.
 
 | Biến | Vai trò | Tối | Sáng |
 |---|---|---|---|
-| `--bg` | nền trang | `#0F3D2E` | `#F2F5F0` |
-| `--surface` | thẻ trận, thẻ nội dung | `#164A39` | `#FFFFFF` |
-| `--surface-2` | nền phụ: ô nhập, tab chưa chọn, hàng xen kẽ | `#1D5644` | `#E3ECE5` |
-| `--border` | viền mảnh, đường chia | `#2A6450` | `#CFDDD4` |
-| `--text` | chữ chính (ngà quả cầu ở theme tối) | `#F7F3E6` | `#0D2B21` |
-| `--text-2` | chữ phụ (giờ, nhãn, username) | `#B7C8BE` | `#4A5F55` |
-| `--accent` | nền nút chính, tab đang chọn, trạng thái nổi bật | `#E4F23A` (vàng chanh) | `#0F3D2E` (xanh sân) |
-| `--on-accent` | chữ trên nền `--accent` | `#0F3D2E` | `#E4F23A` |
-| `--accent-text` | chữ hoặc icon nhấn trên nền trang và thẻ | `#E4F23A` | `#0F6B47` |
-| `--seed-1` | Hạt giống 1 | `#9CC8FF` | `#1F5BD0` |
+| `--bg` | nền trang | `#111111` | `#E9E9E9` |
+| `--surface` | thẻ trận, thẻ nội dung | `#222222` | `#FDFDFD` |
+| `--surface-2` | nền phụ: ô nhập, tab chưa chọn, hàng xen kẽ | `#333333` | `#F0F0F0` |
+| `--border` | viền mảnh, đường chia | `#333333` | `#D6D6D6` |
+| `--text` | chữ chính (ngà quả cầu ở theme tối) | `#FDFDFD` | `#111111` |
+| `--text-2` | chữ phụ (giờ, nhãn, username) | `#AAAAAA` | `#555555` |
+| `--accent` | nền nút chính, tab đang chọn, trạng thái nổi bật | `#FF6B00` (cam) | `#FF6B00` (cam) |
+| `--on-accent` | chữ trên nền `--accent` | `#111111` | `#111111` |
+| `--accent-text` | chữ hoặc icon nhấn trên nền trang và thẻ | `#FF8A00` | `#A84300` |
+| `--seed-1` | Hạt giống 1 | `#4D9FFF` | `#0066DD` |
 | `--seed-2` | Hạt giống 2 (hồng, vì xanh lá chìm trên nền sân) | `#FFA3CF` | `#B0306E` |
-| `--win` | tên cặp thắng (chữ đậm) | `#F7F3E6` | `#0D2B21` |
-| `--loss` | tên và điểm cặp thua | `#A9BDB2` | `#5E6E66` |
+| `--win` | tên cặp thắng (chữ đậm) | `#FDFDFD` | `#111111` |
+| `--loss` | tên và điểm cặp thua | `#A6A6A6` | `#5E5E5E` |
 | `--danger` | lỗi, nút xóa, ELO xuống | `#FF9A90` | `#C62828` |
-| `--highlight` | tên mem được tô khi hover; nền chanh nhạt | `#2C4A1C` | `#F1F7CF` |
-| `--line` | vạch sân: lưới và vạch dọc trong thẻ trận (không phải chữ) | `#DCE6DF` | `#1A6B4B` |
-| `--chrome` | nền đầu trang, thanh đáy, menu bên, màn đăng nhập | `#0A2E22` | `#0F3D2E` |
-| `--on-chrome` | chữ và icon trên `--chrome` | `#F7F3E6` | `#F7F3E6` |
-| `--chrome-active` | mục đang chọn và vạch nhấn trên `--chrome` | `#E4F23A` | `#E4F23A` |
+| `--highlight` | tên mem được tô khi hover; nền chanh nhạt | `#4A2A14` | `#FFE0CC` |
+| `--line` | vạch sân: lưới và vạch dọc trong thẻ trận (không phải chữ) | `#E6E6E6` | `#6E6E6E` |
+| `--chrome` | nền đầu trang, thanh đáy, menu bên, màn đăng nhập | `#181818` | `#181818` |
+| `--on-chrome` | chữ và icon trên `--chrome` | `#FDFDFD` | `#FDFDFD` |
+| `--chrome-active` | mục đang chọn và vạch nhấn trên `--chrome` | `#FF6B00` | `#FF6B00` |
 
 - **Tương phản:** mọi cặp chữ/nền phải đạt tối thiểu 4,5:1, kiểm tra bằng test tự động trên bảng màu, gồm cả `--on-chrome`/`--chrome`, `--chrome-active`/`--chrome` và `--line`/`--surface`. Chữ trên nền `--accent` luôn dùng `--on-accent`.
 - **Font:** hai họ chữ, tự host bằng `next/font/local`.
@@ -389,8 +389,8 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Nền xan
   - Viết hoa kiểu câu; không viết hoa toàn bộ nhãn nhỏ. Số dùng `tabular-nums` để cột thẳng hàng.
 - **Thẻ trận (điểm nhấn):** mỗi trận là một thẻ trên `--surface`, bo 6px.
   - Bên trái là cột hẹp ghi số trận (Barlow nghiêng), ngăn với phần còn lại bằng vạch dọc `--line` như vạch biên sân.
-  - Hai cặp xếp chồng, mỗi cặp một dòng gồm avatar và tên kèm chấm màu hạt giống. Giữa hai cặp là **lưới**: vạch `--line` dày 2px, phía trên có dải nét lưới mảnh cao 4px (gạch lặp lại). Lưới chạy ngang phần tên, không cắt qua cột tỷ số.
-  - Tỷ số canh phải, cùng dòng với cặp tương ứng, Barlow nghiêng cỡ 28px. Cặp thắng: tên `--win` đậm, điểm `--accent-text`. Cặp thua: tên và điểm `--loss`. Chưa có tỷ số thì hiện "–".
+  - Bố cục ngang: đội A bên trái, tỷ số ở giữa, đội B bên phải; mỗi đội hai tag xếp dọc. Tag bên trái đặt avatar bên phải và tên căn phải; tag bên phải đặt avatar bên trái và tên căn trái. Giữa hai hàng tag là **lưới**: vạch liền `--line` dày 2px, bị cắt đứt ở đoạn tỷ số.
+  - Tỷ số ở giữa, hai số xếp ngang (đội A rồi đội B), Barlow nghiêng cỡ 28px. Đội thắng: tên `--win` đậm, điểm `--accent-text`. Đội thua: tên và điểm `--loss`. Chưa có tỷ số thì hiện "–". Admin bấm vào vùng tỷ số để nhập.
 - **Đầu màn Tuần này:** dải `--chrome` chứa ngày ("Thứ 7, 17/10" bằng Barlow nghiêng khoảng 40px, năm "/2026" viết nhỏ ngay sau), dưới là trạng thái và số đã điểm danh; viền dưới của dải là vạch `--chrome-active` dày 3px, giống vạch giao cầu. Nút điểm danh nằm ngay dưới dải.
 - **Điều hướng:** thanh đáy và menu bên nền `--chrome` ở cả hai theme, chữ và icon `--on-chrome`. Mục đang chọn dùng `--chrome-active` cho icon và chữ, kèm vạch ngắn `--chrome-active` ở mép trên (thanh đáy) hoặc mép trái (menu bên).
 - **Bảng xếp hạng và ELO:** cột hạng là Barlow nghiêng cỡ lớn; các cột số dùng Barlow; tên dùng Be Vietnam Pro. Dòng hạng 1 có thêm vạch `--accent-text` ở mép trái; không có huy hiệu.
@@ -473,3 +473,13 @@ Ký hiệu `a+b/c+d`: cặp vị trí a, b đánh với cặp vị trí c, d. Th
 ```
 
 Tổ hợp chưa có sơ đồ: 7 · 0+7; 8 · 0+8, 1+7; 9 · 0+9, 1+8, 2+7; 10 · 0+10 … 3+7; mọi tổ hợp từ 11 người.
+
+**Chỉnh sau plan 6:** mọi button bo 6px; avatar có viền 2px màu `--surface`; tên mem trong thẻ trận (Tuần này, Lịch sử) và danh sách người tham gia là tag viên thuốc cùng chiều rộng, hover/focus đổi nền sang `--accent` (cam, chữ `--on-accent`).
+
+**Chỉnh đợt 2 (sau plan 6):**
+- Thẻ trận không hiện số thứ tự trận (Tuần này, Lịch sử). Trên điện thoại, trong danh sách trận, chạm tag lần đầu chỉ highlight mem đó, chạm lần hai mới mở popup; chuột vẫn mở ngay.
+- Bảng Mùa: không có cột Hạng; cột Mem dính trái khi cuộn ngang; sau tên mem top 4 là huy chương có số (vàng, bạc, đồng, xanh: `--gold`, `--silver`, `--bronze`, `--fourth`), đồng hạng cùng huy chương. Thống kê theo mem không có cột Hạng.
+- ELO: không có cột Hạt giống; dòng Hạt giống 1 (top 4) có nền `--surface-2`, kèm chú thích dưới bảng; vạch ngăn dòng ở theme tối dùng `--bg` vì `--border` trùng `--surface-2`.
+- Danh sách điểm danh: mỗi mem là một tag dài hết dòng, nút điểm danh nằm trong tag ở cuối.
+- Màn Lịch sử: bộ chọn tháng (dính đầu màn) như Xếp hạng; mỗi buổi trong tháng là một block thu gọn, bấm để mở/thu các thẻ trận, mở được nhiều block cùng lúc; đầu block dính ngay dưới bộ chọn tháng, block sau đẩy block trước đi. `/lich-su/<ngày>` chuyển về `/lich-su?mua=<tháng>&ngay=<ngày>` (mở sẵn ngày đó).
+

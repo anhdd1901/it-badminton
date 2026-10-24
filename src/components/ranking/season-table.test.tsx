@@ -29,23 +29,26 @@ describe("SeasonTable", () => {
     expect(await screen.findByRole("dialog")).toBeTruthy();
     expect(getMemberProfileAction).toHaveBeenCalledWith("a", SEASON);
   });
-  it("mọi dòng hạng 1 có vạch nhấn, kể cả đồng hạng", () => {
+  it("không có cột Hạng; top 4 có huy chương sau tên (đồng hạng cùng huy chương)", () => {
     const rows = [
       { rank: 1, member: mem("a"), totals, diff: 11 },
       { rank: 1, member: mem("b"), totals, diff: 11 },
       { rank: 3, member: mem("c"), totals, diff: 5 },
+      { rank: 4, member: mem("d"), totals, diff: 1 },
+      { rank: 5, member: mem("e"), totals, diff: 0 },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any;
     const { container } = render(<SeasonTable rows={rows} season={SEASON} />);
-    const leaders = container.querySelectorAll("tr[data-leader]");
-    expect(leaders.length).toBe(2);
-    for (const tr of leaders) {
-      expect(tr.querySelector("td")!.className).toContain("border-accent-text");
-    }
-    for (const tr of container.querySelectorAll("tbody tr")) {
-      const cls = tr.querySelector("td")!.className;
-      expect(cls).toContain("font-display");
-      expect(cls).toContain("italic");
-    }
+    expect(container.querySelector("thead")!.textContent).not.toContain("Hạng");
+    expect(container.querySelectorAll("tr[data-leader]").length).toBe(2);
+    const medals = Array.from(container.querySelectorAll("tbody tr")).map(
+      (tr) => tr.querySelector("th [data-medal]")?.className ?? null,
+    );
+    expect(medals[0]).toContain("bg-gold");
+    expect(medals[1]).toContain("bg-gold");
+    expect(medals[2]).toContain("bg-bronze");
+    expect(medals[3]).toContain("bg-fourth");
+    expect(medals[4]).toBeNull();
+    expect(screen.getAllByRole("img", { name: "Hạng 1" })).toHaveLength(2);
   });
 });

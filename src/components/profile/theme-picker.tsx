@@ -25,7 +25,7 @@ function apply(value: ThemeChoice) {
 export function ThemePicker({ value }: { value: ThemeChoice }) {
   const [current, setCurrent] = useState(value);
   return (
-    <div role="group" aria-label="Giao diện" className="flex flex-wrap gap-2">
+    <div role="group" aria-label="Giao diện" className="grid grid-cols-3 gap-2">
       {OPTIONS.map((o) => (
         <button
           key={o.value}
@@ -36,7 +36,7 @@ export function ThemePicker({ value }: { value: ThemeChoice }) {
             setCurrent(o.value);
           }}
           className={cn(
-            "inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "inline-flex min-h-11 items-center justify-center rounded-[6px] border px-1 text-[13px] whitespace-nowrap sm:text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
             current === o.value
               ? "border-transparent bg-primary text-primary-foreground"
               : "border-border bg-surface text-text-2",

@@ -60,13 +60,13 @@ export default async function ProfilePage() {
       {me.role === "admin" ? (
         <Link
           href="/toi/quan-ly-mem"
-          className="inline-flex min-h-11 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium"
+          className="inline-flex h-11 w-full items-center justify-center rounded-[6px] border border-border bg-surface px-4 text-sm font-medium"
         >
           Quản lý mem
         </Link>
       ) : null}
       <form action={logoutAction}>
-        <Button type="submit" variant="outline">
+        <Button type="submit" variant="outline" className="w-full">
           Đăng xuất
         </Button>
       </form>

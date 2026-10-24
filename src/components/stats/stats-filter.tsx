@@ -5,8 +5,7 @@ import { useState } from "react";
 import { CalendarDays } from "lucide-react";
 import type { SeasonId } from "@/domain/types";
 import { MonthPopover } from "@/components/month-picker";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -14,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { formatSeason } from "@/ui/format";
 export type StatsFilterMember = {
   id: string;
@@ -33,7 +33,7 @@ const ALL = "all";
 
 // Same height and border as `Input`.
 const TRIGGER_CLASS =
-  "flex h-11 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-2.5 text-left text-base shadow-xs md:text-sm";
+  "flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-transparent px-2.5 text-left text-base shadow-xs md:text-sm";
 
 export function StatsFilter({
   value,
@@ -53,16 +53,17 @@ export function StatsFilter({
     <form
       method="get"
       action="/thong-ke"
-      className="grid grid-cols-1 gap-3 rounded-lg border border-border p-3 sm:grid-cols-3"
+      className="flex flex-col gap-2 rounded-lg border border-border p-3"
     >
       <input type="hidden" name="xem" value={value.view} />
       <input type="hidden" name="tu" value={from ?? ""} />
       <input type="hidden" name="den" value={to ?? ""} />
       <input type="hidden" name="mem" value={member === ALL ? "" : member} />
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="stats-tu">Từ tháng</Label>
+      {/* Từ tháng – đến tháng chung một dòng, kể cả trên điện thoại. */}
+      <div className="grid grid-cols-2 gap-2">
         <MonthPopover
           id="stats-tu"
+          aria-label="Từ tháng"
           value={from}
           onChange={setFrom}
           min={bounds.min}
@@ -70,14 +71,14 @@ export function StatsFilter({
           clearable
           triggerClassName={TRIGGER_CLASS}
         >
-          <span>{from ? formatSeason(from) : "Toàn bộ"}</span>
-          <CalendarDays aria-hidden className="size-4 text-text-2" />
+          <span className={from ? undefined : "text-text-2"}>
+            {from ? formatSeason(from) : "Từ tháng"}
+          </span>
+          <CalendarDays aria-hidden className="size-4 shrink-0 text-text-2" />
         </MonthPopover>
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="stats-den">Đến tháng</Label>
         <MonthPopover
           id="stats-den"
+          aria-label="Đến tháng"
           value={to}
           onChange={setTo}
           min={bounds.min}
@@ -85,14 +86,20 @@ export function StatsFilter({
           clearable
           triggerClassName={TRIGGER_CLASS}
         >
-          <span>{to ? formatSeason(to) : "Toàn bộ"}</span>
-          <CalendarDays aria-hidden className="size-4 text-text-2" />
+          <span className={to ? undefined : "text-text-2"}>
+            {to ? formatSeason(to) : "Đến tháng"}
+          </span>
+          <CalendarDays aria-hidden className="size-4 shrink-0 text-text-2" />
         </MonthPopover>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="stats-mem">Mem</Label>
+      {/* Mem, Lọc và Bỏ lọc chung một dòng. */}
+      <div className="flex items-center gap-2">
         <Select value={member} onValueChange={setMember}>
-          <SelectTrigger id="stats-mem" className="h-11 w-full text-base md:text-sm">
+          <SelectTrigger
+            id="stats-mem"
+            aria-label="Mem"
+            className="min-w-0 flex-1 text-base data-[size=default]:h-11 md:text-sm dark:bg-transparent dark:hover:bg-transparent"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -104,12 +111,12 @@ export function StatsFilter({
             ))}
           </SelectContent>
         </Select>
-      </div>
-      <div className="flex items-center gap-2 sm:col-span-3">
-        <Button type="submit">Lọc</Button>
+        <Button type="submit" className="shrink-0 px-4">
+          Lọc
+        </Button>
         <Link
           href={`/thong-ke?xem=${value.view}`}
-          className="inline-flex min-h-11 items-center rounded-md px-3 text-sm text-text-2 underline"
+          className={cn(buttonVariants({ variant: "outline" }), "shrink-0 px-3")}
         >
           Bỏ lọc
         </Link>

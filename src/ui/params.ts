@@ -28,6 +28,19 @@ export function parseRankingParams(
   };
 }
 
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function parseHistoryParams(
+  sp: SearchParams,
+  currentSeason: SeasonId,
+): { season: SeasonId; day?: string } {
+  const day = single(sp.ngay);
+  return {
+    season: clamp(season(sp.mua), currentSeason),
+    ...(day !== undefined && DAY_RE.test(day) ? { day } : {}),
+  };
+}
+
 export function parseStatsParams(sp: SearchParams): {
   view: "mem" | "cap";
   from?: SeasonId;

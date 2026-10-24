@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseRankingParams, parseStatsParams } from "./params";
+import type { SeasonId } from "@/domain/types";
+import { parseHistoryParams, parseRankingParams, parseStatsParams } from "./params";
 
 describe("parseRankingParams", () => {
   it("mặc định là bảng mùa của tháng hiện tại", () => {
@@ -45,5 +46,21 @@ describe("parseStatsParams", () => {
   it("nhận uuid", () => {
     const id = "123e4567-e89b-42d3-a456-426614174000";
     expect(parseStatsParams({ mem: id }).memberId).toBe(id);
+  });
+});
+
+describe("parseHistoryParams", () => {
+  const cur = "2026-10" as SeasonId;
+  it("mặc định tháng hiện tại, không mở ngày nào", () => {
+    expect(parseHistoryParams({}, cur)).toEqual({ season: cur });
+  });
+  it("tháng tương lai bị kẹp về hiện tại; ngày sai định dạng bị bỏ", () => {
+    expect(parseHistoryParams({ mua: "2027-01", ngay: "abc" }, cur)).toEqual({ season: cur });
+  });
+  it("đọc tháng và ngày cần mở", () => {
+    expect(parseHistoryParams({ mua: "2026-09", ngay: "2026-09-26" }, cur)).toEqual({
+      season: "2026-09",
+      day: "2026-09-26",
+    });
   });
 });

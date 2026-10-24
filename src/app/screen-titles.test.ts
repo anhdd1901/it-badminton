@@ -6,7 +6,6 @@ const SCREENS = [
   "src/app/(app)/xep-hang/page.tsx",
   "src/app/(app)/thong-ke/page.tsx",
   "src/app/(app)/lich-su/page.tsx",
-  "src/app/(app)/lich-su/[ngay]/page.tsx",
   "src/app/(app)/toi/quan-ly-mem/page.tsx",
 ];
 

@@ -2,6 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { createDb } from "../src/server/db/client";
 import { PASSWORD, resetAndSeed } from "./seed";
 
+// A ranking rowheader is the name plus the top-4 medal ("Hạng N").
+const rankedName = (name: string) => new RegExp(`^${name}( Hạng \\d)?$`);
+
 // This spec mutates the match day, so it restores the seeded state around itself
 // (resetAndSeed refuses any database that is not the e2e one).
 async function reset() {
@@ -81,7 +84,7 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   await page.goto("/xep-hang");
   const table = page.getByRole("table");
   for (const name of ["Quản trị", "An", "Bình", "Chi", "Dũng"]) {
-    await expect(table.getByRole("rowheader", { name, exact: true })).toBeVisible();
+    await expect(table.getByRole("rowheader", { name: rankedName(name) })).toBeVisible();
   }
   expect(await table.getByRole("row").count()).toBeGreaterThanOrEqual(6);
   await page.goto("/xep-hang?bang=elo");
@@ -95,7 +98,7 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   // Thống kê (Task 10): tham số lạ bị bỏ qua, trang vẫn hiện bình thường.
   await page.goto("/thong-ke?tu=2026-13");
   await expect(page.getByRole("heading", { name: "Thống kê" })).toBeVisible();
-  await expect(page.getByRole("rowheader", { name: "An", exact: true })).toBeVisible();
+  await expect(page.getByRole("rowheader", { name: rankedName("An") })).toBeVisible();
   await page.getByRole("link", { name: "Theo cặp" }).click();
   // Mỗi dòng cặp có hai tên mem, mỗi tên là một nút mở popup mem (plan 5).
   await expect(page).toHaveURL(/xem=cap/);

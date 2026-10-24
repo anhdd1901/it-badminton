@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getRosterAction, setAttendanceAction } from "@/app/_actions/attendance";
+import { cn } from "@/lib/utils";
 import { MemberAvatar } from "@/components/member-avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,9 @@ import {
 import { useAppAction } from "@/components/use-app-action";
 import type { PlayerRef } from "@/server/views/week";
 import type { MemberRef } from "@/server/views/rankings";
+
+// Tag mem kéo dài hết dòng, nút điểm danh nằm trong tag ở cuối (spec 8.2).
+const TAG = "flex h-11 shrink-0 items-center gap-2 rounded-full bg-surface-2 pr-1";
 
 type Row = { member: MemberRef; attending: boolean };
 
@@ -79,7 +83,7 @@ export function RosterDialog({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="min-h-11 self-start rounded-sm text-left text-sm text-on-chrome underline outline-none focus-visible:ring-2 focus-visible:ring-chrome-active"
+          className="min-h-11 self-start rounded-[6px] text-left text-sm text-on-chrome underline outline-none focus-visible:ring-2 focus-visible:ring-chrome-active"
         >
           {attendees.length} đã điểm danh / {activeMemberCount} mem
         </button>
@@ -99,10 +103,10 @@ export function RosterDialog({
         {canManage && loading && !rows ? (
           <p className="text-sm text-text-2">Đang tải danh sách…</p>
         ) : canManage ? (
-          <ul className="flex max-h-[60vh] flex-col gap-1 overflow-y-auto">
+          <ul className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
             {(rows ?? []).map((row) => (
-              <li key={row.member.id} className="flex items-center gap-3 py-1">
-                <MemberAvatar member={row.member} size={32} />
+              <li key={row.member.id} className={TAG}>
+                <MemberAvatar member={row.member} size={40} />
                 <span className="min-w-0 flex-1 truncate text-sm">
                   {row.member.displayName} (@{row.member.username})
                 </span>
@@ -110,6 +114,7 @@ export function RosterDialog({
                   type="button"
                   size="sm"
                   variant={row.attending ? "outline" : "default"}
+                  className={cn("h-9 px-3", row.attending && "bg-surface")}
                   aria-label={`${row.attending ? "Hủy điểm danh" : "Điểm danh"} ${row.member.displayName}`}
                   disabled={!canChange || busyId === row.member.id}
                   onClick={() => void toggle(row)}
@@ -122,11 +127,11 @@ export function RosterDialog({
         ) : attendees.length === 0 ? (
           <p className="text-sm text-text-2">Chưa có ai điểm danh</p>
         ) : (
-          <ul className="flex max-h-[60vh] flex-col gap-1 overflow-y-auto">
+          <ul className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
             {attendees.map((p) => (
-              <li key={p.id} className="flex items-center gap-3 py-1">
-                <MemberAvatar member={p} size={32} />
-                <span className="text-sm">{p.displayName}</span>
+              <li key={p.id} className={cn(TAG, "pr-4")}>
+                <MemberAvatar member={p} size={40} />
+                <span className="min-w-0 flex-1 truncate text-sm">{p.displayName}</span>
               </li>
             ))}
           </ul>

@@ -52,6 +52,31 @@ describe("PlayerName", () => {
     expect(a2).not.toHaveAttribute("data-focused");
   });
 
+  it("chạm lần đầu chỉ highlight, chạm lần hai mới mở popup", async () => {
+    const { a1, a2, b } = setup();
+    fireEvent.pointerDown(a1, { pointerType: "touch" });
+    fireEvent.click(a1);
+    expect(a1).toHaveAttribute("data-focused");
+    expect(a2).toHaveAttribute("data-focused");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.pointerDown(b, { pointerType: "touch" });
+    fireEvent.click(b);
+    expect(b).toHaveAttribute("data-focused");
+    expect(a1).not.toHaveAttribute("data-focused");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.pointerDown(b, { pointerType: "touch" });
+    fireEvent.click(b);
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+  });
+
+  it("ngoài danh sách trận, chạm mở popup ngay", async () => {
+    render(<PlayerName player={A} season={SEASON} />);
+    const a = screen.getByRole("button", { name: "An" });
+    fireEvent.pointerDown(a, { pointerType: "touch" });
+    fireEvent.click(a);
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+  });
+
   it("pointerType touch không highlight", () => {
     const { a1, a2 } = setup();
     fireEvent.pointerEnter(a1, { pointerType: "touch" });

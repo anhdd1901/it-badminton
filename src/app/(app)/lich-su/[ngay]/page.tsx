@@ -1,66 +1,22 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { now } from "@/app/_lib/clock";
 import { getDb } from "@/app/_lib/db";
 import { requireActor } from "@/app/_lib/session";
-import { MatchCard } from "@/components/match/match-card";
-import { MemberAvatar } from "@/components/member-avatar";
-import { PlayerFocusProvider } from "@/components/player-focus";
-import { PlayerName } from "@/components/player-name";
-import { canEditResults } from "@/domain/match-day";
 import { seasonOf } from "@/domain/time";
 import { AppError } from "@/server/errors";
 import { getMatchDayDetail } from "@/server/views/history";
-import { formatDay } from "@/ui/format";
 
+// Old per-day link: opens the history month with that day expanded.
 export default async function MatchDayDetailPage({ params }: PageProps<"/lich-su/[ngay]">) {
-  const actor = await requireActor();
+  await requireActor();
   const { ngay } = await params;
-  const at = now();
   let detail;
   try {
-    detail = await getMatchDayDetail(getDb(), ngay, at);
+    detail = await getMatchDayDetail(getDb(), ngay, now());
   } catch (e) {
     if (e instanceof AppError && e.code === "VALIDATION") notFound();
     throw e;
   }
   if (!detail) notFound();
-  const editable = canEditResults(detail.day, at, actor.role);
-
-  const season = seasonOf(detail.day);
-
-  return (
-    <main className="flex flex-col gap-4 p-4">
-      <h1 className="font-display text-xl font-bold italic">{formatDay(detail.day)}</h1>
-      <ul className="flex flex-wrap gap-2" aria-label="Người tham gia">
-        {detail.participants.map((p) => (
-          <li
-            key={p.id}
-            className="flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm"
-          >
-            <MemberAvatar member={p} size={24} />
-            <PlayerName
-              player={{ id: p.id, displayName: p.displayName }}
-              season={season}
-              className="block min-w-0 truncate text-left"
-            />
-          </li>
-        ))}
-      </ul>
-      {/* Spec 8.2: name highlight applies to matches only. */}
-      <PlayerFocusProvider>
-        <section className="flex flex-col gap-2">
-          {detail.matches.map((m) => (
-            <MatchCard
-              key={m.number}
-              match={m}
-              editable={editable}
-              day={detail.day}
-              scheduleKey={detail.key}
-              season={season}
-            />
-          ))}
-        </section>
-      </PlayerFocusProvider>
-    </main>
-  );
+  redirect(`/lich-su?mua=${seasonOf(detail.day)}&ngay=${detail.day}`);
 }

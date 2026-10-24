@@ -67,7 +67,7 @@ export function AvatarForm({ member }: { member: AvatarMember }) {
             alt="Ảnh xem trước"
             width={64}
             height={64}
-            className="size-16 rounded-full object-cover"
+            className="size-16 rounded-full border-2 border-surface object-cover"
           />
         ) : (
           <MemberAvatar member={member} size={64} />

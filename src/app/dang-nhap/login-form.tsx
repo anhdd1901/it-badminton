@@ -37,7 +37,7 @@ export function LoginForm() {
       <Button
         type="submit"
         disabled={pending}
-        className="rounded-full bg-accent text-on-accent hover:bg-accent/90"
+        className="rounded-[6px] bg-accent text-on-accent hover:bg-accent/90"
       >
         {pending ? "Đang đăng nhập…" : "Đăng nhập"}
       </Button>

@@ -30,11 +30,18 @@ describe("EloTable", () => {
     render(<EloTable rows={[row("a", 9000, 2, -50)]} season={SEASON} />);
     expect(screen.getByText("▼ 5,0").className).toContain("text-danger");
   });
-  it("hạt giống 1 hiện chữ 1 kèm chấm màu", () => {
-    const { container } = render(<EloTable rows={[row("a", 10168, 1, 0)]} season={SEASON} />);
-    const cell = screen.getByLabelText("Hạt giống 1");
-    expect(cell.textContent).toContain("1");
-    expect(container.querySelector(".bg-seed-1")).not.toBeNull();
+  it("không có cột Hạt giống; dòng Hạt giống 1 có nền surface-2", () => {
+    const { container } = render(
+      <EloTable rows={[row("a", 10168, 1, 0), row("b", 9000, 2, 0)]} season={SEASON} />,
+    );
+    expect(container.querySelector("thead")!.textContent).not.toContain("Hạt giống");
+    const [top, other] = Array.from(container.querySelectorAll("tbody tr"));
+    expect(top.className).toContain("bg-surface-2");
+    expect(top.querySelector("th")!.className).toContain("bg-surface-2");
+    expect(top.textContent).toContain("Hạt giống 1");
+    expect(other.className).not.toContain("bg-surface-2");
+    // --border equals --surface-2 in the dark theme, so dividers use --bg
+    expect(top.className).toContain("var(--bg)");
   });
   it("tên mem là nút mở popup", async () => {
     render(<EloTable rows={[row("a", 10168, 1, 0)]} season={SEASON} />);

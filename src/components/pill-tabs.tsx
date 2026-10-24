@@ -18,7 +18,7 @@ export function PillTabs({
           href={it.href}
           aria-current={it.active ? "page" : undefined}
           className={cn(
-            "inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium",
+            "inline-flex min-h-11 items-center rounded-[6px] border px-4 text-sm font-medium",
             it.active
               ? "border-transparent bg-primary text-primary-foreground"
               : "border-border bg-surface text-text-2",

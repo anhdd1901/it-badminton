@@ -2,6 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { createDb } from "../src/server/db/client";
 import { PASSWORD, resetAndSeed, seedPastMatchDay } from "./seed";
 
+// A ranking rowheader is the name plus the top-4 medal ("Hạng N").
+const rankedName = (name: string) => new RegExp(`^${name}( Hạng \\d)?$`);
+
 const FIVE = ["admin", "anh", "binh", "chi", "dung"];
 const WINS = Array.from({ length: 5 }, () => [21, 15] as [number, number]);
 
@@ -44,7 +47,7 @@ test("Xếp hạng: bấm tên mem mở popup có 'Toàn thời gian'", async ({
   await page.goto("/xep-hang");
   await page
     .getByRole("table")
-    .getByRole("rowheader", { name: "Bình", exact: true })
+    .getByRole("rowheader", { name: rankedName("Bình") })
     .getByRole("button", { name: "Bình", exact: true })
     .click();
   await expectMemberPopup(page, "Bình");
@@ -79,7 +82,7 @@ test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem
 }) => {
   await login(page, "anh");
   await page.goto("/lich-su/2026-10-10");
-  await expect(page.getByRole("heading", { name: "Thứ 7, 10/10/2026" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Thứ 7, 10\/10\/2026/ })).toBeVisible();
   const all = page.locator("main section").getByRole("button", { name: "Chi", exact: true });
   const count = await all.count();
   expect(count).toBeGreaterThan(1);
@@ -89,17 +92,7 @@ test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem
   await all.first().hover();
   for (let i = 0; i < count; i++) await expect(all.nth(i)).toHaveAttribute("data-focused", "");
   await expect(page.locator("button[data-focused]")).toHaveCount(count);
-  // Spec 8.2: highlight applies to matches only, not the participants list.
-  const chip = page
-    .getByRole("list", { name: "Người tham gia" })
-    .getByRole("button", { name: "Chi", exact: true });
-  await expect(chip).not.toHaveAttribute("data-focused", "");
-  await chip.hover();
-  await expect(page.locator("button[data-focused]")).toHaveCount(0);
-  await all.first().hover();
-  await expect(page.locator("button[data-focused]")).toHaveCount(count);
-
-  await page.getByRole("heading", { name: "Thứ 7, 10/10/2026" }).hover();
+  await page.getByRole("heading", { name: "Lịch sử", level: 1 }).hover();
   await expect(page.locator("button[data-focused]")).toHaveCount(0);
 });
 
@@ -113,7 +106,7 @@ test("Tuần này (admin): nút Nhập tỷ số vẫn mở, bấm tên mem mở
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
   const firstName = page.getByTestId("team-a").first().getByRole("button").first();
-  const name = (await firstName.innerText()).trim();
+  const name = (await firstName.getAttribute("aria-label")) ?? "";
   await firstName.click();
   await expectMemberPopup(page, name);
 });
@@ -133,8 +126,8 @@ test("Thống kê: Bỏ lọc đưa bộ lọc về mặc định, Lọc ngay sa
 
   await page.getByRole("link", { name: "Bỏ lọc" }).click();
   await expect(page).toHaveURL(/\/thong-ke\?xem=mem$/);
-  await expect(page.getByRole("button", { name: "Từ tháng" })).toHaveText("Toàn bộ");
-  await expect(page.getByRole("button", { name: "Đến tháng" })).toHaveText("Toàn bộ");
+  await expect(page.getByRole("button", { name: "Từ tháng" })).toHaveText("Từ tháng");
+  await expect(page.getByRole("button", { name: "Đến tháng" })).toHaveText("Đến tháng");
   await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText("Tất cả mem");
 
   await page.getByRole("button", { name: "Lọc" }).click();

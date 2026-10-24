@@ -40,7 +40,7 @@ describe("MatchCard", () => {
     );
     expect(screen.getByTestId("team-a").className).toContain("text-win");
     expect(screen.getByTestId("team-b").className).toContain("text-loss");
-    expect(screen.getByTestId("team-a").textContent).toContain("21");
+    expect(screen.getByTestId("score-a").textContent).toBe("21");
   });
 
   it("chưa có kết quả: hai ô –", () => {
@@ -117,26 +117,32 @@ describe("MatchCard court style", () => {
       <MatchCard match={match(res)} editable={editable} day="d" scheduleKey="k" season={SEASON} />,
     );
 
-  it("có lưới giữa hai cặp, ẩn với trình đọc màn hình", () => {
+  it("có lưới ngang giữa hai đội, ẩn với trình đọc màn hình", () => {
     r(false);
     const net = screen.getByTestId("net");
     expect(net.getAttribute("aria-hidden")).toBe("true");
-    const a = screen.getByTestId("team-a");
-    const b = screen.getByTestId("team-b");
-    expect(a.compareDocumentPosition(net) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(net.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(net.querySelectorAll(".net")).toHaveLength(2);
   });
 
-  it.each([
-    [true, "mr-12"],
-    [false, "mr-10"],
-  ])("lưới không chạy vào cột tỷ số (editable=%s)", (editable, cls) => {
+  it.each([true, false])("lưới bị cắt đứt ở đoạn tỷ số (editable=%s)", (editable) => {
     r(editable);
     const net = screen.getByTestId("net");
     expect(net.contains(screen.getByTestId("score-a"))).toBe(false);
     expect(net.contains(screen.getByTestId("score-b"))).toBe(false);
-    expect(net.className).toContain(cls);
     cleanup();
+  });
+
+  it("tỷ số nằm giữa, hai số xếp ngang theo thứ tự đội A rồi đội B", () => {
+    r(false);
+    const a = screen.getByTestId("team-a");
+    const b = screen.getByTestId("team-b");
+    const sa = screen.getByTestId("score-a");
+    const sb = screen.getByTestId("score-b");
+    const F = Node.DOCUMENT_POSITION_FOLLOWING;
+    expect(a.compareDocumentPosition(sa) & F).toBeTruthy();
+    expect(sa.compareDocumentPosition(sb) & F).toBeTruthy();
+    expect(sb.compareDocumentPosition(b) & F).toBeTruthy();
+    expect(sa.parentElement).toBe(sb.parentElement);
   });
 
   it("điểm cặp thắng màu nhấn, điểm cặp thua màu loss", () => {
@@ -147,10 +153,8 @@ describe("MatchCard court style", () => {
     expect(screen.getByTestId("score-b").className).toContain("text-loss");
   });
 
-  it("số trận dùng font hiển thị, ngăn bằng vạch sân", () => {
+  it("không hiện số thứ tự trận", () => {
     r(false);
-    const n = screen.getByTestId("match-number").className;
-    expect(n).toContain("font-display");
-    expect(n).toContain("border-line");
+    expect(screen.queryByTestId("match-number")).toBeNull();
   });
 });

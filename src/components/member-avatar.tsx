@@ -17,7 +17,8 @@ export function MemberAvatar({
   member: AvatarMember;
   size: 24 | 32 | 40 | 56 | 64;
 }) {
-  const box = "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full";
+  const box =
+    "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-surface";
   if (member.avatarUrl) {
     return (
       <span data-slot="avatar" className={box} style={{ width: size, height: size }}>

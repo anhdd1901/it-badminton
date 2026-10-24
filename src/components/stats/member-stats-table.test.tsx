@@ -31,24 +31,15 @@ describe("MemberStatsTable", () => {
     expect(getMemberProfileAction).toHaveBeenCalledWith("a", SEASON);
   });
 
-  it("ô hạng và ô số dùng font hiển thị như bảng mùa", () => {
+  it("không có cột Hạng; ô số dùng font hiển thị như bảng mùa", () => {
     const podium = { first: 1, second: 0, third: 0, fourth: 0 };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rows = [{ rank: 1, member: mem("a"), totals, diff: 11, podium }] as any;
     const { container } = render(<MemberStatsTable rows={rows} season={SEASON} />);
     const cells = Array.from(container.querySelectorAll("tbody td"));
-    expect(cells).toHaveLength(10);
-    const [rank, ...nums] = cells;
-    for (const c of [
-      "font-display",
-      "italic",
-      "font-bold",
-      "text-xl",
-      "leading-none",
-      "tabular-nums",
-    ])
-      expect(rank).toHaveClass(c);
-    for (const n of nums)
+    expect(cells).toHaveLength(9);
+    expect(container.querySelector("thead")!.textContent).not.toMatch(/^Hạng/);
+    for (const n of cells)
       for (const c of ["font-display", "italic", "font-semibold", "text-base", "tabular-nums"])
         expect(n).toHaveClass(c);
   });

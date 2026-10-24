@@ -74,7 +74,7 @@ export function PasswordForm() {
           Đã đổi mật khẩu
         </p>
       ) : null}
-      <Button type="submit" disabled={pending} className="self-start">
+      <Button type="submit" disabled={pending} className="self-end">
         Đổi mật khẩu
       </Button>
     </form>

@@ -32,11 +32,19 @@ describe("StatsFilter", () => {
     expect(screen.getByLabelText("Đến tháng").textContent).toBe("Tháng 5/2026");
   });
 
-  it("ô trống hiện Toàn bộ và gửi chuỗi rỗng", () => {
+  it("không có label hiện ra; Bỏ lọc cùng kiểu nút outline như Đăng xuất", () => {
     const { container } = render(
       <StatsFilter value={{ view: "mem" }} members={members} bounds={bounds} />,
     );
-    expect(screen.getByLabelText("Từ tháng").textContent).toBe("Toàn bộ");
+    expect(container.querySelector("label")).toBeNull();
+    expect(screen.getByRole("link", { name: "Bỏ lọc" }).className).toContain("border-border");
+  });
+
+  it("ô trống hiện Từ tháng / Đến tháng và gửi chuỗi rỗng", () => {
+    const { container } = render(
+      <StatsFilter value={{ view: "mem" }} members={members} bounds={bounds} />,
+    );
+    expect(screen.getByLabelText("Từ tháng").textContent).toBe("Từ tháng");
     expect(hidden(container, "tu")).toBe("");
     expect(hidden(container, "den")).toBe("");
     expect(hidden(container, "mem")).toBe("");
@@ -49,7 +57,7 @@ describe("StatsFilter", () => {
     fireEvent.click(screen.getByLabelText("Từ tháng"));
     fireEvent.click(screen.getByRole("button", { name: "Xóa" }));
     expect(hidden(container, "tu")).toBe("");
-    expect(screen.getByLabelText("Từ tháng").textContent).toBe("Toàn bộ");
+    expect(screen.getByLabelText("Từ tháng").textContent).toBe("Từ tháng");
   });
 
   it("Select mem hiện Tất cả mem khi không chọn, tên kèm (đã ngưng) khi có", () => {

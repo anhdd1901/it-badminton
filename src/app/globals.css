@@ -5,25 +5,31 @@
 /* Bảng màu theo spec 8.1: light-dark(<sáng>, <tối>). Thành phần chỉ dùng các biến này. */
 :root {
   color-scheme: light dark;
-  --bg: light-dark(#f2f5f0, #0f3d2e);
-  --surface: light-dark(#ffffff, #164a39);
-  --surface-2: light-dark(#e3ece5, #1d5644);
-  --border: light-dark(#cfddd4, #2a6450);
-  --text: light-dark(#0d2b21, #f7f3e6);
-  --text-2: light-dark(#4a5f55, #b7c8be);
-  --accent: light-dark(#0f3d2e, #e4f23a);
-  --on-accent: light-dark(#e4f23a, #0f3d2e);
-  --accent-text: light-dark(#0f6b47, #e4f23a);
-  --seed-1: light-dark(#1f5bd0, #9cc8ff);
+  --bg: light-dark(#e9e9e9, #111111);
+  --surface: light-dark(#fdfdfd, #222222);
+  --surface-2: light-dark(#f0f0f0, #333333);
+  --border: light-dark(#d6d6d6, #333333);
+  --text: light-dark(#111111, #fdfdfd);
+  --text-2: light-dark(#555555, #aaaaaa);
+  --accent: light-dark(#ff6b00, #ff6b00);
+  --on-accent: light-dark(#111111, #111111);
+  --accent-text: light-dark(#a84300, #ff8a00);
+  --seed-1: light-dark(#0066dd, #4d9fff);
   --seed-2: light-dark(#b0306e, #ffa3cf);
-  --win: light-dark(#0d2b21, #f7f3e6);
-  --loss: light-dark(#5e6e66, #a9bdb2);
+  --win: light-dark(#111111, #fdfdfd);
+  --loss: light-dark(#5e5e5e, #a6a6a6);
   --danger: light-dark(#c62828, #ff9a90);
-  --highlight: light-dark(#f1f7cf, #2c4a1c);
-  --line: light-dark(#1a6b4b, #dce6df);
-  --chrome: light-dark(#0f3d2e, #0a2e22);
-  --on-chrome: light-dark(#f7f3e6, #f7f3e6);
-  --chrome-active: light-dark(#e4f23a, #e4f23a);
+  --highlight: light-dark(#ffe0cc, #4a2a14);
+  --line: light-dark(#6e6e6e, #e6e6e6);
+  --chrome: light-dark(#181818, #181818);
+  --on-chrome: light-dark(#fdfdfd, #fdfdfd);
+  --chrome-active: light-dark(#ff6b00, #ff6b00);
+  /* Huy chương hạng 1–4 (chữ số dùng --on-medal) */
+  --gold: #f5c518;
+  --silver: #c4c9cf;
+  --bronze: #d08a4e;
+  --fourth: #6aa9e9;
+  --on-medal: #111111;
 
   /* shadcn/ui trỏ về token ở trên */
   --background: var(--bg);
@@ -72,6 +78,11 @@
   --color-chrome: var(--chrome);
   --color-on-chrome: var(--on-chrome);
   --color-chrome-active: var(--chrome-active);
+  --color-gold: var(--gold);
+  --color-silver: var(--silver);
+  --color-bronze: var(--bronze);
+  --color-fourth: var(--fourth);
+  --color-on-medal: var(--on-medal);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -112,13 +123,7 @@
 }
 
 @utility net {
-  height: 6px;
-  background:
-    repeating-linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--line) 55%, transparent) 0 1px,
-        transparent 1px 5px
-      )
-      top / 100% 4px no-repeat,
-    linear-gradient(var(--line), var(--line)) bottom / 100% 2px no-repeat;
+  height: 2px;
+  background: var(--line);
+  opacity: 0.6;
 }
