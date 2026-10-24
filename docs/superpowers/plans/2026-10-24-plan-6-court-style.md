@@ -290,24 +290,24 @@ git commit -m "feat(plan-6/task-5): chrome navigation with lime active mark"
 - Consumes: `font-display` (Task 2), `text-accent-text`, `border-accent-text` (Task 1).
 - Produces: dòng hạng 1 ở bảng mùa có `data-leader`.
 
-- [ ] **Step 1: Test**
+- [x] **Step 1: Test**
 
 - `season-table.test.tsx`: `"mọi dòng hạng 1 có vạch nhấn, kể cả đồng hạng"`: dữ liệu hai mem cùng hạng 1 và một mem hạng 3 → đúng hai `tr[data-leader]`; ô hạng của chúng có `border-accent-text`; ô hạng mọi dòng có `font-display` và `italic`.
 - `elo-table.test.tsx`: test cũ dòng 25 đổi mong đợi `"text-seed-2"` → `"text-accent-text"` (spec 8.2: ELO lên dùng `--accent-text`); thêm ô ELO có `font-display`.
 - `member-dialog.test.tsx`: chevron lên (`aria-label` thay đổi ELO dương) có `text-accent-text`; số ELO lớn có `font-display`.
 Run: `pnpm test src/components/ranking src/components/member` → FAIL.
 
-- [ ] **Step 2: Sửa ba thành phần**
+- [x] **Step 2: Sửa ba thành phần**
 
 - `season-table.tsx`: ô hạng `font-display italic font-bold text-xl leading-none tabular-nums`; dòng `r.rank === 1` có `data-leader` và ô hạng `border-l-[3px] border-accent-text`; các ô số (`Thắng`…`Số trận`) thêm `font-display italic font-semibold text-base`. Tên mem giữ nguyên.
 - `elo-table.tsx`: ô ELO `font-display italic font-semibold text-base`; thay đổi dương `text-accent-text` (thay `text-seed-2`). Chấm hạt giống `bg-seed-2` giữ nguyên.
 - `member-dialog.tsx`: số ELO `font-display italic font-bold text-4xl`; `ChevronUp` đổi `text-seed-2` → `text-accent-text`. Ô số liệu trong lưới thêm `font-display italic font-semibold` cho số (nhãn giữ Be Vietnam Pro).
 
-- [ ] **Step 3: Chạy test, xác nhận xanh**
+- [x] **Step 3: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/components/ranking src/components/member` → PASS.
 
-- [ ] **Step 4: Cổng kiểm tra và commit**
+- [x] **Step 4: Cổng kiểm tra và commit**
 
 ```bash
 pnpm test && pnpm typecheck && pnpm lint && pnpm format:check

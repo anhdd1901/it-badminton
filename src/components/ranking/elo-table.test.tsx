@@ -22,8 +22,9 @@ describe("EloTable", () => {
   it("hiện ELO và thay đổi có ký hiệu", () => {
     render(<EloTable rows={[row("a", 10168, 1, 168), row("b", 9900, 2, null)]} season={SEASON} />);
     expect(screen.getByText("1.016,8")).toBeTruthy();
-    expect(screen.getByText("▲ 16,8").className).toContain("text-seed-2");
+    expect(screen.getByText("▲ 16,8").className).toContain("text-accent-text");
     expect(screen.getByText("–")).toBeTruthy();
+    expect(screen.getByText("1.016,8").className).toContain("font-display");
   });
   it("giảm hiện ▼ màu danger", () => {
     render(<EloTable rows={[row("a", 9000, 2, -50)]} season={SEASON} />);

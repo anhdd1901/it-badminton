@@ -96,7 +96,9 @@ describe("MemberDialog", () => {
   it("chevron theo delta", async () => {
     action.mockResolvedValue({ ok: true, data: view({ lastMatchDayDelta: 123 }) });
     renderDialog();
-    await screen.findByLabelText("Tăng 12,3 điểm ở buổi gần nhất");
+    const up = await screen.findByLabelText("Tăng 12,3 điểm ở buổi gần nhất");
+    expect(up.getAttribute("class")).toContain("text-accent-text");
+    expect(screen.getByText("1.016,8").className).toContain("font-display");
     cleanup();
     action.mockResolvedValue({ ok: true, data: view({ lastMatchDayDelta: -123 }) });
     renderDialog();

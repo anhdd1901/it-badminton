@@ -2,6 +2,7 @@ import type { getSeasonView } from "@/server/views/rankings";
 import { MemberAvatar } from "@/components/member-avatar";
 import { PlayerName } from "@/components/player-name";
 import type { SeasonId } from "@/domain/types";
+import { cn } from "@/lib/utils";
 import { formatDiff } from "@/ui/format";
 
 type Row = Awaited<ReturnType<typeof getSeasonView>>["rows"][number];
@@ -46,8 +47,19 @@ export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId })
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.member.id} className="border-t border-border tabular-nums">
-              <td className="p-2">{r.rank}</td>
+            <tr
+              key={r.member.id}
+              data-leader={r.rank === 1 ? "" : undefined}
+              className="border-t border-border tabular-nums"
+            >
+              <td
+                className={cn(
+                  "p-2 font-display text-xl leading-none font-bold italic tabular-nums",
+                  r.rank === 1 && "border-l-[3px] border-accent-text",
+                )}
+              >
+                {r.rank}
+              </td>
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
                   <MemberAvatar member={r.member} size={24} />
@@ -60,11 +72,21 @@ export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId })
                   </span>
                 </span>
               </th>
-              <td className="p-2 text-right">{r.totals.wins}</td>
-              <td className="p-2 text-right">{formatDiff(r.diff)}</td>
-              <td className="p-2 text-right">{r.totals.pointsFor}</td>
-              <td className="p-2 text-right">{r.totals.pointsAgainst}</td>
-              <td className="p-2 text-right">{r.totals.played}</td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.totals.wins}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {formatDiff(r.diff)}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.totals.pointsFor}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.totals.pointsAgainst}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.totals.played}
+              </td>
             </tr>
           ))}
         </tbody>

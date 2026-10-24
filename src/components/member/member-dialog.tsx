@@ -115,7 +115,7 @@ function Cell({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div data-slot="stat-cell" className={CELL_BOX}>
       <span className="text-xs text-text-2">{label}</span>
-      <span className="text-lg font-semibold tabular-nums">{value}</span>
+      <span className="font-display text-lg font-semibold italic tabular-nums">{value}</span>
     </div>
   );
 }
@@ -147,10 +147,12 @@ function Ready({ view }: { view: MemberProfileView }) {
         </div>
       </DialogHeader>
       <div className="flex items-center gap-1">
-        <span className="text-3xl font-semibold tabular-nums">{formatElo(view.eloTenths)}</span>
+        <span className="font-display text-4xl font-bold italic tabular-nums">
+          {formatElo(view.eloTenths)}
+        </span>
         {member.active && delta ? (
           delta > 0 ? (
-            <ChevronUp aria-label={label} role="img" className="size-6 text-seed-2" />
+            <ChevronUp aria-label={label} role="img" className="size-6 text-accent-text" />
           ) : (
             <ChevronDown aria-label={label} role="img" className="size-6 text-danger" />
           )

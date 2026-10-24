@@ -44,7 +44,9 @@ export function EloTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
                     </span>
                   </span>
                 </th>
-                <td className="p-2 text-right tabular-nums">{formatElo(r.eloTenths)}</td>
+                <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                  {formatElo(r.eloTenths)}
+                </td>
                 <td className="p-2">
                   <span
                     role="img"
@@ -64,7 +66,7 @@ export function EloTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
                 <td className="p-2 text-right tabular-nums">
                   <span
                     className={cn(
-                      d !== null && d > 0 && "text-seed-2",
+                      d !== null && d > 0 && "text-accent-text",
                       d !== null && d < 0 && "text-danger",
                     )}
                   >
