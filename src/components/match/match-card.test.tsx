@@ -107,3 +107,50 @@ describe("MatchCard", () => {
     expect(screen.getAllByRole("button", { name: "Mem b" })[0]).not.toHaveAttribute("data-focused");
   });
 });
+
+describe("MatchCard court style", () => {
+  const r = (
+    editable: boolean,
+    res: WeekMatch["result"] = { scoreA: 21, scoreB: 15, version: 1 },
+  ) =>
+    render(
+      <MatchCard match={match(res)} editable={editable} day="d" scheduleKey="k" season={SEASON} />,
+    );
+
+  it("có lưới giữa hai cặp, ẩn với trình đọc màn hình", () => {
+    r(false);
+    const net = screen.getByTestId("net");
+    expect(net.getAttribute("aria-hidden")).toBe("true");
+    const a = screen.getByTestId("team-a");
+    const b = screen.getByTestId("team-b");
+    expect(a.compareDocumentPosition(net) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(net.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it.each([
+    [true, "mr-12"],
+    [false, "mr-10"],
+  ])("lưới không chạy vào cột tỷ số (editable=%s)", (editable, cls) => {
+    r(editable);
+    const net = screen.getByTestId("net");
+    expect(net.contains(screen.getByTestId("score-a"))).toBe(false);
+    expect(net.contains(screen.getByTestId("score-b"))).toBe(false);
+    expect(net.className).toContain(cls);
+    cleanup();
+  });
+
+  it("điểm cặp thắng màu nhấn, điểm cặp thua màu loss", () => {
+    r(false);
+    const a = screen.getByTestId("score-a").className;
+    for (const c of ["text-accent-text", "font-display", "italic", "tabular-nums"])
+      expect(a).toContain(c);
+    expect(screen.getByTestId("score-b").className).toContain("text-loss");
+  });
+
+  it("số trận dùng font hiển thị, ngăn bằng vạch sân", () => {
+    r(false);
+    const n = screen.getByTestId("match-number").className;
+    expect(n).toContain("font-display");
+    expect(n).toContain("border-line");
+  });
+});

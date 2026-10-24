@@ -163,7 +163,7 @@ git commit -m "feat(plan-6/task-2): self-hosted Barlow Condensed display font an
 - Consumes: `font-display`, `net` (Task 2); `border-line`, `text-accent-text` (Task 1).
 - Produces: không đổi props của `MatchCard`. Trong DOM: `data-testid="net"` (lưới), `data-testid="score-a"`, `data-testid="score-b"` (ô tỷ số), `data-testid="match-number"`.
 
-- [ ] **Step 1: Test**
+- [x] **Step 1: Test**
 
 Thêm vào `match-card.test.tsx`:
 - `"có lưới giữa hai cặp, ẩn với trình đọc màn hình"`: `screen.getByTestId("net")` có `aria-hidden="true"`; trong DOM, `team-a` đứng trước `net`, `net` đứng trước `team-b` (`compareDocumentPosition`).
@@ -174,18 +174,18 @@ Thêm vào `match-card.test.tsx`:
 
 Run: `pnpm test src/components/match/match-card.test.tsx` → FAIL.
 
-- [ ] **Step 2: Sửa `MatchCard`**
+- [x] **Step 2: Sửa `MatchCard`**
 
 - Cột số trận: `data-testid="match-number"`, `font-display italic font-semibold text-lg text-text-2`, `border-r-2 border-line`, rộng cố định đủ 2 chữ số, căn giữa.
 - Cột cặp: `TeamA`, rồi `<div data-testid="net" aria-hidden="true" className="net mr-…" />`, rồi `TeamB`. Lề phải của lưới = độ rộng ô tỷ số + khoảng cách `gap-2`: sửa được thì ô tỷ số `w-10` → `mr-12`; chỉ xem `w-8` → `mr-10`.
 - Ô tỷ số: `data-testid` theo cặp, `font-display italic font-semibold text-[28px] leading-none tabular-nums text-right`; thắng `text-accent-text`, thua `text-loss`, chưa có kết quả `text-text-2` và hiện "–".
 - Thẻ: giữ `rounded-lg` (giờ là 6px), `border-border bg-surface`; nút phủ tỷ số giữ `w-14` và `aria-label`.
 
-- [ ] **Step 3: Chạy test, xác nhận xanh**
+- [x] **Step 3: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/components/match/match-card.test.tsx` → PASS (cả test cũ, gồm "không có nút lồng trong nút" với 5 nút).
 
-- [ ] **Step 4: Cổng kiểm tra và commit**
+- [x] **Step 4: Cổng kiểm tra và commit**
 
 ```bash
 pnpm test && pnpm typecheck && pnpm lint && pnpm format:check

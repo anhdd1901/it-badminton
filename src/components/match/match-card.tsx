@@ -49,6 +49,9 @@ function Team({
   season: SeasonId;
   scoreWidth: string;
 }) {
+  const scoreTone =
+    tone === "win" ? "text-accent-text" : tone === "loss" ? "text-loss" : "text-text-2";
+  const scoreTestId = testId === "team-a" ? "score-a" : "score-b";
   const cls = tone === "win" ? "text-win font-semibold" : tone === "loss" ? "text-loss" : "";
   return (
     <div data-testid={testId} className={`flex items-center gap-2 ${cls}`}>
@@ -56,7 +59,12 @@ function Team({
         <Player p={players[0]} season={season} />
         <Player p={players[1]} season={season} />
       </div>
-      <span className={`${scoreWidth} shrink-0 text-right tabular-nums`}>{score ?? "–"}</span>
+      <span
+        data-testid={scoreTestId}
+        className={`${scoreWidth} shrink-0 text-right font-display text-[28px] leading-none font-semibold tabular-nums italic ${scoreTone}`}
+      >
+        {score ?? "–"}
+      </span>
     </div>
   );
 }
@@ -82,9 +90,16 @@ export function MatchCard({
   const r = match.result;
   // editable: the score column is covered by the w-14 overlay button, so keep names clear of it
   const scoreWidth = editable ? "w-10" : "w-8";
+  // net margin = score width + gap-2, so the net never runs under the score column
+  const netMargin = editable ? "mr-12" : "mr-10";
   const body = (
     <>
-      <span className="w-5 shrink-0 text-xs text-text-2">{match.number}</span>
+      <span
+        data-testid="match-number"
+        className="w-8 shrink-0 self-stretch border-r-2 border-line text-center font-display text-lg font-semibold text-text-2 italic"
+      >
+        {match.number}
+      </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <Team
           testId="team-a"
@@ -94,6 +109,7 @@ export function MatchCard({
           season={season}
           scoreWidth={scoreWidth}
         />
+        <div data-testid="net" aria-hidden="true" className={`net ${netMargin}`} />
         <Team
           testId="team-b"
           players={match.teamB}
