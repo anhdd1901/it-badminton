@@ -16,7 +16,7 @@ Web app cho một câu lạc bộ cầu lông (hiện 10 mem): mem điểm danh 
 - **Thuật ngữ:** `GLOSSARY.md`. Dùng đúng thuật ngữ này trong code, test và giao diện.
 - **Kế hoạch:** `docs/superpowers/plans/`. Dự án chia 5 kế hoạch: 1 Nền móng và lõi quy tắc · 2 Database, đăng nhập, lớp nghiệp vụ · 3 Giao diện · 4 Vận hành · 5 Hoàn thiện giao diện (spec 8.2). Kế hoạch đã có file và mọi bước `[x]` là xong.
 - **Việc tồn đọng:** `docs/backlog.md`.
-- **Giao diện:** phong cách lấy cảm hứng từ livescore.com, hai theme sáng/tối, font Be Vietnam Pro (spec 8.1). `docs/design/` (prompt Stitch) chỉ để tham khảo, không dùng nữa.
+- **Giao diện:** phong cách sân cầu (xanh sân, vàng chanh, thẻ trận có lưới), hai theme sáng/tối, font Barlow Condensed nghiêng cho số và tiêu đề, Be Vietnam Pro cho nội dung (spec 8.1). `docs/design/` (prompt Stitch) chỉ để tham khảo, không dùng nữa.
 
 ## Công nghệ
 
@@ -52,7 +52,7 @@ scripts/                lệnh quản trị (tsx)
 drizzle/                migration
 docs/superpowers/specs/ spec
 docs/design/            prompt Stitch (không dùng nữa, để tham khảo)
-src/fonts/              font tự host (Be Vietnam Pro)
+src/fonts/              font tự host (Be Vietnam Pro, Barlow Condensed)
 docs/superpowers/plans/ kế hoạch triển khai (tiến độ = các bước [x])
 docs/backlog.md         việc tồn đọng
 docs/adr/               quyết định kiến trúc (chưa có)
@@ -82,12 +82,13 @@ Chi tiết và ngoại lệ nằm trong spec; đây chỉ là bản đồ nhanh.
 - `ALLOW_FAKE_CLOCK=1` + `APP_FAKE_NOW` chỉ dùng cho e2e/local (`src/app/_lib/clock.ts`); không bao giờ đặt ở môi trường production.
 - **Nhánh làm việc:** `main` là nhánh chính (remote `origin` trên GitHub). Mỗi kế hoạch mới: viết → người dùng duyệt → tạo worktree riêng (`using-git-worktrees`) → thực hiện bằng subagent-driven-development → merge về `main`. Worktree mới cần `pnpm install`, chép `.env` và chạy `pnpm next typegen` (không có thì typecheck báo thiếu `PageProps`/`LayoutProps`).
 - **Môi trường:** PostgreSQL 17 chạy bằng Docker ở cổng 5433 (`docker-compose.yml`), database `anh_em_it_dev`, `anh_em_it_test` và `anh_em_it_e2e` (e2e tự tạo). Chép `.env.example` thành `.env`. Phiên Claude cũ chưa nhận nhóm `docker` thì chạy lệnh docker qua `sg docker -c "..."`.
-- **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` ở `src/fonts/be-vietnam-pro/`.
+- **Font:** Be Vietnam Pro 400/500/600/700 (`.ttf`, đủ dấu tiếng Việt) và `OFL.txt` ở `src/fonts/be-vietnam-pro/`; Barlow Condensed 600/700 nghiêng ở `src/fonts/barlow-condensed/` (lớp `font-display`, luôn kèm `italic` và `font-semibold`/`font-bold`, vì không có bản đứng). Lưới thẻ trận là tiện ích CSS `net` trong `globals.css`.
+- **Nền `--chrome`** (thanh đáy, menu bên, đầu màn Tuần này, màn đăng nhập) xanh ở cả hai theme: chữ trên đó chỉ dùng `text-on-chrome`/`text-chrome-active`, viền focus `ring-chrome-active`; `text-text*`/`text-accent-text` không đọc được ở theme sáng.
 - **Next.js 16 khác kiến thức cũ:** trước khi viết code Next, đọc hướng dẫn trong `node_modules/next/dist/docs/` (xem `AGENTS.md`).
 - **Ranh giới `src/domain/`:** hàm nhận `now: Date`, không gọi `new Date()`; chỉ import `date-fns`, `@date-fns/tz` và file trong `src/domain/`. ELO lưu bằng số nguyên phần mười. Domain tin dữ liệu vào: lớp nghiệp vụ (kế hoạch 2) phải kiểm tra `LocalDate`/`SeasonId` bằng Zod, chỉ đưa mem đang hoạt động vào xếp hạt giống, và truyền cho `seasonEndsAt` đúng một mốc thời gian cho mỗi trận có kết quả của thứ 7 cuối mùa.
 - **Lớp nghiệp vụ `src/server/`:** hàm nhận `db`, `Actor`, `now`; tự kiểm quyền; lỗi là `AppError` (code + thông báo tiếng Việt trong `errors.ts`, `HTTP_STATUS` để ánh xạ). Mọi thao tác ghi trên một buổi khóa advisory theo ngày (`lockMatchDay`) và gọi `finalizeDue` trước. Khóa lịch (`scheduleKey`) = danh sách mem *đang hoạt động* đã điểm danh; giao diện phải gửi lại `scheduleKey` lấy từ `getWeekView`/`getMatchDayDetail` khi nhập/sửa/xóa kết quả. Id từ client đi qua `parseMemberId`.
 - **Cho kế hoạch 3 (từ review):** cần thêm dữ liệu cho màn Cá nhân, danh sách mem cho admin, chọn mem kèm username, danh sách tháng có dữ liệu; dịch vụ avatar; client `db` dùng chung (cache trên `globalThis`); ẩn "đặt lại mật khẩu" cho chính admin (sẽ tự đăng xuất).
-- **Component shadcn thêm bằng CLI:** token `--accent` của dự án là màu cam, nên thay `bg-accent`/`focus:bg-accent`/`text-accent-foreground` bằng `bg-surface-2`/`text-text`; CLI có thể sinh `import { cn } from "cn"` và thêm gói `cn`: sửa về `@/lib/utils`, bỏ gói. Nút `<button>` tự viết cần `focus-visible:ring-2 focus-visible:ring-ring` (globals.css chỉ có viền focus cho `a`).
+- **Component shadcn thêm bằng CLI:** token `--accent` của dự án là màu nhấn (vàng chanh ở theme tối, xanh sân ở theme sáng), nên thay `bg-accent`/`focus:bg-accent`/`text-accent-foreground` bằng `bg-surface-2`/`text-text`; CLI có thể sinh `import { cn } from "cn"` và thêm gói `cn`: sửa về `@/lib/utils`, bỏ gói. Nút `<button>` tự viết cần `focus-visible:ring-2 focus-visible:ring-ring` (globals.css chỉ có viền focus cho `a`).
 - **Không để `username` xuống client:** prop truyền từ server component sang client component chỉ mang `{ id, displayName, … }` cần dùng, không truyền nguyên `MemberRef`/`Me` (spec 8.2, 5.2: username không công khai). `PlayerName`, `StatsFilter`, `AppNav` khai báo `username?: never` để typecheck chặn; e2e `member-popup.spec.ts` kiểm HTML của mem thường.
 - **Tên mem bấm được:** dùng `PlayerName` (mở popup mem, `MemberDialog`); highlight khi hover chỉ trong `PlayerFocusProvider` (chỉ bọc danh sách trận). Danh sách điểm danh không dùng `PlayerName` (spec 8.2).
 - `pnpm test:int -- <tên>` không lọc file, luôn chạy toàn bộ test tích hợp.

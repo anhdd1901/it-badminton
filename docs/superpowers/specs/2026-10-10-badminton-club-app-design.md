@@ -260,7 +260,7 @@ Phiên bản ghi là bản mới nhất trên npm ngày 2026-10-10, để tham k
 | CSS | Tailwind CSS | 4.x | giao diện responsive |
 | Thành phần UI | shadcn/ui (dựa trên Radix UI) | CLI 4.x | popup, tabs, select, popover, form, thông báo: chép mã vào dự án, tùy biến theo thiết kế; select luôn dùng component shadcn, chọn tháng dùng `MonthPicker` tự viết trên popover shadcn (8.2) |
 | Icon | lucide-react | 1.x | |
-| Font | Be Vietnam Pro qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/be-vietnam-pro/` (8.1) |
+| Font | Be Vietnam Pro và Barlow Condensed qua `next/font/local` | có sẵn trong Next.js | font tự host từ `src/fonts/` (8.1) |
 | Database | PostgreSQL | 17 (local), 18 (Neon, production) | Neon tạo qua Vercel Marketplace, region AWS `ap-southeast-1` (Singapore) |
 | Driver | `postgres` (postgres.js) | 3.x | kết nối PostgreSQL, dùng chung cho local và Neon |
 | ORM và migration | Drizzle ORM + drizzle-kit | 0.45.x / 0.31.x | định nghĩa bảng, truy vấn có kiểu, sinh migration |
@@ -391,7 +391,7 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Nền xan
   - Bên trái là cột hẹp ghi số trận (Barlow nghiêng), ngăn với phần còn lại bằng vạch dọc `--line` như vạch biên sân.
   - Hai cặp xếp chồng, mỗi cặp một dòng gồm avatar và tên kèm chấm màu hạt giống. Giữa hai cặp là **lưới**: vạch `--line` dày 2px, phía trên có dải nét lưới mảnh cao 4px (gạch lặp lại). Lưới chạy ngang phần tên, không cắt qua cột tỷ số.
   - Tỷ số canh phải, cùng dòng với cặp tương ứng, Barlow nghiêng cỡ 28px. Cặp thắng: tên `--win` đậm, điểm `--accent-text`. Cặp thua: tên và điểm `--loss`. Chưa có tỷ số thì hiện "–".
-- **Đầu màn Tuần này:** dải `--chrome` chứa ngày ("Thứ 7, 17/10") bằng Barlow nghiêng khoảng 40px, dưới là trạng thái và số đã điểm danh; viền dưới của dải là vạch `--chrome-active` dày 3px, giống vạch giao cầu. Nút điểm danh nằm ngay dưới dải.
+- **Đầu màn Tuần này:** dải `--chrome` chứa ngày ("Thứ 7, 17/10" bằng Barlow nghiêng khoảng 40px, năm "/2026" viết nhỏ ngay sau), dưới là trạng thái và số đã điểm danh; viền dưới của dải là vạch `--chrome-active` dày 3px, giống vạch giao cầu. Nút điểm danh nằm ngay dưới dải.
 - **Điều hướng:** thanh đáy và menu bên nền `--chrome` ở cả hai theme, chữ và icon `--on-chrome`. Mục đang chọn dùng `--chrome-active` cho icon và chữ, kèm vạch ngắn `--chrome-active` ở mép trên (thanh đáy) hoặc mép trái (menu bên).
 - **Bảng xếp hạng và ELO:** cột hạng là Barlow nghiêng cỡ lớn; các cột số dùng Barlow; tên dùng Be Vietnam Pro. Dòng hạng 1 có thêm vạch `--accent-text` ở mép trái; không có huy hiệu.
 - **Màn đăng nhập:** nền `--chrome`; chữ "ANH EM IT" Barlow nghiêng cỡ lớn, bên dưới là một vạch lưới như ở thẻ trận.

@@ -366,7 +366,7 @@ Expected: tất cả xanh, không sửa test e2e nào.
 
 Chạy app như e2e (đồng hồ giả thứ 7 17/10/2026, seed e2e). Chụp màn hình ở 375×812 và 1280×800, theme sáng và tối (cookie `theme`), cho: Đăng nhập, Tuần này (admin, có lịch và kết quả), Xếp hạng (Mùa và ELO), Thống kê, Lịch sử chi tiết, popup mem, Tôi. Kiểm theo Review Focus 1, 2, 4: lưới không chạm tỷ số với tên dài ở 320px; chữ và viền focus (Tab bằng bàn phím) nhìn rõ trên `--chrome` ở theme sáng; dấu tiếng Việt trong Barlow đúng font. Lỗi tìm thấy thì sửa trong task này kèm test lớp tương ứng.
 
-- [ ] **Step 3: Cập nhật `CLAUDE.md`**
+- [x] **Step 3: Cập nhật `CLAUDE.md`**
 
 - Dòng "Giao diện": "phong cách sân cầu (xanh sân, vàng chanh), hai theme sáng/tối, font Barlow Condensed cho số và tiêu đề, Be Vietnam Pro cho nội dung (spec 8.1)".
 - Lưu ý shadcn: "token `--accent` của dự án là màu nhấn (vàng chanh/xanh sân)" thay cho "màu cam".
