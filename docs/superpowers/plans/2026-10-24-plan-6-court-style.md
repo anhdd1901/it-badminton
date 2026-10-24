@@ -373,7 +373,7 @@ Chạy app như e2e (đồng hồ giả thứ 7 17/10/2026, seed e2e). Chụp m�
 - Lưu ý font: thêm Barlow Condensed 600/700 nghiêng ở `src/fonts/barlow-condensed/`; thêm "chữ trên `--chrome` chỉ dùng `--on-chrome`/`--chrome-active`, focus `ring-chrome-active`".
 - Cấu trúc thư mục: dòng `src/fonts/` ghi cả hai font.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 graphify update .
