@@ -79,7 +79,7 @@ export function RosterDialog({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="min-h-11 self-start text-left text-sm text-text-2 underline"
+          className="min-h-11 self-start rounded-sm text-left text-sm text-on-chrome underline outline-none focus-visible:ring-2 focus-visible:ring-chrome-active"
         >
           {attendees.length} đã điểm danh / {activeMemberCount} mem
         </button>

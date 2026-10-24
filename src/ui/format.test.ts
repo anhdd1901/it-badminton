@@ -3,6 +3,7 @@ import type { SeasonId } from "@/domain/types";
 import {
   eloInputValue,
   formatDay,
+  formatDayShort,
   formatElo,
   formatEloDelta,
   formatSeason,
@@ -24,6 +25,10 @@ describe("format", () => {
     expect(formatDay("2026-10-17")).toBe("Thứ 7, 17/10/2026");
     expect(formatDay("2026-10-18")).toBe("Chủ nhật, 18/10/2026");
     expect(formatDay("2026-10-12")).toBe("Thứ 2, 12/10/2026");
+  });
+  it("formatDayShort không có năm", () => {
+    expect(formatDayShort("2026-10-17")).toBe("Thứ 7, 17/10");
+    expect(formatDayShort("2026-10-18")).toBe("Chủ nhật, 18/10");
   });
   it("formatSeason", () => {
     expect(formatSeason("2026-10")).toBe("Tháng 10/2026");

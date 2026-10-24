@@ -21,9 +21,14 @@ export function formatEloDelta(tenths: number | null): string {
 
 /** "2026-10-17" → "Thứ 7, 17/10/2026"; thứ tính từ chuỗi ngày, không qua múi giờ máy. */
 export function formatDay(day: LocalDate): string {
+  return `${formatDayShort(day)}/${day.slice(0, 4)}`;
+}
+
+/** "2026-10-17" → "Thứ 7, 17/10" (không có năm). */
+export function formatDayShort(day: LocalDate): string {
   const [y, m, d] = day.split("-").map(Number);
   const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-  return `${weekday}, ${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${y}`;
+  return `${weekday}, ${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}`;
 }
 
 export function formatSeason(season: SeasonId): string {

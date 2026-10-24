@@ -206,13 +206,13 @@ git commit -m "feat(plan-6/task-3): match card with net divider and display-font
 - Consumes: `bg-chrome`, `text-on-chrome`, `text-chrome-active`, `border-chrome-active`, `ring-chrome-active` (Task 1); `font-display` (Task 2).
 - Produces: `formatDayShort(day: LocalDate): string` trong `src/ui/format.ts`, trả "Thứ 7, 17/10" (không có năm; cùng tên thứ như `formatDay`).
 
-- [ ] **Step 1: Test `formatDayShort`**
+- [x] **Step 1: Test `formatDayShort`**
 
 Trong `format.test.ts`: `formatDayShort("2026-10-17" as LocalDate)` → `"Thứ 7, 17/10"`; `formatDayShort("2026-10-18" as LocalDate)` → `"Chủ nhật, 18/10"` (theo bảng `WEEKDAYS` hiện có; sửa chuỗi mong đợi cho khớp bảng đó nếu khác). Run → FAIL.
 
-- [ ] **Step 2: Viết `formatDayShort`** dùng chung phần tách ngày với `formatDay`. Run → PASS.
+- [x] **Step 2: Viết `formatDayShort`** dùng chung phần tách ngày với `formatDay`. Run → PASS.
 
-- [ ] **Step 3: Test `WeekHeader`**
+- [x] **Step 3: Test `WeekHeader`**
 
 `week-header.test.tsx`: render `<WeekHeader day="2026-10-17" status="open"><button>8/10</button></WeekHeader>`:
 - `container.querySelector("header")` có `bg-chrome`, `text-on-chrome`, `border-chrome-active`.
@@ -221,7 +221,7 @@ Trong `format.test.ts`: `formatDayShort("2026-10-17" as LocalDate)` → `"Thứ 
 - Không phần tử nào trong header có `text-accent-text` hoặc `text-text-2`.
 Run → FAIL.
 
-- [ ] **Step 4: Sửa `WeekHeader`**
+- [x] **Step 4: Sửa `WeekHeader`**
 
 - `header`: `-mx-4 -mt-4 bg-chrome text-on-chrome border-b-[3px] border-chrome-active px-4 pt-4 pb-3`, giữ `flex flex-col gap-1`.
 - `h1` "Tuần này": `text-sm font-medium`.
@@ -229,11 +229,11 @@ Run → FAIL.
 - Trạng thái: `text-sm text-chrome-active`.
 - `roster-dialog.tsx`: nút mở danh sách đổi `text-text-2` → `text-on-chrome`, thêm `outline-none focus-visible:ring-2 focus-visible:ring-chrome-active rounded-sm`. Nút này chỉ xuất hiện trong `WeekHeader`; nếu `graphify query` cho thấy chỗ dùng khác thì báo lại thay vì đổi.
 
-- [ ] **Step 5: Chạy test, xác nhận xanh**
+- [x] **Step 5: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/components/week src/ui/format.test.ts` → PASS (gồm `roster-dialog.test.tsx` cũ).
 
-- [ ] **Step 6: Cổng kiểm tra và commit**
+- [x] **Step 6: Cổng kiểm tra và commit**
 
 ```bash
 pnpm test && pnpm typecheck && pnpm lint && pnpm format:check
