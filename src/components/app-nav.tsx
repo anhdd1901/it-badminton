@@ -29,14 +29,23 @@ export function AppNav({ me }: { me: AvatarMember & { username?: never } }) {
         href={item.href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex min-h-11 items-center rounded-md text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "relative flex min-h-11 items-center rounded-md text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-chrome-active",
           layout === "bottom"
             ? "flex-1 flex-col justify-center gap-0.5 py-1"
             : "justify-start gap-2 px-1 text-sm",
-          active ? "text-accent-text" : "text-text-2",
-          layout === "side" && active && "bg-surface-2",
+          active ? "text-chrome-active" : "text-on-chrome",
         )}
       >
+        {active && (
+          <span
+            data-slot="nav-mark"
+            aria-hidden="true"
+            className={cn(
+              "absolute bg-chrome-active",
+              layout === "bottom" ? "inset-x-3 top-0 h-[3px]" : "inset-y-2 left-0 w-[3px]",
+            )}
+          />
+        )}
         {layout === "side" ? (
           <span data-slot="nav-icon" className="flex size-10 shrink-0 items-center justify-center">
             <item.Icon className="size-5" aria-hidden="true" />
@@ -52,16 +61,16 @@ export function AppNav({ me }: { me: AvatarMember & { username?: never } }) {
     <>
       <nav
         aria-label="Điều hướng chính"
-        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-chrome bg-chrome text-on-chrome pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {ITEMS.map((i) => link(i, "bottom"))}
       </nav>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-56 flex-col gap-4 border-r border-border bg-surface p-3 md:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-56 flex-col gap-4 border-r border-chrome bg-chrome p-3 text-on-chrome md:flex">
         <div className="flex items-center gap-2 px-1 pt-1">
           <MemberAvatar member={me} size={40} />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{me.displayName}</p>
-            <p className="text-xs text-text-2">ANH EM IT</p>
+            <p className="text-xs text-on-chrome">ANH EM IT</p>
           </div>
         </div>
         <nav aria-label="Điều hướng chính" className="flex flex-col gap-1">

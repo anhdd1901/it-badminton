@@ -62,4 +62,31 @@ describe("AppNav", () => {
     const nav = container.querySelector("nav") as HTMLElement;
     for (const l of Array.from(nav.querySelectorAll("a"))) expect(l).toHaveClass("flex-col");
   });
+
+  it("thanh đáy và menu bên nền chrome", () => {
+    const { container } = render(<AppNav me={me} />);
+    expect(container.querySelector("nav")).toHaveClass("bg-chrome");
+    expect(container.querySelector("aside")).toHaveClass("bg-chrome");
+  });
+
+  it("mục đang chọn màu chrome-active, có vạch nhấn", () => {
+    pathname.mockReturnValue("/xep-hang");
+    render(<AppNav me={me} />);
+    for (const l of screen.getAllByRole("link", { name: "Xếp hạng" })) {
+      expect(l).toHaveClass("text-chrome-active");
+      expect(l.querySelector('[data-slot="nav-mark"]')).not.toBeNull();
+    }
+    for (const l of screen.getAllByRole("link", { name: "Tuần này" })) {
+      expect(l).toHaveClass("text-on-chrome");
+      expect(l.querySelector('[data-slot="nav-mark"]')).toBeNull();
+    }
+  });
+
+  it("viền focus nhìn thấy trên nền chrome", () => {
+    render(<AppNav me={me} />);
+    for (const l of screen.getAllByRole("link")) {
+      expect(l).toHaveClass("focus-visible:ring-chrome-active");
+      expect(l).not.toHaveClass("focus-visible:ring-ring");
+    }
+  });
 });

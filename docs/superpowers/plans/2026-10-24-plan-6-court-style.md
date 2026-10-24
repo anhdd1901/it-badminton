@@ -252,7 +252,7 @@ git commit -m "feat(plan-6/task-4): this-week header band on chrome with display
 - Consumes: token `--chrome*` (Task 1).
 - Produces: link đang chọn có `data-active` và một phần tử con `data-slot="nav-mark"` (vạch nhấn).
 
-- [ ] **Step 1: Test**
+- [x] **Step 1: Test**
 
 Thêm vào `app-nav.test.tsx` (giữ test cũ về thẳng hàng và `aria-current`):
 - `"thanh đáy và menu bên nền chrome"`: cả hai `nav`/`aside` có `bg-chrome`.
@@ -260,18 +260,18 @@ Thêm vào `app-nav.test.tsx` (giữ test cũ về thẳng hàng và `aria-curre
 - `"viền focus nhìn thấy trên nền chrome"`: mọi link có `focus-visible:ring-chrome-active`, không có `focus-visible:ring-ring`.
 Run → FAIL.
 
-- [ ] **Step 2: Sửa `AppNav`**
+- [x] **Step 2: Sửa `AppNav`**
 
 - `nav` đáy và `aside`: `bg-chrome text-on-chrome`, viền `border-chrome` (bỏ `border-border`).
 - Link: `text-on-chrome`, đang chọn `text-chrome-active`; bỏ `bg-surface-2` của mục đang chọn ở menu bên. Focus: `focus-visible:ring-2 focus-visible:ring-chrome-active`.
 - Vạch nhấn `<span data-slot="nav-mark" aria-hidden="true">` nền `bg-chrome-active`: thanh đáy ở mép trên link (`absolute inset-x-3 top-0 h-[3px]`), menu bên ở mép trái (`absolute inset-y-2 left-0 w-[3px]`); link thêm `relative`.
 - Chữ "ANH EM IT" dưới tên ở menu bên: `text-on-chrome`. Ô icon 40px và căn thẳng hàng (spec 8.2) giữ nguyên.
 
-- [ ] **Step 3: Chạy test, xác nhận xanh**
+- [x] **Step 3: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/components/app-nav.test.tsx` → PASS.
 
-- [ ] **Step 4: Cổng kiểm tra và commit**
+- [x] **Step 4: Cổng kiểm tra và commit**
 
 ```bash
 pnpm test && pnpm typecheck && pnpm lint && pnpm format:check
