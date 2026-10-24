@@ -18,6 +18,7 @@ describe("WeekHeader", () => {
     const date = screen.getByText("Thứ 7, 17/10");
     expect(date.className).toContain("font-display");
     expect(date.className).toContain("italic");
+    expect(date.textContent).toBe("Thứ 7, 17/10/2026");
     expect(screen.getByText("Đang mở điểm danh").className).toContain("text-chrome-active");
     expect(header.querySelector(".text-accent-text, .text-text-2")).toBeNull();
   });

@@ -24,6 +24,7 @@ export function WeekHeader({
       <h1 className="text-sm font-medium">Tuần này</h1>
       <p className="font-display text-[40px] leading-none font-bold italic">
         {formatDayShort(day)}
+        <span className="text-base font-semibold">/{day.slice(0, 4)}</span>
       </p>
       <p className="text-sm text-chrome-active">{STATUS_LABEL[status]}</p>
       {children}

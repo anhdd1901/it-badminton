@@ -357,12 +357,12 @@ git commit -m "feat(plan-6/task-7): login screen on chrome with display wordmark
 - Modify: `CLAUDE.md` (mục Tài liệu → dòng "Giao diện"; mục Lưu ý → "Component shadcn thêm bằng CLI" và "Font")
 - Modify: `docs/backlog.md` (nếu có mục deferred)
 
-- [ ] **Step 1: Cổng đầy đủ**
+- [x] **Step 1: Cổng đầy đủ**
 
 Run: `pnpm test && pnpm typecheck && pnpm lint && pnpm format:check && pnpm build`, rồi `pnpm db:up && pnpm test:int && pnpm test:e2e`.
 Expected: tất cả xanh, không sửa test e2e nào.
 
-- [ ] **Step 2: Kiểm tra bằng mắt bằng `agent-browser`**
+- [x] **Step 2: Kiểm tra bằng mắt bằng `agent-browser`**
 
 Chạy app như e2e (đồng hồ giả thứ 7 17/10/2026, seed e2e). Chụp màn hình ở 375×812 và 1280×800, theme sáng và tối (cookie `theme`), cho: Đăng nhập, Tuần này (admin, có lịch và kết quả), Xếp hạng (Mùa và ELO), Thống kê, Lịch sử chi tiết, popup mem, Tôi. Kiểm theo Review Focus 1, 2, 4: lưới không chạm tỷ số với tên dài ở 320px; chữ và viền focus (Tab bằng bàn phím) nhìn rõ trên `--chrome` ở theme sáng; dấu tiếng Việt trong Barlow đúng font. Lỗi tìm thấy thì sửa trong task này kèm test lớp tương ứng.
 

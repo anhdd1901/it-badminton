@@ -18,7 +18,7 @@ export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId })
     );
   }
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
+    <div className="overflow-x-auto rounded-lg border border-border bg-surface">
       <table className="w-full min-w-[30rem] border-collapse text-sm">
         <thead className="bg-surface-2 text-text-2">
           <tr>
