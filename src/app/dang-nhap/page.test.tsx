@@ -21,6 +21,8 @@ describe("LoginPage", () => {
     const { container } = render(await LoginPage());
     const net = container.querySelector(".net");
     expect(net?.getAttribute("aria-hidden")).toBe("true");
+    // --line (xanh đậm) trùng nền chrome ở theme sáng: đổi cục bộ sang màu chữ trên chrome.
+    expect(net).toHaveClass("[--line:var(--on-chrome)]");
     const form = screen.getByRole("form", { name: "Đăng nhập" });
     expect(form.closest(".bg-surface")).not.toBeNull();
   });

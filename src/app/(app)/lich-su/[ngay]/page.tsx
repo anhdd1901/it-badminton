@@ -30,7 +30,7 @@ export default async function MatchDayDetailPage({ params }: PageProps<"/lich-su
 
   return (
     <main className="flex flex-col gap-4 p-4">
-      <h1 className="text-xl font-semibold">{formatDay(detail.day)}</h1>
+      <h1 className="font-display text-xl font-bold italic">{formatDay(detail.day)}</h1>
       <ul className="flex flex-wrap gap-2" aria-label="Người tham gia">
         {detail.participants.map((p) => (
           <li

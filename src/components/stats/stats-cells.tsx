@@ -35,11 +35,21 @@ export function TotalsHead() {
 export function TotalsCells({ row }: { row: Ranked<string> }) {
   return (
     <>
-      <td className="p-2 text-right">{row.totals.wins}</td>
-      <td className="p-2 text-right">{formatDiff(row.diff)}</td>
-      <td className="p-2 text-right">{row.totals.pointsFor}</td>
-      <td className="p-2 text-right">{row.totals.pointsAgainst}</td>
-      <td className="p-2 text-right">{row.totals.played}</td>
+      <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+        {row.totals.wins}
+      </td>
+      <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+        {formatDiff(row.diff)}
+      </td>
+      <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+        {row.totals.pointsFor}
+      </td>
+      <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+        {row.totals.pointsAgainst}
+      </td>
+      <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+        {row.totals.played}
+      </td>
     </>
   );
 }

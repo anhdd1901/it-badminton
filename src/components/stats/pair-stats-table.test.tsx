@@ -31,4 +31,15 @@ describe("PairStatsTable", () => {
     expect(getMemberProfileAction).toHaveBeenCalledWith("b", SEASON);
     expect(getMemberProfileAction).not.toHaveBeenCalledWith("a", SEASON);
   });
+
+  it("ô số dùng font hiển thị như bảng mùa", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = [{ key: "a|b", rank: 1, members: [mem("a"), mem("b")], totals, diff: 11 }] as any;
+    const { container } = render(<PairStatsTable rows={rows} season={SEASON} />);
+    const cells = Array.from(container.querySelectorAll("tbody td"));
+    expect(cells).toHaveLength(5);
+    for (const n of cells)
+      for (const c of ["font-display", "italic", "font-semibold", "text-base", "tabular-nums"])
+        expect(n).toHaveClass(c);
+  });
 });

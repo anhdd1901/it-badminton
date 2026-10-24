@@ -67,6 +67,8 @@ describe("AppNav", () => {
     const { container } = render(<AppNav me={me} />);
     expect(container.querySelector("nav")).toHaveClass("bg-chrome");
     expect(container.querySelector("aside")).toHaveClass("bg-chrome");
+    expect(container.querySelector("nav")).toHaveClass("text-on-chrome");
+    expect(container.querySelector("aside")).toHaveClass("text-on-chrome");
   });
 
   it("mục đang chọn màu chrome-active, có vạch nhấn", () => {

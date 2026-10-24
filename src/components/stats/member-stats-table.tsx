@@ -37,7 +37,9 @@ export function MemberStatsTable({ rows, season }: { rows: Row[]; season: Season
         <tbody>
           {rows.map((r) => (
             <tr key={r.member.id} className="border-t border-border tabular-nums">
-              <td className="p-2">{r.rank}</td>
+              <td className="p-2 font-display text-xl leading-none font-bold italic tabular-nums">
+                {r.rank}
+              </td>
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
                   <MemberAvatar member={r.member} size={24} />
@@ -51,10 +53,18 @@ export function MemberStatsTable({ rows, season }: { rows: Row[]; season: Season
                 </span>
               </th>
               <TotalsCells row={r} />
-              <td className="p-2 text-right">{r.podium.first}</td>
-              <td className="p-2 text-right">{r.podium.second}</td>
-              <td className="p-2 text-right">{r.podium.third}</td>
-              <td className="p-2 text-right">{r.podium.fourth}</td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.podium.first}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.podium.second}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.podium.third}
+              </td>
+              <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
+                {r.podium.fourth}
+              </td>
             </tr>
           ))}
         </tbody>

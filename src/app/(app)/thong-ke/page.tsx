@@ -29,7 +29,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
 
   return (
     <main className="flex flex-col gap-4 p-4">
-      <h1 className="text-xl font-semibold">Thống kê</h1>
+      <h1 className="font-display text-xl font-bold italic">Thống kê</h1>
       <PillTabs
         aria-label="Kiểu thống kê"
         items={[

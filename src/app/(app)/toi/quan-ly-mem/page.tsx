@@ -31,7 +31,7 @@ export default async function ManageMembersPage({
   return (
     <main className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Quản lý mem</h1>
+        <h1 className="font-display text-xl font-bold italic">Quản lý mem</h1>
         <MemberForm />
       </div>
       <PillTabs

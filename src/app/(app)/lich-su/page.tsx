@@ -11,7 +11,7 @@ export default async function HistoryPage() {
 
   return (
     <main className="flex flex-col gap-4 p-4">
-      <h1 className="text-xl font-semibold">Lịch sử</h1>
+      <h1 className="font-display text-xl font-bold italic">Lịch sử</h1>
       {groups.length === 0 ? (
         <p className="text-text-2">Chưa có buổi đấu nào</p>
       ) : (

@@ -22,7 +22,7 @@ export default async function RankingPage({
 
   return (
     <main className="flex flex-col gap-4 p-4">
-      <h1 className="text-xl font-semibold">Xếp hạng</h1>
+      <h1 className="font-display text-xl font-bold italic">Xếp hạng</h1>
       <PillTabs
         aria-label="Bảng xếp hạng"
         items={[

@@ -10,7 +10,7 @@ export default async function LoginPage() {
         <h1 className="text-center font-display text-5xl font-bold italic text-on-chrome">
           ANH EM IT
         </h1>
-        <div aria-hidden="true" className="net" />
+        <div aria-hidden="true" className="net [--line:var(--on-chrome)]" />
         <div className="rounded-lg bg-surface p-4">
           <LoginForm />
         </div>
