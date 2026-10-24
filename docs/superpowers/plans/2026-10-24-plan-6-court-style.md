@@ -107,7 +107,7 @@ git commit -m "feat(plan-6/task-1): court palette, chrome tokens, 6px radius, av
 - Consumes: token `--line` (Task 1).
 - Produces: lớp `font-display` (Barlow Condensed; luôn dùng kèm `italic` và `font-semibold` hoặc `font-bold`); tiện ích `net` (khối cao 6px: dải nét lưới 4px trên, vạch `--line` 2px dưới), dùng với `aria-hidden="true"`.
 
-- [ ] **Step 1: Test file font và khai báo**
+- [x] **Step 1: Test file font và khai báo**
 
 `src/ui/fonts.test.ts` (môi trường node):
 - `existsSync` cho hai file `.ttf` và `OFL.txt` trong `src/fonts/barlow-condensed/`.
@@ -117,7 +117,7 @@ git commit -m "feat(plan-6/task-1): court palette, chrome tokens, 6px radius, av
 
 Run: `pnpm test src/ui/fonts.test.ts` → FAIL.
 
-- [ ] **Step 2: Tải font**
+- [x] **Step 2: Tải font**
 
 Nguồn duy nhất: repo `google/fonts`, thư mục `ofl/barlowcondensed/` (bản đầy đủ, có tiếng Việt). Tải vào thư mục tạm riêng, kiểm `file *.ttf` báo "TrueType Font data", rồi chép vào `src/fonts/barlow-condensed/`:
 ```bash
@@ -127,7 +127,7 @@ curl -fL -o BarlowCondensed-BoldItalic.ttf $base/BarlowCondensed-BoldItalic.ttf
 curl -fL -o OFL.txt $base/OFL.txt
 ```
 
-- [ ] **Step 3: Khai báo font và tiện ích**
+- [x] **Step 3: Khai báo font và tiện ích**
 
 - `layout.tsx`: thêm `barlowCondensed = localFont({ src: [600 italic, 700 italic], variable: "--font-barlow-condensed", display: "swap" })`, thêm `barlowCondensed.variable` vào `className` của `<html>`.
 - `globals.css` trong `@theme inline`: `--font-display: var(--font-barlow-condensed);`.
@@ -141,11 +141,11 @@ curl -fL -o OFL.txt $base/OFL.txt
 }
 ```
 
-- [ ] **Step 4: Chạy test, xác nhận xanh**
+- [x] **Step 4: Chạy test, xác nhận xanh**
 
 Run: `pnpm test src/ui/fonts.test.ts` → PASS. Sau đó `pnpm test && pnpm typecheck && pnpm lint && pnpm format:check && pnpm build` → sạch (`build` xác nhận `next/font/local` đọc được file).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 graphify update .

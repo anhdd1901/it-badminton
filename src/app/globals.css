@@ -95,6 +95,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --font-sans: var(--font-be-vietnam-pro);
+  --font-display: var(--font-barlow-condensed);
 }
 
 @layer base {
@@ -108,4 +109,16 @@
   body {
     @apply bg-bg text-text font-sans;
   }
+}
+
+@utility net {
+  height: 6px;
+  background:
+    repeating-linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--line) 55%, transparent) 0 1px,
+        transparent 1px 5px
+      )
+      top / 100% 4px no-repeat,
+    linear-gradient(var(--line), var(--line)) bottom / 100% 2px no-repeat;
 }

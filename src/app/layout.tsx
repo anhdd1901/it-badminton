@@ -15,6 +15,23 @@ const beVietnamPro = localFont({
   display: "swap",
 });
 
+const barlowCondensed = localFont({
+  src: [
+    {
+      path: "../fonts/barlow-condensed/BarlowCondensed-SemiBoldItalic.ttf",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../fonts/barlow-condensed/BarlowCondensed-BoldItalic.ttf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "ANH EM IT",
 };
@@ -27,7 +44,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="vi"
       data-theme={dataTheme}
-      className={`${beVietnamPro.variable} h-full antialiased`}
+      className={`${beVietnamPro.variable} ${barlowCondensed.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}
