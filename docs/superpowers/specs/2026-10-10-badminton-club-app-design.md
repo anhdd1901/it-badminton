@@ -356,33 +356,47 @@ Tiếng Việt; thiết kế cho điện thoại trước. Tên app trên màn �
 
 ### 8.1 Phong cách giao diện
 
-Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám đậm, một màu nhấn cam duy nhất, danh sách trận gọn. Chỉ mượn bố cục và cách phối màu; không dùng logo, tên hay hình ảnh của LiveScore.
+Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Nền xanh sân, vạch trắng ngà như vạch sân và lông quả cầu, một màu nhấn vàng chanh. Điểm nhấn duy nhất là thẻ trận có **lưới** chia hai cặp; các phần khác giữ gọn và yên. Không đổ bóng, không gradient, không thêm chuyển động tự chạy.
 
-**Theme sáng và tối:** có cả hai. Mặc định theo cài đặt của thiết bị; mem đổi được ở màn "Tôi" (Theo thiết bị / Sáng / Tối), lựa chọn lưu trên thiết bị đó. Mọi màu định nghĩa thành biến CSS dùng chung; thành phần không viết màu cứng.
+**Theme sáng và tối:** có cả hai. Mặc định theo cài đặt của thiết bị; mem đổi được ở màn "Tôi" (Theo thiết bị / Sáng / Tối), lựa chọn lưu trên thiết bị đó. Tối là sân xanh; sáng là nền trắng ánh xanh, còn đầu trang và điều hướng vẫn xanh sân (`--chrome`), nên hai theme nhận ra là cùng một app. Mọi màu định nghĩa thành biến CSS dùng chung; thành phần không viết màu cứng.
 
 | Biến | Vai trò | Tối | Sáng |
 |---|---|---|---|
-| `--bg` | nền trang | `#111111` | `#F4F4F5` |
-| `--surface` | thẻ trận, thẻ nội dung | `#1C1C1C` | `#FFFFFF` |
-| `--surface-2` | nền phụ: ô nhập, tab chưa chọn, hàng xen kẽ | `#222222` | `#EDEDED` |
-| `--border` | viền mảnh, đường chia | `#333333` | `#E0E0E0` |
-| `--text` | chữ chính | `#FDFDFD` | `#111111` |
-| `--text-2` | chữ phụ (giờ, nhãn, username) | `#AAAAAA` | `#5C5C5C` |
-| `--accent` | nền nút chính, tab đang chọn, trạng thái nổi bật | `#FF6B00` | `#FF6B00` |
-| `--on-accent` | chữ trên nền `--accent` | `#111111` | `#111111` |
-| `--accent-text` | chữ hoặc icon màu cam trên nền trang | `#FF6B00` | cam đậm (khởi điểm `#B34800`), chỉnh cho đạt tương phản |
-| `--seed-1` | Hạt giống 1 | `#6EA0FF` | `#1F5BD0` |
-| `--seed-2` | Hạt giống 2 | `#4CC98A` | `#13804B` |
-| `--win` | tên và điểm cặp thắng (chữ đậm) | `#FDFDFD` | `#111111` |
-| `--loss` | tên và điểm cặp thua | `#8A8A8A` | `#6B6B6B` |
-| `--danger` | lỗi, nút xóa | `#FF5C5C` | `#C62828` |
-| `--highlight` | tên mem được tô khi hover; nền cam nhạt | `#2E1D10` | `#FFF0E0` |
+| `--bg` | nền trang | `#0F3D2E` | `#F2F5F0` |
+| `--surface` | thẻ trận, thẻ nội dung | `#164A39` | `#FFFFFF` |
+| `--surface-2` | nền phụ: ô nhập, tab chưa chọn, hàng xen kẽ | `#1D5644` | `#E3ECE5` |
+| `--border` | viền mảnh, đường chia | `#2A6450` | `#CFDDD4` |
+| `--text` | chữ chính (ngà quả cầu ở theme tối) | `#F7F3E6` | `#0D2B21` |
+| `--text-2` | chữ phụ (giờ, nhãn, username) | `#B7C8BE` | `#4A5F55` |
+| `--accent` | nền nút chính, tab đang chọn, trạng thái nổi bật | `#E4F23A` (vàng chanh) | `#0F3D2E` (xanh sân) |
+| `--on-accent` | chữ trên nền `--accent` | `#0F3D2E` | `#E4F23A` |
+| `--accent-text` | chữ hoặc icon nhấn trên nền trang và thẻ | `#E4F23A` | `#0F6B47` |
+| `--seed-1` | Hạt giống 1 | `#9CC8FF` | `#1F5BD0` |
+| `--seed-2` | Hạt giống 2 (hồng, vì xanh lá chìm trên nền sân) | `#FFA3CF` | `#B0306E` |
+| `--win` | tên cặp thắng (chữ đậm) | `#F7F3E6` | `#0D2B21` |
+| `--loss` | tên và điểm cặp thua | `#A9BDB2` | `#5E6E66` |
+| `--danger` | lỗi, nút xóa, ELO xuống | `#FF9A90` | `#C62828` |
+| `--highlight` | tên mem được tô khi hover; nền chanh nhạt | `#2C4A1C` | `#F1F7CF` |
+| `--line` | vạch sân: lưới và vạch dọc trong thẻ trận (không phải chữ) | `#DCE6DF` | `#1A6B4B` |
+| `--chrome` | nền đầu trang, thanh đáy, menu bên, màn đăng nhập | `#0A2E22` | `#0F3D2E` |
+| `--on-chrome` | chữ và icon trên `--chrome` | `#F7F3E6` | `#F7F3E6` |
+| `--chrome-active` | mục đang chọn và vạch nhấn trên `--chrome` | `#E4F23A` | `#E4F23A` |
 
-- **Tương phản:** mọi cặp chữ/nền phải đạt tối thiểu 4,5:1, kiểm tra bằng test tự động trên bảng màu. Chữ trắng trên nền cam không đạt, nên nút cam luôn dùng `--on-accent`.
-- **Font:** Be Vietnam Pro (có bộ chữ tiếng Việt), tự host bằng `next/font/local` từ `src/fonts/be-vietnam-pro/`. Số (tỷ số, ELO, điểm) dùng chữ số đều độ rộng (`tabular-nums`) để cột thẳng hàng.
-- **Dòng trận:** mỗi trận là một thẻ gọn trên `--surface`: số trận nhỏ bên trái; hai cặp xếp chồng, mỗi cặp một dòng gồm avatar và tên kèm chấm màu hạt giống; tỷ số canh phải, cùng dòng với cặp tương ứng. Cặp thắng dùng `--win` đậm, cặp thua dùng `--loss`. Chưa có tỷ số thì hiện "–".
-- **Nút:** nút chính nền `--accent`, chữ `--on-accent`, bo tròn hoàn toàn; nút phụ nền `--surface-2`. Nhóm lựa chọn (tab, chọn tháng) dạng viên thuốc như thanh chọn môn thể thao của LiveScore: mục đang chọn nổi bật, các mục khác nền `--surface-2`.
-- **Avatar chữ cái:** màu nền cố định theo mem, chọn từ một dải màu đã kiểm tương phản với chữ trắng trong cả hai theme.
+- **Tương phản:** mọi cặp chữ/nền phải đạt tối thiểu 4,5:1, kiểm tra bằng test tự động trên bảng màu, gồm cả `--on-chrome`/`--chrome`, `--chrome-active`/`--chrome` và `--line`/`--surface`. Chữ trên nền `--accent` luôn dùng `--on-accent`.
+- **Font:** hai họ chữ, tự host bằng `next/font/local`.
+  - **Barlow Condensed** nghiêng, 600/700 (có bộ chữ tiếng Việt, `src/fonts/barlow-condensed/` kèm `OFL.txt`) cho số và tiêu đề: tỷ số, ELO, hạng, số trận, các cột số trong bảng, ngày ở đầu màn Tuần này, tiêu đề màn, chữ "ANH EM IT" ở màn đăng nhập.
+  - **Be Vietnam Pro** (`src/fonts/be-vietnam-pro/`) cho tên mem, nhãn, nút và nội dung.
+  - Viết hoa kiểu câu; không viết hoa toàn bộ nhãn nhỏ. Số dùng `tabular-nums` để cột thẳng hàng.
+- **Thẻ trận (điểm nhấn):** mỗi trận là một thẻ trên `--surface`, bo 6px.
+  - Bên trái là cột hẹp ghi số trận (Barlow nghiêng), ngăn với phần còn lại bằng vạch dọc `--line` như vạch biên sân.
+  - Hai cặp xếp chồng, mỗi cặp một dòng gồm avatar và tên kèm chấm màu hạt giống. Giữa hai cặp là **lưới**: vạch `--line` dày 2px, phía trên có dải nét lưới mảnh cao 4px (gạch lặp lại). Lưới chạy ngang phần tên, không cắt qua cột tỷ số.
+  - Tỷ số canh phải, cùng dòng với cặp tương ứng, Barlow nghiêng cỡ 28px. Cặp thắng: tên `--win` đậm, điểm `--accent-text`. Cặp thua: tên và điểm `--loss`. Chưa có tỷ số thì hiện "–".
+- **Đầu màn Tuần này:** dải `--chrome` chứa ngày ("Thứ 7, 17/10") bằng Barlow nghiêng khoảng 40px, dưới là trạng thái và số đã điểm danh; viền dưới của dải là vạch `--chrome-active` dày 3px, giống vạch giao cầu. Nút điểm danh nằm ngay dưới dải.
+- **Điều hướng:** thanh đáy và menu bên nền `--chrome` ở cả hai theme, chữ và icon `--on-chrome`. Mục đang chọn dùng `--chrome-active` cho icon và chữ, kèm vạch ngắn `--chrome-active` ở mép trên (thanh đáy) hoặc mép trái (menu bên).
+- **Bảng xếp hạng và ELO:** cột hạng là Barlow nghiêng cỡ lớn; các cột số dùng Barlow; tên dùng Be Vietnam Pro. Dòng hạng 1 có thêm vạch `--accent-text` ở mép trái; không có huy hiệu.
+- **Màn đăng nhập:** nền `--chrome`; chữ "ANH EM IT" Barlow nghiêng cỡ lớn, bên dưới là một vạch lưới như ở thẻ trận.
+- **Hình khối:** thẻ và khối nội dung bo 6px (`--radius`). Nút chính nền `--accent`, chữ `--on-accent`, bo tròn hoàn toàn; nút phụ nền `--surface-2`. Nhóm lựa chọn (tab, chọn tháng) dạng viên thuốc: mục đang chọn nền `--accent`, các mục khác nền `--surface-2`.
+- **Avatar chữ cái:** màu nền cố định theo mem, chọn từ một dải màu đã kiểm tương phản với chữ trắng; dải màu không có xanh lá hay xanh ngọc để không lẫn vào nền sân: `#C2185B`, `#7B1FA2`, `#4527A0`, `#1565C0`, `#455A64`, `#B71C1C`, `#AD4A00`, `#5D4037`.
 - Chạm tối thiểu 44px; viền focus nhìn rõ trong cả hai theme.
 
 | Màn | Nội dung |
@@ -399,10 +413,10 @@ Lấy cảm hứng từ livescore.com: nền tối gần đen, thẻ trận xám
 ### 8.2 Tương tác dùng chung (Tuần này, Xếp hạng, Thống kê, Lịch sử)
 
 - **Menu bên (máy tính):** icon mỗi mục nằm trong ô cố định 40px, căn giữa, nên tâm icon trùng tâm avatar. Label nằm ngay sau ô icon với cùng khoảng cách giữa avatar và tên, nên label thẳng cột, căn trái với tên mem. Thanh đáy điện thoại không đổi.
-- **Select và chọn ngày/tháng:** dùng component shadcn (`Select`, `Popover`), đồng bộ token theme ở 8.1; không dùng `<select>` hay `<input type="month|date">` gốc. Không cần chọn ngày cụ thể ở đâu trong app nên không thêm `Calendar`. Biến `--accent` của shadcn không được là màu cam (hover dùng `--surface-2`). Chỗ chỉ cần chọn tháng dùng một `MonthPicker` chung (lưới 12 tháng, nút đổi năm), có thể vô hiệu tháng ngoài khoảng. Bộ lọc từ–đến tháng ở Thống kê giữ hành vi hiện tại (mặc định trống = toàn bộ), chỉ đổi giao diện sang `MonthPicker`, mỗi ô có nút "Xóa" để quay lại trống.
+- **Select và chọn ngày/tháng:** dùng component shadcn (`Select`, `Popover`), đồng bộ token theme ở 8.1; không dùng `<select>` hay `<input type="month|date">` gốc. Không cần chọn ngày cụ thể ở đâu trong app nên không thêm `Calendar`. Biến `--accent` của shadcn không được là màu nhấn của dự án (hover dùng `--surface-2`). Chỗ chỉ cần chọn tháng dùng một `MonthPicker` chung (lưới 12 tháng, nút đổi năm), có thể vô hiệu tháng ngoài khoảng. Bộ lọc từ–đến tháng ở Thống kê giữ hành vi hiện tại (mặc định trống = toàn bộ), chỉ đổi giao diện sang `MonthPicker`, mỗi ô có nút "Xóa" để quay lại trống.
 - **Chọn mùa ở Xếp hạng:** bấm tháng/năm ở giữa mở `MonthPicker` trong popover, chọn tháng thì đổi mùa. Nút ◀ ▶ vẫn giữ. Chỉ chọn được từ mùa có dữ liệu sớm nhất đến mùa hiện tại; nút ◀ dừng ở mùa sớm nhất.
-- **Highlight khi rê vào tên mem:** ở mọi nơi hiện trận (lịch hoặc kết quả), rê chuột hoặc focus bàn phím vào tên một mem thì mọi vị trí của mem đó trong các trận cùng màn được tô sáng bằng token `--highlight` (nền cam nhạt ở cả hai theme, thêm vào bảng màu 8.1 và vào test tương phản ≥ 4,5:1). Xử lý ở client, không gọi server; mỗi màn có phạm vi riêng. Màn cảm ứng không có highlight, bấm tên chỉ mở popup. Chỉ áp dụng cho trận, không áp dụng cho bảng xếp hạng hay thống kê.
-- **Popup thông tin mem:** bấm tên mem (Tuần này, Xếp hạng mùa và ELO, Thống kê, Lịch sử) mở popup: avatar, tên, ELO, Hạt giống, icon chevron lên/xuống cho thay đổi ELO buổi gần nhất (chỉ icon và màu: `--seed-2` khi lên, `--danger` khi xuống, ẩn khi chưa có; có `aria-label` ghi số), các cột 4.7 của một mùa, và thống kê toàn thời gian theo 4.10 gồm số lần hạng 1–4.
+- **Highlight khi rê vào tên mem:** ở mọi nơi hiện trận (lịch hoặc kết quả), rê chuột hoặc focus bàn phím vào tên một mem thì mọi vị trí của mem đó trong các trận cùng màn được tô sáng bằng token `--highlight` (nền chanh nhạt ở cả hai theme, thêm vào bảng màu 8.1 và vào test tương phản ≥ 4,5:1). Xử lý ở client, không gọi server; mỗi màn có phạm vi riêng. Màn cảm ứng không có highlight, bấm tên chỉ mở popup. Chỉ áp dụng cho trận, không áp dụng cho bảng xếp hạng hay thống kê.
+- **Popup thông tin mem:** bấm tên mem (Tuần này, Xếp hạng mùa và ELO, Thống kê, Lịch sử) mở popup: avatar, tên, ELO, Hạt giống, icon chevron lên/xuống cho thay đổi ELO buổi gần nhất (chỉ icon và màu: `--accent-text` khi lên, `--danger` khi xuống, ẩn khi chưa có; có `aria-label` ghi số), các cột 4.7 của một mùa, và thống kê toàn thời gian theo 4.10 gồm số lần hạng 1–4.
   - **Danh sách điểm danh** (popup ở màn Tuần này) không bấm được tên mem, để không có popup chồng popup.
   - **Mùa của phần chỉ số mùa** (ghi rõ "Mùa MM/YYYY" trong popup): Xếp hạng lấy mùa đang xem; Tuần này và Thống kê lấy mùa hiện tại; Lịch sử lấy mùa của tháng chứa buổi đó.
   - **Toàn thời gian** không theo bộ lọc của màn Thống kê.
