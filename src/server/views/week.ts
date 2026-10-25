@@ -28,6 +28,7 @@ export type PlayerRef = {
   avatarUrl: string | null;
   seed: 1 | 2 | null;
 };
+export type PlayerOption = { id: string; displayName: string };
 export type WeekMatch = {
   number: number;
   teamA: [PlayerRef, PlayerRef];
@@ -42,12 +43,23 @@ export type WeekView = {
   activeMemberCount: number;
   actorAttending: boolean;
   /** `key`: attendee key of the schedule; result writes send it back as `scheduleKey`. */
-  schedule: { source: "draft" | "official"; key: string; matches: WeekMatch[] } | null;
+  schedule: {
+    source: "draft" | "official";
+    key: string;
+    matches: WeekMatch[];
+    /** Official schedule only: everyone named in it, sorted by name (empty for a draft). */
+    roster: PlayerOption[];
+  } | null;
   notice:
     | { kind: "NOT_ENOUGH"; count: number }
     | { kind: "NO_DIAGRAM"; seed1: number; seed2: number }
     | null;
-  can: { changeOwnAttendance: boolean; manageAttendance: boolean; editResults: boolean };
+  can: {
+    changeOwnAttendance: boolean;
+    manageAttendance: boolean;
+    editResults: boolean;
+    changePlayers: boolean;
+  };
 };
 
 type RawMatch = {
@@ -82,7 +94,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
       actorAttending: false,
       schedule: null,
       notice: { kind: "NOT_ENOUGH", count: 0 },
-      can: permissions(day, now, 0, actor),
+      can: permissions(day, now, 0, actor, false),
     };
   }
 
@@ -118,6 +130,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
   let key = "";
   let seedOf = new Map<string, 1 | 2>();
   let rawMatches: RawMatch[] = [];
+  let rosterIds: string[] = [];
   const [official] = await db
     .select()
     .from(officialSchedules)
@@ -126,6 +139,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     source = "official";
     key = official.attendeeKey;
     seedOf = new Map(official.assignments.map((a) => [a.memberId, a.seed]));
+    rosterIds = official.assignments.map((a) => a.memberId);
     const rows = await db
       .select({
         number: scheduledMatches.number,
@@ -171,10 +185,10 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
   let schedule: WeekView["schedule"] = null;
   if (source) {
     // Official schedules may include members who are no longer in the list.
-    const refs = await loadMemberRefs(
-      db,
-      rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]),
-    );
+    const refs = await loadMemberRefs(db, [
+      ...rosterIds,
+      ...rawMatches.flatMap((m) => [...m.teamA, ...m.teamB]),
+    ]);
     const ref = (id: string): PlayerRef => {
       const m = memberRef(refs, id);
       return {
@@ -193,6 +207,9 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
         teamB: [ref(m.teamB[0]), ref(m.teamB[1])],
         result: m.result,
       })),
+      roster: rosterIds
+        .map((id) => ({ id, displayName: memberRef(refs, id).displayName }))
+        .sort((a, b) => a.displayName.localeCompare(b.displayName, "vi")),
     };
   }
 
@@ -218,7 +235,7 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
     actorAttending: ids.includes(actor.memberId),
     schedule,
     notice,
-    can: permissions(day, now, resultCount, actor),
+    can: permissions(day, now, resultCount, actor, schedule?.source === "official"),
   };
 }
 
@@ -227,11 +244,13 @@ function permissions(
   now: Date,
   resultCount: number,
   actor: Actor,
+  official: boolean,
 ): WeekView["can"] {
   const changeable = canChangeAttendance(day, now, resultCount);
   return {
     changeOwnAttendance: changeable,
     manageAttendance: (actor.role === "admin" || actor.role === "subadmin") && changeable,
     editResults: canEditResults(day, now, actor.role),
+    changePlayers: actor.role === "admin" && canEditResults(day, now, actor.role) && official,
   };
 }

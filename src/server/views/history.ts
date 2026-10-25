@@ -6,7 +6,7 @@ import { matchDays, matchResults, officialSchedules, scheduledMatches } from "..
 import { finalizeDue } from "../match-days/schedule";
 import { parseLocalDate } from "../validation";
 import { loadMemberRefs, type MemberRef, ref } from "./rankings";
-import type { PlayerRef, WeekMatch } from "./week";
+import type { PlayerOption, PlayerRef, WeekMatch } from "./week";
 
 type HistoryDay = { day: LocalDate; playerCount: number; matchCount: number; resultCount: number };
 
@@ -63,6 +63,7 @@ export async function getMatchDayDetail(
   day: LocalDate;
   key: string;
   participants: MemberRef[];
+  roster: PlayerOption[];
   matches: WeekMatch[];
 } | null> {
   const localDay = parseLocalDate(day);
@@ -111,6 +112,9 @@ export async function getMatchDayDetail(
     day: localDay,
     key: official.key,
     participants: official.assignments.map((a) => ref(refs, a.memberId)),
+    roster: official.assignments
+      .map((a) => ({ id: a.memberId, displayName: ref(refs, a.memberId).displayName }))
+      .sort((a, b) => a.displayName.localeCompare(b.displayName, "vi")),
     matches: rows.map((r) => ({
       number: r.number,
       teamA: [player(r.a1), player(r.a2)],

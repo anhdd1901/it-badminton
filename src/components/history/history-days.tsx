@@ -5,7 +5,7 @@ import { MatchCard } from "@/components/match/match-card";
 import { PlayerFocusProvider } from "@/components/player-focus";
 import type { LocalDate, SeasonId } from "@/domain/types";
 import { cn } from "@/lib/utils";
-import type { WeekMatch } from "@/server/views/week";
+import type { PlayerOption, WeekMatch } from "@/server/views/week";
 import { formatDay } from "@/ui/format";
 
 export type HistoryDayItem = {
@@ -15,6 +15,8 @@ export type HistoryDayItem = {
   resultCount: number;
   scheduleKey: string;
   editable: boolean;
+  roster: PlayerOption[];
+  canChangePlayers: boolean;
   matches: WeekMatch[];
 };
 

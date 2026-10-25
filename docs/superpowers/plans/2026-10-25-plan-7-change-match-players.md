@@ -129,13 +129,13 @@ Thứ tự này cố ý kiểm xung đột trước khi kiểm hợp lệ: khi a
   - `getMatchDayDetail` trả thêm `roster: PlayerOption[]`, cùng thứ tự sắp như trên. Giữ `participants` cho chỗ khác đang dùng.
   - `HistoryDayItem` thêm `roster: PlayerOption[]` và `canChangePlayers: boolean`. Trang `lich-su` gán `canChangePlayers = actor.role === "admin" && canEditResults(d.day, at, actor.role)`.
 
-- [ ] **Step 1: Viết test hỏng.**
+- [x] **Step 1: Viết test hỏng.**
   - `week.int.test.ts`, trong test "6 người: nháp 6 trận; …": lúc còn lịch nháp thì `schedule.roster` là `[]` và `can.changePlayers === false`. Sau khi nhập trận 1, admin thấy `roster` có 6 phần tử, mỗi phần tử chỉ có đúng các key `["displayName", "id"]` (`Object.keys(..).sort()`), và `can.changePlayers === true`; view của subadmin cho `can.changePlayers === false`.
   - `history.int.test.ts`: `getMatchDayDetail` trả `roster` có cùng tập id với `participants` và không có key `username`.
-- [ ] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test:int`. Expected: FAIL ở các assertion mới.
-- [ ] **Step 3: Thêm các trường ở trên** vào hai view và trang `lich-su`.
-- [ ] **Step 4: Chạy lại.** Run: `pnpm test:int && pnpm typecheck`. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(plan-7/task-3): roster and changePlayers in views` (kèm `graphify update .` và `[x]`).
+- [x] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test:int`. Expected: FAIL ở các assertion mới.
+- [x] **Step 3: Thêm các trường ở trên** vào hai view và trang `lich-su`.
+- [x] **Step 4: Chạy lại.** Run: `pnpm test:int && pnpm typecheck`. Expected: PASS.
+- [x] **Step 5: Commit** `feat(plan-7/task-3): roster and changePlayers in views` (kèm `graphify update .` và `[x]`).
 
 ### Task 4: Giao diện: phần "Người chơi" trong popup Trận N
 

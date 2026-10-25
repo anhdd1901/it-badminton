@@ -40,6 +40,7 @@ describe("getWeekView", () => {
       changeOwnAttendance: true,
       manageAttendance: true,
       editResults: false,
+      changePlayers: false,
     });
   });
 
@@ -70,6 +71,8 @@ describe("getWeekView", () => {
       for (const p of [...m.teamA, ...m.teamB]) expect(p.displayName).toMatch(/^Ten \d$/);
     }
     expect(v.notice).toBeNull();
+    expect(v.schedule?.roster).toEqual([]);
+    expect(v.can.changePlayers).toBe(false);
     const sat = vn("2026-10-17T09:00");
     await enterResult(
       t.db,
@@ -87,7 +90,16 @@ describe("getWeekView", () => {
       changeOwnAttendance: false,
       manageAttendance: false,
       editResults: true,
+      changePlayers: true,
     });
+    expect(w.schedule?.roster).toHaveLength(6);
+    for (const p of w.schedule?.roster ?? []) {
+      expect(Object.keys(p).sort()).toEqual(["displayName", "id"]);
+    }
+    const names = (w.schedule?.roster ?? []).map((p) => p.displayName);
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "vi")));
+    const sub = await getWeekView(t.db, { ...as(ms[1]), role: "subadmin" }, sat);
+    expect(sub.can.changePlayers).toBe(false);
   });
 
   it("activeMemberCount không tính người đã ngưng", async () => {

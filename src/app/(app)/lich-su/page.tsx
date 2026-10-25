@@ -33,6 +33,8 @@ export default async function HistoryPage({
         resultCount: d.resultCount,
         scheduleKey: detail.key,
         editable: canEditResults(d.day, at, actor.role),
+        roster: detail.roster,
+        canChangePlayers: actor.role === "admin" && canEditResults(d.day, at, actor.role),
         matches: detail.matches,
       },
     ];

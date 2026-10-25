@@ -58,6 +58,8 @@ describe("history views", () => {
     const ms = await setup();
     const d = await getMatchDayDetail(t.db, "2026-10-03", NOW);
     expect(d?.participants).toHaveLength(6);
+    expect(new Set(d?.roster.map((p) => p.id))).toEqual(new Set(d?.participants.map((p) => p.id)));
+    for (const p of d?.roster ?? []) expect(Object.keys(p).sort()).toEqual(["displayName", "id"]);
     expect(d?.key).toBe(attendeeKey(ms.map((m) => m.id)));
     expect(d?.matches).toHaveLength(6);
     expect(d?.matches[0].result).toEqual({ scoreA: 21, scoreB: 15, version: 1 });
