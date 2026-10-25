@@ -18,16 +18,16 @@ export function MemberStatsTable({ rows, season }: { rows: Row[]; season: Season
             </th>
             <TotalsHead />
             <th scope="col" className={th}>
-              Hạng 1
+              #1
             </th>
             <th scope="col" className={th}>
-              Hạng 2
+              #2
             </th>
             <th scope="col" className={th}>
-              Hạng 3
+              #3
             </th>
             <th scope="col" className={th}>
-              Hạng 4
+              #4
             </th>
           </tr>
         </thead>

@@ -3,7 +3,9 @@ import { isSeasonEnded, type LastDayResults } from "@/domain/season";
 import {
   memberStats,
   type MemberStatRow,
+  type FormResult,
   pairStats,
+  seasonForm,
   seasonStandings,
   type StatsFilter,
 } from "@/domain/stats";
@@ -21,6 +23,8 @@ import {
 } from "../db/schema";
 import { finalizeDue } from "../match-days/schedule";
 import { parseSeasonId } from "../validation";
+
+const FORM_LENGTH = 4;
 
 export type MemberRef = {
   id: string;
@@ -104,10 +108,16 @@ export async function getSeasonView(
   db: Db,
   season: string,
   now: Date,
-): Promise<{ season: SeasonId; ended: boolean; rows: (Ranked<string> & { member: MemberRef })[] }> {
+): Promise<{
+  season: SeasonId;
+  ended: boolean;
+  rows: (Ranked<string> & { member: MemberRef; form: FormResult[] })[];
+}> {
   const id = parseSeasonId(season);
   await finalizeDue(db, now);
-  const standings = seasonStandings(await loadResultMatches(db), id);
+  const matches = await loadResultMatches(db);
+  const standings = seasonStandings(matches, id);
+  const form = seasonForm(matches, id, FORM_LENGTH);
   const [refs, ended] = await Promise.all([
     loadMemberRefs(
       db,
@@ -118,7 +128,7 @@ export async function getSeasonView(
   return {
     season: id,
     ended: ended.has(id),
-    rows: standings.map((r) => ({ ...r, member: ref(refs, r.key) })),
+    rows: standings.map((r) => ({ ...r, member: ref(refs, r.key), form: form.get(r.key) ?? [] })),
   };
 }
 

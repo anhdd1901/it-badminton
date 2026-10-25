@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Pair } from "./types";
 import { pairKey, type ResultMatch } from "./standings";
-import { memberStats, pairStats, seasonStandings } from "./stats";
+import { memberStats, pairStats, seasonForm, seasonStandings } from "./stats";
 
 const M = (day: string, a: Pair, b: Pair, sa: number, sb: number): ResultMatch => ({
   matchDay: day,
@@ -50,5 +50,24 @@ describe("stats", () => {
       {},
     );
     expect(p.find((r) => r.key === pairKey(["a", "b"]))?.totals.played).toBe(2);
+  });
+});
+
+describe("seasonForm", () => {
+  const at = (day: string, number: number, sa: number, sb: number): ResultMatch => ({
+    ...M(day, ["a", "b"], ["c", "d"], sa, sb),
+    number,
+  });
+  it("trận gần nhất đứng đầu, chỉ lấy trong mùa, tối đa limit", () => {
+    const list = [
+      at("2026-09-26", 1, 21, 0),
+      at("2026-10-03", 1, 21, 10),
+      at("2026-10-03", 2, 10, 21),
+      at("2026-10-10", 1, 21, 5),
+    ];
+    expect(seasonForm(list, "2026-10", 2).get("a")).toEqual(["win", "loss"]);
+    expect(seasonForm(list, "2026-10", 4).get("a")).toEqual(["win", "loss", "win"]);
+    expect(seasonForm(list, "2026-10", 4).get("c")).toEqual(["loss", "win", "loss"]);
+    expect(seasonForm(list, "2026-10", 4).get("zzz")).toBeUndefined();
   });
 });

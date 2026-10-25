@@ -1,3 +1,4 @@
+import { Check, X } from "lucide-react";
 import type { getSeasonView } from "@/server/views/rankings";
 import { MemberAvatar } from "@/components/member-avatar";
 import { PlayerName } from "@/components/player-name";
@@ -35,7 +36,40 @@ export function RankBadge({ rank }: { rank: number }) {
   );
 }
 
-export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
+// Trận gần nhất bên trái; mem chưa đủ 4 trận thì chỉ hiện số trận đã đấu.
+function FormIcons({ form }: { form: Row["form"] }) {
+  return (
+    <span className="flex items-center justify-end gap-1">
+      {form.map((f, i) => {
+        const Icon = f === "win" ? Check : X;
+        return (
+          <span
+            key={i}
+            role="img"
+            aria-label={f === "win" ? "Thắng" : "Thua"}
+            className={cn(
+              "inline-flex size-5 items-center justify-center rounded-full text-white",
+              f === "win" ? "bg-green-600" : "bg-red-600",
+            )}
+          >
+            <Icon aria-hidden="true" className="size-3" strokeWidth={3.5} />
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+export function SeasonTable({
+  rows,
+  season,
+  showForm = false,
+}: {
+  rows: Row[];
+  season: SeasonId;
+  /** Cột Phong độ chỉ có ý nghĩa với tháng hiện tại. */
+  showForm?: boolean;
+}) {
   if (rows.length === 0) {
     return (
       <p className="rounded-lg border border-border p-4 text-center text-text-2">
@@ -66,6 +100,11 @@ export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId })
             <th scope="col" className={th}>
               Số trận
             </th>
+            {showForm ? (
+              <th scope="col" className={th}>
+                Phong độ
+              </th>
+            ) : null}
           </tr>
         </thead>
         <tbody>
@@ -103,6 +142,11 @@ export function SeasonTable({ rows, season }: { rows: Row[]; season: SeasonId })
               <td className="p-2 text-right font-display text-base font-semibold italic tabular-nums">
                 {r.totals.played}
               </td>
+              {showForm ? (
+                <td className="p-2">
+                  <FormIcons form={r.form} />
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

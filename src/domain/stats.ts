@@ -53,3 +53,32 @@ export function pairStats(matches: readonly ResultMatch[], filter: StatsFilter):
     (r) => filter.memberId === undefined || pairMembers(r.key).includes(filter.memberId),
   );
 }
+
+export type FormResult = "win" | "loss";
+
+/** Kết quả tối đa `limit` trận gần nhất của mỗi mem trong mùa, trận gần nhất đứng đầu. */
+export function seasonForm(
+  matches: readonly ResultMatch[],
+  season: SeasonId,
+  limit: number,
+): Map<MemberId, FormResult[]> {
+  const inSeason = matches
+    .filter((m) => seasonOf(m.matchDay) === season)
+    .sort((a, b) =>
+      a.matchDay < b.matchDay ? 1 : a.matchDay > b.matchDay ? -1 : b.number - a.number,
+    );
+  const form = new Map<MemberId, FormResult[]>();
+  for (const m of inSeason) {
+    const aWon = m.scoreA > m.scoreB;
+    for (const [team, won] of [
+      [m.teamA, aWon],
+      [m.teamB, !aWon],
+    ] as const) {
+      for (const id of team) {
+        const list = form.get(id) ?? [];
+        if (list.length < limit) form.set(id, [...list, won ? "win" : "loss"]);
+      }
+    }
+  }
+  return form;
+}

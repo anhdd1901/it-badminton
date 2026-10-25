@@ -51,4 +51,18 @@ describe("SeasonTable", () => {
     expect(medals[4]).toBeNull();
     expect(screen.getAllByRole("img", { name: "Hạng 1" })).toHaveLength(2);
   });
+  it("cột Phong độ chỉ hiện khi showForm, trận gần nhất bên trái", () => {
+    const rows = [
+      { rank: 1, member: mem("a"), totals, diff: 11, form: ["win", "loss", "win"] },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ] as any;
+    const { container, rerender } = render(<SeasonTable rows={rows} season={SEASON} />);
+    expect(container.querySelector("thead")!.textContent).not.toContain("Phong độ");
+    rerender(<SeasonTable rows={rows} season={SEASON} showForm />);
+    expect(container.querySelector("thead")!.textContent).toContain("Phong độ");
+    const icons = Array.from(container.querySelectorAll("tbody td:last-child [role=img]")).map(
+      (e) => e.getAttribute("aria-label"),
+    );
+    expect(icons).toEqual(["Thắng", "Thua", "Thắng"]);
+  });
 });

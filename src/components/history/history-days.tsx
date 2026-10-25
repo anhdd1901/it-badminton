@@ -51,7 +51,7 @@ export function HistoryDays({
           return (
             // Each header sticks only within its own section, so the next day pushes it away.
             <section key={d.day} className="flex flex-col gap-2">
-              <h2 className={cn("sticky z-10 bg-bg", STICKY_TOP)}>
+              <h2 className={cn("sticky z-20 bg-bg", STICKY_TOP)}>
                 <button
                   type="button"
                   aria-expanded={expanded}

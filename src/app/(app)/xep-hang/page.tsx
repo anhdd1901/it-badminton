@@ -62,7 +62,7 @@ async function SeasonSection({
         hrefBase="/xep-hang?mua="
       />
       <p className="text-sm text-text-2">{view.ended ? "Đã kết thúc" : "Đang diễn ra"}</p>
-      <SeasonTable rows={view.rows} season={view.season} />
+      <SeasonTable rows={view.rows} season={view.season} showForm={view.season === current} />
     </>
   );
 }

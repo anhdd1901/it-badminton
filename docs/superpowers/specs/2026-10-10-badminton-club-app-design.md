@@ -403,7 +403,7 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Theo bả
 |---|---|
 | **Đăng nhập** | tên app "ANH EM IT", username, mật khẩu |
 | **Buổi tuần này** (trang chủ) | ngày, trạng thái (đang mở / đã khóa / đã đóng lúc 12:00); "đã điểm danh / tổng mem đang hoạt động", bấm vào mở popup danh sách (avatar + tên; admin và subadmin điểm danh hoặc hủy hộ tại đây); nút điểm danh hoặc hủy; lịch các trận (số trận, hai cặp, tỷ số, ô trống nếu chưa nhập); admin và subadmin nhập hoặc sửa tỷ số ngay tại trận, có nút "Xóa hết kết quả buổi này". Dưới 5 người: "Chưa đủ người để xếp lịch (cần ít nhất 5, hiện có N)". Không có sơ đồ: thông báo ở 4.4. |
-| **Bảng xếp hạng** | chọn tháng (mặc định tháng hiện tại; bấm vào tháng/năm ở giữa để mở bộ chọn tháng, 8.2); nhãn "Đang diễn ra" / "Đã kết thúc"; các cột ở 4.7 |
+| **Bảng xếp hạng** | chọn tháng (mặc định tháng hiện tại; bấm vào tháng/năm ở giữa để mở bộ chọn tháng, 8.2); nhãn "Đang diễn ra" / "Đã kết thúc"; các cột ở 4.7; riêng tháng hiện tại có thêm cột Phong độ: tối đa 4 icon kết quả các trận gần nhất của mem trong tháng (vòng tròn xanh lá chứa ✓ trắng là thắng, vòng tròn đỏ chứa ✗ trắng là thua, cùng màu ở hai theme), trận gần nhất bên trái |
 | **ELO** | 4.9 |
 | **Thống kê** | tab Theo mem / Theo cặp; bộ lọc 4.10 |
 | **Lịch sử** | danh sách buổi theo tháng; chi tiết buổi: người tham gia, lịch, kết quả; admin sửa kết quả tại đây |
