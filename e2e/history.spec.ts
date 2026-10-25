@@ -66,7 +66,7 @@ test("admin sửa kết quả buổi đã qua, bảng xếp hạng đổi theo",
   const inputs = dialog.getByRole("textbox");
   await inputs.nth(0).fill("21");
   await inputs.nth(1).fill("10");
-  await dialog.getByRole("button", { name: "Lưu tỷ số" }).click();
+  await dialog.getByRole("button", { name: "Lưu kết quả" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
   await page.goto("/xep-hang");
@@ -85,18 +85,18 @@ test("admin đổi người trận đã có tỷ số, bảng xếp hạng đổ
 
   await page.getByRole("button", { name: "Nhập tỷ số trận 1" }).click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByRole("heading", { name: "Người chơi" })).toBeVisible();
+  await expect(dialog.getByRole("combobox")).toHaveCount(4);
   const slot = dialog.getByRole("combobox", { name: "Cặp A, người 1" });
-  const oldName = (await slot.innerText()).split(" · ")[0].trim();
+  // innerText có chữ cái avatar ở dòng trước tên.
+  const nameOf = (t: string) => t.trim().split("\n").pop()!.split(" · ")[0].trim();
+  const oldName = nameOf(await slot.innerText());
   const others: string[] = [];
   for (const label of ["Cặp A, người 2", "Cặp B, người 1", "Cặp B, người 2"]) {
-    others.push(
-      (await dialog.getByRole("combobox", { name: label }).innerText()).split(" · ")[0].trim(),
-    );
+    others.push(nameOf(await dialog.getByRole("combobox", { name: label }).innerText()));
   }
   await slot.click();
   const options = await page.getByRole("option").allInnerTexts();
-  const names = options.map((o) => o.split(" · ")[0].trim());
+  const names = options.map(nameOf);
   const newName = names.find((n) => n !== oldName && !others.includes(n));
   if (!newName) throw new Error("không có người ngoài trận 1");
   await page.keyboard.press("Escape"); // đóng danh sách chọn
@@ -109,7 +109,7 @@ test("admin đổi người trận đã có tỷ số, bảng xếp hạng đổ
   await page.getByRole("button", { name: "Nhập tỷ số trận 1" }).click();
   await dialog.getByRole("combobox", { name: "Cặp A, người 1" }).click();
   await page.getByRole("option", { name: new RegExp(`^${newName} · `) }).click();
-  await dialog.getByRole("button", { name: "Lưu người chơi" }).click();
+  await dialog.getByRole("button", { name: "Lưu kết quả" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
   await expect(page.getByTestId("team-a").first()).toContainText(newName);

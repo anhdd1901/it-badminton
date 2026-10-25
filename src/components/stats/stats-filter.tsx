@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CalendarDays } from "lucide-react";
 import type { SeasonId } from "@/domain/types";
+import { MemberPill, PILL_ITEM_CLASS, PILL_TRIGGER_CLASS } from "@/components/member-pill";
 import { MonthPopover } from "@/components/month-picker";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import { formatSeason } from "@/ui/format";
 export type StatsFilterMember = {
   id: string;
   displayName: string;
+  avatarUrl: string | null;
   active: boolean;
   username?: never;
 };
@@ -48,6 +50,8 @@ export function StatsFilter({
   const [from, setFrom] = useState<SeasonId | null>((value.from as SeasonId | undefined) ?? null);
   const [to, setTo] = useState<SeasonId | null>((value.to as SeasonId | undefined) ?? null);
   const [member, setMember] = useState(value.memberId ?? ALL);
+
+  const selected = members.find((m) => m.id === member);
 
   return (
     <form
@@ -98,15 +102,33 @@ export function StatsFilter({
           <SelectTrigger
             id="stats-mem"
             aria-label="Mem"
-            className="min-w-0 flex-1 text-base data-[size=default]:h-11 md:text-sm dark:bg-transparent dark:hover:bg-transparent"
+            className={cn(
+              "min-w-0 flex-1 text-base data-[size=default]:h-11 md:text-sm dark:bg-transparent dark:hover:bg-transparent",
+              PILL_TRIGGER_CLASS,
+            )}
           >
-            <SelectValue />
+            <SelectValue>
+              {selected ? (
+                <MemberPill
+                  plain
+                  player={selected}
+                  note={selected.active ? undefined : "đã ngưng"}
+                />
+              ) : (
+                "Tất cả mem"
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>Tất cả mem</SelectItem>
             {members.map((m) => (
-              <SelectItem key={m.id} value={m.id}>
-                {m.active ? m.displayName : `${m.displayName} (đã ngưng)`}
+              <SelectItem key={m.id} value={m.id} className={PILL_ITEM_CLASS}>
+                <MemberPill
+                  plain
+                  className="pr-6"
+                  player={m}
+                  note={m.active ? undefined : "đã ngưng"}
+                />
               </SelectItem>
             ))}
           </SelectContent>
@@ -116,6 +138,12 @@ export function StatsFilter({
         </Button>
         <Link
           href={`/thong-ke?xem=${value.view}`}
+          onClick={() => {
+            // Chưa bấm Lọc thì URL không đổi, trang không tải lại: tự đưa ô về trống.
+            setFrom(null);
+            setTo(null);
+            setMember(ALL);
+          }}
           className={cn(buttonVariants({ variant: "outline" }), "shrink-0 px-3")}
         >
           Bỏ lọc

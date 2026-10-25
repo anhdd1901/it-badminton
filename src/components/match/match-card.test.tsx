@@ -159,8 +159,11 @@ describe("MatchCard court style", () => {
     expect(screen.queryByTestId("match-number")).toBeNull();
   });
 
-  it("có lineup và editable: popup có phần Người chơi", () => {
-    const lineup = { roster: [{ id: "a", displayName: "Mem a" }], counts: new Map([["a", 1]]) };
+  it("có lineup và editable: popup có bốn ô chọn mem và nút Lưu kết quả", () => {
+    const lineup = {
+      roster: [{ id: "a", displayName: "Mem a", avatarUrl: null }],
+      counts: new Map([["a", 1]]),
+    };
     render(
       <MatchCard
         match={match(null)}
@@ -172,12 +175,19 @@ describe("MatchCard court style", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Nhập tỷ số trận 1" }));
-    expect(screen.getByRole("heading", { name: "Người chơi" })).toBeTruthy();
+    expect(screen.getAllByRole("combobox")).toHaveLength(4);
+    expect(screen.getByRole("button", { name: "Lưu kết quả" })).toBeTruthy();
   });
 
-  it("editable mà không có lineup: không có phần Người chơi", () => {
+  it("editable mà không có lineup: không có ô chọn mem", () => {
     render(<MatchCard match={match(null)} editable day="d" scheduleKey="k" season={SEASON} />);
     fireEvent.click(screen.getByRole("button", { name: "Nhập tỷ số trận 1" }));
-    expect(screen.queryByText("Người chơi")).toBeNull();
+    expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+  });
+
+  it("popup không còn mô tả: DialogContent không trỏ aria-describedby", () => {
+    render(<MatchCard match={match(null)} editable day="d" scheduleKey="k" season={SEASON} />);
+    fireEvent.click(screen.getByRole("button", { name: "Nhập tỷ số trận 1" }));
+    expect(screen.getByRole("dialog").hasAttribute("aria-describedby")).toBe(false);
   });
 });

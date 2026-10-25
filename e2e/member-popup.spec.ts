@@ -71,10 +71,10 @@ test("Thống kê: chọn mem bằng Select và lọc, URL có mem=", async ({ p
   await page.goto("/thong-ke");
   await page.getByRole("combobox", { name: "Mem" }).click();
   await page.getByRole("option", { name: "Chi", exact: true }).click();
-  await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText("Chi");
+  await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText(/Chi$/);
   await page.getByRole("button", { name: "Lọc" }).click();
   await expect(page).toHaveURL(/[?&]mem=[^&]+/);
-  await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText("Chi");
+  await expect(page.getByRole("combobox", { name: "Mem" })).toHaveText(/Chi$/);
 });
 
 test("Lịch sử chi tiết: rê vào tên một mem thì mọi chỗ của mem đó trong các trận có data-focused", async ({
@@ -101,7 +101,7 @@ test("Tuần này (admin): nút Nhập tỷ số vẫn mở, bấm tên mem mở
   await page.getByRole("button", { name: "Nhập tỷ số trận 1" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "Trận 1" })).toBeVisible();
-  await expect(dialog.getByRole("button", { name: "Lưu tỷ số" })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Lưu kết quả" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 

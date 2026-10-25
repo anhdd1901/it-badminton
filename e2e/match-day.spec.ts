@@ -34,7 +34,7 @@ async function enter(page: Page, number: number, a: string, b: string) {
   const inputs = dialog.getByRole("textbox");
   await inputs.nth(0).fill(a);
   await inputs.nth(1).fill(b);
-  await dialog.getByRole("button", { name: "Lưu tỷ số" }).click();
+  await dialog.getByRole("button", { name: "Lưu kết quả" }).click();
 }
 
 test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", async ({ page }) => {
@@ -65,9 +65,7 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
     page.getByRole("alert").filter({ hasText: "Tỷ số 21–20 không hợp lệ" }),
   ).toBeVisible();
   // Lịch nháp: popup không có phần đổi người.
-  await expect(page.getByRole("dialog").getByRole("heading", { name: "Người chơi" })).toHaveCount(
-    0,
-  );
+  await expect(page.getByRole("dialog").getByRole("combobox")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByText("Đã khóa", { exact: true })).toHaveCount(0);
 
@@ -79,7 +77,7 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
 
   // Lịch chính thức: admin thấy phần đổi người ở popup trận khác.
   await page.getByRole("button", { name: "Nhập tỷ số trận 2" }).click();
-  await expect(page.getByRole("dialog").getByRole("heading", { name: "Người chơi" })).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("combobox")).toHaveCount(4);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 

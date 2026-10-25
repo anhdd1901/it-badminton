@@ -94,7 +94,7 @@ describe("getWeekView", () => {
     });
     expect(w.schedule?.roster).toHaveLength(6);
     for (const p of w.schedule?.roster ?? []) {
-      expect(Object.keys(p).sort()).toEqual(["displayName", "id"]);
+      expect(Object.keys(p).sort()).toEqual(["avatarUrl", "displayName", "id"]);
     }
     const names = (w.schedule?.roster ?? []).map((p) => p.displayName);
     expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "vi")));

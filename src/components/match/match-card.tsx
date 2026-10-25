@@ -2,12 +2,10 @@
 import { useState } from "react";
 import { changePlayersAction, deleteResultAction, saveResultAction } from "@/app/_actions/results";
 import { MemberTag } from "@/components/member-tag";
-import { PlayersInput } from "@/components/match/players-input";
-import { ScoreInput } from "@/components/match/score-input";
+import { MatchForm } from "@/components/match/match-form";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -64,8 +62,6 @@ function ScoreCell({
     </span>
   );
 }
-
-const names = (t: [PlayerRef, PlayerRef]) => `${t[0].displayName} & ${t[1].displayName}`;
 
 export function MatchCard({
   match,
@@ -132,52 +128,29 @@ export function MatchCard({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <div className={`${box} min-h-11`}>{body}</div>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Trận {match.number}</DialogTitle>
-          <DialogDescription>Nhập tỷ số một ván</DialogDescription>
         </DialogHeader>
-        <ScoreInput
-          initial={r ? { scoreA: r.scoreA, scoreB: r.scoreB } : null}
-          labelA={names(match.teamA)}
-          labelB={names(match.teamB)}
-          onSave={async (s) => {
-            const res = await save({ ...ref, ...s, expectedVersion: r ? r.version : null });
-            if (res.ok) setOpen(false);
-            return res;
-          }}
-          onDelete={
-            r
-              ? async () => {
-                  const res = await del(ref);
-                  if (res.ok) setOpen(false);
-                  return res;
-                }
-              : undefined
+        <MatchForm
+          teamA={match.teamA}
+          teamB={match.teamB}
+          initialScores={r ? { scoreA: r.scoreA, scoreB: r.scoreB } : null}
+          lineup={lineup}
+          onSaveScores={(sc) => save({ ...ref, ...sc, expectedVersion: r ? r.version : null })}
+          onChangePlayers={(next) =>
+            change({
+              ...ref,
+              expected: {
+                teamA: [match.teamA[0].id, match.teamA[1].id],
+                teamB: [match.teamB[0].id, match.teamB[1].id],
+              },
+              next,
+            })
           }
+          onDelete={r ? () => del(ref) : undefined}
+          onDone={() => setOpen(false)}
         />
-        {lineup ? (
-          <PlayersInput
-            roster={lineup.roster}
-            counts={lineup.counts}
-            initial={{
-              teamA: [match.teamA[0].id, match.teamA[1].id],
-              teamB: [match.teamB[0].id, match.teamB[1].id],
-            }}
-            onSave={async (next) => {
-              const res = await change({
-                ...ref,
-                expected: {
-                  teamA: [match.teamA[0].id, match.teamA[1].id],
-                  teamB: [match.teamB[0].id, match.teamB[1].id],
-                },
-                next,
-              });
-              if (res.ok) setOpen(false);
-              return res;
-            }}
-          />
-        ) : null}
       </DialogContent>
     </Dialog>
   );

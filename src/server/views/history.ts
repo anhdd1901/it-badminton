@@ -113,7 +113,10 @@ export async function getMatchDayDetail(
     key: official.key,
     participants: official.assignments.map((a) => ref(refs, a.memberId)),
     roster: official.assignments
-      .map((a) => ({ id: a.memberId, displayName: ref(refs, a.memberId).displayName }))
+      .map((a) => {
+        const m = ref(refs, a.memberId);
+        return { id: a.memberId, displayName: m.displayName, avatarUrl: m.avatarUrl };
+      })
       .sort((a, b) => a.displayName.localeCompare(b.displayName, "vi")),
     matches: rows.map((r) => ({
       number: r.number,

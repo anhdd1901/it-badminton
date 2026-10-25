@@ -28,7 +28,7 @@ export type PlayerRef = {
   avatarUrl: string | null;
   seed: 1 | 2 | null;
 };
-export type PlayerOption = { id: string; displayName: string };
+export type PlayerOption = { id: string; displayName: string; avatarUrl: string | null };
 export type WeekMatch = {
   number: number;
   teamA: [PlayerRef, PlayerRef];
@@ -208,7 +208,10 @@ export async function getWeekView(db: Db, actor: Actor, now: Date): Promise<Week
         result: m.result,
       })),
       roster: rosterIds
-        .map((id) => ({ id, displayName: memberRef(refs, id).displayName }))
+        .map((id) => {
+          const m = memberRef(refs, id);
+          return { id, displayName: m.displayName, avatarUrl: m.avatarUrl };
+        })
         .sort((a, b) => a.displayName.localeCompare(b.displayName, "vi")),
     };
   }

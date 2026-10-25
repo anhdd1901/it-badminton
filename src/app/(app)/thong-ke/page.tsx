@@ -41,7 +41,12 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
       <StatsFilter
         key={`${params.view}|${params.from ?? ""}|${params.to ?? ""}|${params.memberId ?? ""}`}
         value={params}
-        members={options.map(({ id, displayName, active }) => ({ id, displayName, active }))}
+        members={options.map(({ id, displayName, avatarUrl, active }) => ({
+          id,
+          displayName,
+          avatarUrl,
+          active,
+        }))}
         bounds={bounds}
       />
       {params.view === "cap" ? (

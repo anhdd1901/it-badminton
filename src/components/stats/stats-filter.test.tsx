@@ -5,8 +5,8 @@ import type { SeasonId } from "@/domain/types";
 import { StatsFilter } from "./stats-filter";
 
 const members = [
-  { id: "m1", displayName: "An", active: true },
-  { id: "m2", displayName: "Bình", active: false },
+  { id: "m1", displayName: "An", avatarUrl: null, active: true },
+  { id: "m2", displayName: "Bình", avatarUrl: null, active: false },
 ];
 const bounds = { min: "2026-01" as SeasonId, max: "2026-10" as SeasonId };
 const hidden = (c: HTMLElement, name: string) =>
@@ -60,7 +60,7 @@ describe("StatsFilter", () => {
     expect(screen.getByLabelText("Từ tháng").textContent).toBe("Từ tháng");
   });
 
-  it("Select mem hiện Tất cả mem khi không chọn, tên kèm (đã ngưng) khi có", () => {
+  it("Select mem hiện Tất cả mem khi không chọn, tên kèm chú thích đã ngưng khi có", () => {
     const a = render(<StatsFilter value={{ view: "mem" }} members={members} bounds={bounds} />);
     expect(screen.getByLabelText("Mem").textContent).toBe("Tất cả mem");
     expect(hidden(a.container, "mem")).toBe("");
@@ -68,7 +68,7 @@ describe("StatsFilter", () => {
     const b = render(
       <StatsFilter value={{ view: "mem", memberId: "m2" }} members={members} bounds={bounds} />,
     );
-    expect(screen.getByLabelText("Mem").textContent).toBe("Bình (đã ngưng)");
+    expect(screen.getByLabelText("Mem").textContent).toMatch(/Bình · đã ngưng$/);
     expect(hidden(b.container, "mem")).toBe("m2");
   });
 
@@ -80,5 +80,31 @@ describe("StatsFilter", () => {
     // Radix renders an aria-hidden native select inside forms for autofill; it has no name.
     expect(container.querySelector("select:not([aria-hidden])")).toBeNull();
     expect(container.querySelector("select[name]")).toBeNull();
+  });
+
+  it("mục chọn mem là tag mem; mem đã ngưng có chú thích mờ", () => {
+    Element.prototype.hasPointerCapture ??= () => false;
+    Element.prototype.setPointerCapture ??= () => {};
+    Element.prototype.releasePointerCapture ??= () => {};
+    Element.prototype.scrollIntoView ??= () => {};
+    render(<StatsFilter value={{ view: "mem" }} members={members} bounds={bounds} />);
+    fireEvent.keyDown(screen.getByRole("combobox", { name: "Mem" }), { key: "Enter" });
+    const option = screen.getByRole("option", { name: "Bình · đã ngưng" });
+    expect(option.querySelector('[data-slot="avatar"]')).not.toBeNull();
+    expect(option.querySelector(".text-text-2\\/70")?.textContent).toBe("· đã ngưng");
+  });
+
+  it("Bỏ lọc đưa mọi ô về trống kể cả khi chưa bấm Lọc", () => {
+    const { container } = render(
+      <StatsFilter value={{ view: "mem" }} members={members} bounds={bounds} />,
+    );
+    // Chọn tháng rồi bấm thẳng Bỏ lọc (link không tải lại trang trong jsdom).
+    fireEvent.click(screen.getByLabelText("Từ tháng"));
+    fireEvent.click(screen.getAllByRole("button", { name: /^Tháng 1\b/ })[0]);
+    expect(hidden(container, "tu")).not.toBe("");
+    fireEvent.click(screen.getByRole("link", { name: "Bỏ lọc" }));
+    expect(hidden(container, "tu")).toBe("");
+    expect(hidden(container, "den")).toBe("");
+    expect(hidden(container, "mem")).toBe("");
   });
 });
