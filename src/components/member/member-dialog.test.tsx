@@ -91,6 +91,9 @@ describe("MemberDialog", () => {
     }
     expect(screen.getByText("7")).toBeTruthy();
     expect(screen.getByText("6")).toBeTruthy();
+    // Chỉ thống kê toàn thời gian có tỷ lệ thắng: 20/30.
+    expect(screen.getAllByText("Tỷ lệ thắng")).toHaveLength(1);
+    expect(screen.getByText("67%")).toBeTruthy();
   });
 
   it("chevron theo delta", async () => {
@@ -142,7 +145,7 @@ describe("MemberDialog", () => {
     renderDialog();
     const cells = () => document.querySelectorAll('[data-slot="stat-cell"]').length;
     const skeletonCount = cells();
-    expect(skeletonCount).toBe(15);
+    expect(skeletonCount).toBe(16);
     resolve({ ok: true, data: view() });
     await screen.findByText("Toàn thời gian");
     expect(cells()).toBe(skeletonCount);

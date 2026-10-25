@@ -25,8 +25,8 @@ export function PairStatsTable({ rows, season }: { rows: Row[]; season: SeasonId
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
                   <span className="flex -space-x-1.5">
-                    <MemberAvatar member={r.members[0]} size={24} />
-                    <MemberAvatar member={r.members[1]} size={24} />
+                    <MemberAvatar member={r.members[0]} size={32} />
+                    <MemberAvatar member={r.members[1]} size={32} />
                   </span>
                   <span
                     className="flex max-w-[14rem] min-w-0 items-center gap-1"

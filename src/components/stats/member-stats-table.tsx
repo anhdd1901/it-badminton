@@ -36,7 +36,7 @@ export function MemberStatsTable({ rows, season }: { rows: Row[]; season: Season
             <tr key={r.member.id} className="border-t border-border tabular-nums">
               <th scope="row" className="sticky left-0 bg-surface p-2 text-left font-normal">
                 <span className="flex items-center gap-2">
-                  <MemberAvatar member={r.member} size={24} />
+                  <MemberAvatar member={r.member} size={32} />
                   <span className="min-w-0" title={r.member.displayName}>
                     <PlayerName
                       player={{ id: r.member.id, displayName: r.member.displayName }}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SeasonId } from "@/domain/types";
 import {
   eloInputValue,
+  formatWinRate,
   formatDay,
   formatDayShort,
   formatElo,
@@ -45,5 +46,14 @@ describe("eloInputValue", () => {
 describe("formatSeasonShort", () => {
   it("2026-10 thành 10/2026", () => {
     expect(formatSeasonShort("2026-10" as SeasonId)).toBe("10/2026");
+  });
+});
+
+describe("formatWinRate", () => {
+  it("làm tròn số nguyên, chưa có trận thì gạch ngang", () => {
+    expect(formatWinRate(5, 8)).toBe("63%");
+    expect(formatWinRate(20, 30)).toBe("67%");
+    expect(formatWinRate(0, 4)).toBe("0%");
+    expect(formatWinRate(0, 0)).toBe("–");
   });
 });

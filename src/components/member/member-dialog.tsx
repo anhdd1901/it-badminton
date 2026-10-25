@@ -16,7 +16,7 @@ import { useAppAction } from "@/components/use-app-action";
 import type { SeasonId } from "@/domain/types";
 import type { MemberProfileView } from "@/server/views/member-profile";
 import { cn } from "@/lib/utils";
-import { formatDiff, formatElo, formatSeasonShort } from "@/ui/format";
+import { formatDiff, formatElo, formatSeasonShort, formatWinRate } from "@/ui/format";
 
 const FOCUS_RING = "outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
@@ -181,6 +181,10 @@ function Ready({ view }: { view: MemberProfileView }) {
           <Cell label="Cầu thắng" value={allTime.totals.pointsFor} />
           <Cell label="Cầu thua" value={allTime.totals.pointsAgainst} />
           <Cell label="Số trận" value={allTime.totals.played} />
+          <Cell
+            label="Tỷ lệ thắng"
+            value={formatWinRate(allTime.totals.wins, allTime.totals.played)}
+          />
         </div>
         <div className="grid grid-cols-4 gap-2">
           <Cell label="Hạng 1" value={allTime.podium.first} />
@@ -232,7 +236,7 @@ function Skeleton() {
       </div>
       <div className={cn(bar, "h-9 w-28")} />
       {group(6, false, 0)}
-      {group(5, true, 1)}
+      {group(6, true, 1)}
     </div>
   );
 }
