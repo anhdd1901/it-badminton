@@ -46,7 +46,7 @@
   - `const LINEUP_INVALID = "Mỗi trận cần 4 người khác nhau có tên trong lịch của buổi"`, export từ `src/domain/lineup.ts` để client hiện lỗi tại chỗ.
   - `MESSAGES.badLineup = LINEUP_INVALID` và `MESSAGES.lineupChanged = "Trận này vừa được đổi người, hãy tải lại"` trong `src/server/errors.ts`.
 
-- [ ] **Step 1: Viết test hỏng** `src/domain/lineup.test.ts`
+- [x] **Step 1: Viết test hỏng** `src/domain/lineup.test.ts`
 
 ```ts
 const roster = new Set(["a", "b", "c", "d", "e"]);
@@ -60,10 +60,10 @@ it("người ngoài lịch", () =>
   expect(checkLineup({ teamA: ["a", "b"], teamB: ["c", "x"] }, roster)).toBe(false));
 ```
 
-- [ ] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test src/domain/lineup.test.ts`. Expected: FAIL (không tìm thấy module).
-- [ ] **Step 3: Viết `src/domain/lineup.ts`** với các export ở trên, rồi thêm hai mục vào `MESSAGES`. `badLineup` import `LINEUP_INVALID` để chỉ có một chuỗi gốc.
-- [ ] **Step 4: Chạy lại test.** Run: `pnpm test src/domain/lineup.test.ts && pnpm typecheck`. Expected: PASS.
-- [ ] **Step 5: Commit**
+- [x] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test src/domain/lineup.test.ts`. Expected: FAIL (không tìm thấy module).
+- [x] **Step 3: Viết `src/domain/lineup.ts`** với các export ở trên, rồi thêm hai mục vào `MESSAGES`. `badLineup` import `LINEUP_INVALID` để chỉ có một chuỗi gốc.
+- [x] **Step 4: Chạy lại test.** Run: `pnpm test src/domain/lineup.test.ts && pnpm typecheck`. Expected: PASS.
+- [x] **Step 5: Commit**
 
 ```bash
 graphify update .

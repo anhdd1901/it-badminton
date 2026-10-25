@@ -1,3 +1,5 @@
+import { LINEUP_INVALID } from "@/domain/lineup";
+
 export type ErrorCode =
   "UNAUTHENTICATED" | "FORBIDDEN" | "VALIDATION" | "CONFLICT" | "LOCKED" | "NOT_FOUND";
 
@@ -32,6 +34,8 @@ export const MESSAGES = {
   usernameTaken: "Tên đăng nhập đã có người dùng",
   wrongPassword: "Mật khẩu không đúng",
   scheduleChanged: "Lịch thi đấu vừa thay đổi, hãy tải lại",
+  lineupChanged: "Trận này vừa được đổi người, hãy tải lại",
+  badLineup: LINEUP_INVALID,
   adminChanged: "Quyền admin vừa thay đổi, hãy tải lại",
   avatarTooLarge: "Ảnh tối đa 5 MB",
   avatarFormat: "Ảnh phải là JPG, PNG hoặc WEBP",
