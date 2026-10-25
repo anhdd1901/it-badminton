@@ -80,7 +80,7 @@ export function SeasonTable({
   return (
     <div className="overflow-x-auto rounded-lg border border-border bg-surface">
       <table className="w-full min-w-[30rem] border-collapse text-sm">
-        <thead className="bg-surface-2 text-text-2">
+        <thead className="bg-surface-2 text-text-2 [&_th]:whitespace-nowrap">
           <tr>
             <th scope="col" className="sticky left-0 bg-surface-2 p-2 text-left font-medium">
               Mem

@@ -12,7 +12,7 @@ export function EloTable({ rows, season }: { rows: Row[]; season: SeasonId }) {
     <div className="flex flex-col gap-2">
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full min-w-[22rem] border-collapse text-sm">
-          <thead className="bg-surface-2 text-left text-text-2">
+          <thead className="bg-surface-2 text-left text-text-2 [&_th]:whitespace-nowrap">
             <tr>
               <th scope="col" className="sticky left-0 bg-surface-2 p-2 font-medium">
                 Mem
