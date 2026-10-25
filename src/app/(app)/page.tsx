@@ -5,6 +5,7 @@ import { DeleteAllResults } from "@/components/match/delete-all-results";
 import { MatchCard } from "@/components/match/match-card";
 import { PlayerFocusProvider } from "@/components/player-focus";
 import { seasonOf } from "@/domain/time";
+import { matchCounts } from "@/ui/lineup";
 import { AttendanceButton } from "@/components/week/attendance-button";
 import { RosterDialog } from "@/components/week/roster-dialog";
 import { WeekHeader } from "@/components/week/week-header";
@@ -15,6 +16,7 @@ export default async function ThisWeekPage() {
   const actor = await requireActor();
   const view = await getWeekView(getDb(), actor, now());
   const { can, schedule } = view;
+  const counts = schedule ? matchCounts(schedule.matches) : null;
   const disabledReason =
     view.status === "locked"
       ? "Buổi đấu đã khóa, không thể thay đổi điểm danh"
@@ -55,6 +57,9 @@ export default async function ThisWeekPage() {
                 day={view.day}
                 scheduleKey={schedule.key}
                 season={seasonOf(view.day)}
+                lineup={
+                  can.changePlayers && counts ? { roster: schedule.roster, counts } : undefined
+                }
               />
             ))}
             {can.editResults && schedule.matches.some((m) => m.result) ? (

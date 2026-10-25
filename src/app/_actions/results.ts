@@ -1,6 +1,8 @@
 "use server";
 import { runAction } from "@/app/_lib/action";
 import {
+  changeMatchPlayers,
+  type ChangePlayersInput,
   deleteAllResults,
   deleteResult,
   enterResult,
@@ -32,5 +34,11 @@ export async function deleteAllResultsAction(input: {
 }): Promise<ActionResult> {
   return runAction(async ({ db, actor, now }) => {
     await deleteAllResults(db, actor, input, now);
+  });
+}
+
+export async function changePlayersAction(input: ChangePlayersInput): Promise<ActionResult> {
+  return runAction(async ({ db, actor, now }) => {
+    await changeMatchPlayers(db, actor, input, now);
   });
 }

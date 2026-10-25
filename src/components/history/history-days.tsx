@@ -7,6 +7,7 @@ import type { LocalDate, SeasonId } from "@/domain/types";
 import { cn } from "@/lib/utils";
 import type { PlayerOption, WeekMatch } from "@/server/views/week";
 import { formatDay } from "@/ui/format";
+import { matchCounts } from "@/ui/lineup";
 
 export type HistoryDayItem = {
   day: LocalDate;
@@ -50,6 +51,7 @@ export function HistoryDays({
         {days.map((d) => {
           const expanded = open.has(d.day);
           const panelId = `ngay-${d.day}`;
+          const counts = expanded && d.canChangePlayers ? matchCounts(d.matches) : null;
           return (
             // Each header sticks only within its own section, so the next day pushes it away.
             <section key={d.day} className="flex flex-col gap-2">
@@ -86,6 +88,7 @@ export function HistoryDays({
                       day={d.day}
                       scheduleKey={d.scheduleKey}
                       season={season}
+                      lineup={counts ? { roster: d.roster, counts } : undefined}
                     />
                   ))}
                 </div>

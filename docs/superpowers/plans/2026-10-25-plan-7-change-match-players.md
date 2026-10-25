@@ -167,7 +167,7 @@ Giao diện theo spec 8.2:
 - Chọn trùng người thì hiện `role="alert"` với `LINEUP_INVALID` và vô hiệu nút.
 - Nút "Lưu người chơi" chỉ bật khi lineup khác `initial`. Lưu xong (`ok`) thì đóng popup. Lỗi `CONFLICT` thì hiện thông báo và `router.refresh()`, giống `ScoreInput`.
 
-- [ ] **Step 1: Viết test hỏng.**
+- [x] **Step 1: Viết test hỏng.**
   - `src/ui/lineup.test.ts`: 2 trận `[a,b] vs [c,d]`, `[a,c] vs [b,e]` → `a:2, b:2, c:2, d:1, e:1`.
   - `players-input.test.tsx` (jsdom, mock `next/navigation` như `score-input.test.tsx`):
     - `"chưa đổi gì: nút Lưu người chơi bị vô hiệu"`.
@@ -175,10 +175,10 @@ Giao diện theo spec 8.2:
     - `"chọn trùng người: báo lỗi, không gọi onSave"`: alert có `textContent === LINEUP_INVALID`, nút disabled.
     - `"đổi một người: gọi onSave với lineup mới"`: `onSave` nhận `{ teamA: ["e", "b"], teamB: ["c", "d"] }`.
   - `match-card.test.tsx`: có `lineup` và `editable` → mở popup thấy heading "Người chơi"; `editable` mà không có `lineup` → không có "Người chơi".
-- [ ] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test src/ui/lineup.test.ts src/components/match`. Expected: FAIL.
-- [ ] **Step 3: Viết `matchCounts`, `PlayersInput`, `changePlayersAction`; nối `MatchCard`.** Trang Tuần này truyền `lineup={can.changePlayers ? { roster: schedule.roster, counts } : undefined}`, trong đó `counts = matchCounts(schedule.matches)` tính một lần. `HistoryDays` làm tương tự với `d.canChangePlayers`/`d.roster`. `onSave` của popup gọi `changePlayersAction({ day, scheduleKey, matchNumber, expected: id hiện tại của match.teamA/teamB, next })`.
-- [ ] **Step 4: Chạy lại.** Run: `pnpm test && pnpm typecheck && pnpm lint`. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(plan-7/task-4): players section in match dialog` (kèm `graphify update .` và `[x]`).
+- [x] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test src/ui/lineup.test.ts src/components/match`. Expected: FAIL.
+- [x] **Step 3: Viết `matchCounts`, `PlayersInput`, `changePlayersAction`; nối `MatchCard`.** Trang Tuần này truyền `lineup={can.changePlayers ? { roster: schedule.roster, counts } : undefined}`, trong đó `counts = matchCounts(schedule.matches)` tính một lần. `HistoryDays` làm tương tự với `d.canChangePlayers`/`d.roster`. `onSave` của popup gọi `changePlayersAction({ day, scheduleKey, matchNumber, expected: id hiện tại của match.teamA/teamB, next })`.
+- [x] **Step 4: Chạy lại.** Run: `pnpm test && pnpm typecheck && pnpm lint`. Expected: PASS.
+- [x] **Step 5: Commit** `feat(plan-7/task-4): players section in match dialog` (kèm `graphify update .` và `[x]`).
 
 ### Task 5: E2E và đóng kế hoạch
 

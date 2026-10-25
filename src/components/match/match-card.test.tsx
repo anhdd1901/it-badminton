@@ -12,6 +12,7 @@ vi.mock("@/app/_actions/member-profile", () => ({ getMemberProfileAction: vi.fn(
 vi.mock("@/app/_actions/results", () => ({
   saveResultAction: vi.fn(),
   deleteResultAction: vi.fn(),
+  changePlayersAction: vi.fn(),
 }));
 
 const SEASON = "2026-10" as SeasonId;
@@ -156,5 +157,27 @@ describe("MatchCard court style", () => {
   it("không hiện số thứ tự trận", () => {
     r(false);
     expect(screen.queryByTestId("match-number")).toBeNull();
+  });
+
+  it("có lineup và editable: popup có phần Người chơi", () => {
+    const lineup = { roster: [{ id: "a", displayName: "Mem a" }], counts: new Map([["a", 1]]) };
+    render(
+      <MatchCard
+        match={match(null)}
+        editable
+        lineup={lineup}
+        day="d"
+        scheduleKey="k"
+        season={SEASON}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Nhập tỷ số trận 1" }));
+    expect(screen.getByRole("heading", { name: "Người chơi" })).toBeTruthy();
+  });
+
+  it("editable mà không có lineup: không có phần Người chơi", () => {
+    render(<MatchCard match={match(null)} editable day="d" scheduleKey="k" season={SEASON} />);
+    fireEvent.click(screen.getByRole("button", { name: "Nhập tỷ số trận 1" }));
+    expect(screen.queryByText("Người chơi")).toBeNull();
   });
 });

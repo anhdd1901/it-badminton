@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { deleteResultAction, saveResultAction } from "@/app/_actions/results";
+import { changePlayersAction, deleteResultAction, saveResultAction } from "@/app/_actions/results";
 import { MemberTag } from "@/components/member-tag";
+import { PlayersInput } from "@/components/match/players-input";
 import { ScoreInput } from "@/components/match/score-input";
 import {
   Dialog,
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAppAction } from "@/components/use-app-action";
 import type { SeasonId } from "@/domain/types";
-import type { PlayerRef, WeekMatch } from "@/server/views/week";
+import type { PlayerOption, PlayerRef, WeekMatch } from "@/server/views/week";
 
 function Team({
   testId,
@@ -72,16 +73,19 @@ export function MatchCard({
   day,
   scheduleKey,
   season,
+  lineup,
 }: {
   match: WeekMatch;
   editable: boolean;
   day: string;
   scheduleKey: string;
   season: SeasonId;
+  lineup?: { roster: PlayerOption[]; counts: Map<string, number> };
 }) {
   const [open, setOpen] = useState(false);
   const { run: save } = useAppAction(saveResultAction);
   const { run: del } = useAppAction(deleteResultAction);
+  const { run: change } = useAppAction(changePlayersAction);
   const r = match.result;
   const toneA = !r ? "none" : r.scoreA > r.scoreB ? "win" : "loss";
   const toneB = !r ? "none" : r.scoreB > r.scoreA ? "win" : "loss";
@@ -152,6 +156,28 @@ export function MatchCard({
               : undefined
           }
         />
+        {lineup ? (
+          <PlayersInput
+            roster={lineup.roster}
+            counts={lineup.counts}
+            initial={{
+              teamA: [match.teamA[0].id, match.teamA[1].id],
+              teamB: [match.teamB[0].id, match.teamB[1].id],
+            }}
+            onSave={async (next) => {
+              const res = await change({
+                ...ref,
+                expected: {
+                  teamA: [match.teamA[0].id, match.teamA[1].id],
+                  teamB: [match.teamB[0].id, match.teamB[1].id],
+                },
+                next,
+              });
+              if (res.ok) setOpen(false);
+              return res;
+            }}
+          />
+        ) : null}
       </DialogContent>
     </Dialog>
   );
