@@ -1,12 +1,28 @@
+import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { seededRng } from "@/domain/rng";
 import { attendeeKey } from "@/domain/schedule";
 import type { Actor } from "../actor";
-import { draftSchedules, matchDays, matchResults, officialSchedules } from "../db/schema";
+import {
+  draftSchedules,
+  matchDays,
+  matchResults,
+  members,
+  officialSchedules,
+  scheduledMatches,
+} from "../db/schema";
 import { MESSAGES } from "../errors";
 import { makeMember, useTestDb, vn } from "../test/db";
 import { setAttendance } from "./attendance";
-import { deleteAllResults, deleteResult, enterResult, updateResult } from "./results";
+import { getSeasonView } from "../views/rankings";
+import { getWeekView } from "../views/week";
+import {
+  changeMatchPlayers,
+  deleteAllResults,
+  deleteResult,
+  enterResult,
+  updateResult,
+} from "./results";
 import { finalizeDue } from "./schedule";
 
 describe("match results", () => {
@@ -384,5 +400,151 @@ describe("match results", () => {
     expect(day.finalizedAt).toEqual(SAT("12:00"));
     expect(await t.db.select().from(draftSchedules)).toHaveLength(0);
     expect(await t.db.select().from(officialSchedules)).toHaveLength(0);
+  });
+  describe("đổi người trong trận", () => {
+    type Teams = { teamA: [string, string]; teamB: [string, string] };
+    const DAY = "2026-10-17";
+
+    async function official() {
+      const s = await setup();
+      await enterResult(
+        t.db,
+        s.admin,
+        { day: DAY, scheduleKey: s.key, matchNumber: 1, scoreA: 21, scoreB: 15 },
+        SAT("09:00"),
+      );
+      const view = await getWeekView(t.db, s.admin, SAT("09:00"));
+      const m = view.schedule!.matches.find((x) => x.number === 1)!;
+      const cur: Teams = {
+        teamA: [m.teamA[0].id, m.teamA[1].id],
+        teamB: [m.teamB[0].id, m.teamB[1].id],
+      };
+      const all = view.schedule!.matches.flatMap((x) => [...x.teamA, ...x.teamB]).map((p) => p.id);
+      const x = s.ms.map((u) => u.id).find((id) => ![...cur.teamA, ...cur.teamB].includes(id))!;
+      expect(all).toContain(x);
+      return { ...s, cur, x };
+    }
+    const change = (s: { admin: Actor; key: string }, cur: Teams, next: Teams, at = SAT("09:30")) =>
+      changeMatchPlayers(
+        t.db,
+        s.admin,
+        { day: DAY, scheduleKey: s.key, matchNumber: 1, expected: cur, next },
+        at,
+      );
+    const wins = async (id: string) =>
+      (await getSeasonView(t.db, "2026-10", SAT("10:00"))).rows.find((r) => r.member.id === id)
+        ?.totals.wins ?? 0;
+
+    it("subadmin: FORBIDDEN", async () => {
+      const s = await official();
+      await expect(
+        changeMatchPlayers(
+          t.db,
+          s.sub,
+          { day: DAY, scheduleKey: s.key, matchNumber: 1, expected: s.cur, next: s.cur },
+          SAT("09:30"),
+        ),
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+    it("lịch nháp: NOT_FOUND, không chốt lịch", async () => {
+      const s = await setup();
+      const cur = { teamA: [s.ms[0].id, s.ms[1].id], teamB: [s.ms[2].id, s.ms[3].id] } as Teams;
+      await expect(change(s, cur, cur, SAT("09:00"))).rejects.toMatchObject({
+        code: "NOT_FOUND",
+        message: MESSAGES.noSchedule,
+      });
+      expect(await t.db.select().from(officialSchedules)).toHaveLength(0);
+    });
+    it("đổi người trận đã có tỷ số: xếp hạng tính lại", async () => {
+      const s = await official();
+      const out = s.cur.teamA[0];
+      const [xBefore, outBefore] = [await wins(s.x), await wins(out)];
+      await change(s, s.cur, { teamA: [s.x, s.cur.teamA[1]], teamB: s.cur.teamB });
+      const view = await getWeekView(t.db, s.admin, SAT("10:00"));
+      const m = view.schedule!.matches.find((q) => q.number === 1)!;
+      expect(m.teamA[0].id).toBe(s.x);
+      expect(m.result).toEqual({ scoreA: 21, scoreB: 15, version: 1 });
+      expect(await wins(s.x)).toBe(xBefore + 1);
+      expect(await wins(out)).toBe(outBefore - 1);
+    });
+    it("trùng người hoặc người ngoài lịch: VALIDATION", async () => {
+      const s = await official();
+      await expect(
+        change(s, s.cur, { teamA: s.cur.teamA, teamB: [s.cur.teamB[0], s.cur.teamA[0]] }),
+      ).rejects.toMatchObject({ code: "VALIDATION", message: MESSAGES.badLineup });
+      const outsider = await makeMember(t.db);
+      await expect(
+        change(s, s.cur, { teamA: [outsider.id, s.cur.teamA[1]], teamB: s.cur.teamB }),
+      ).rejects.toMatchObject({ code: "VALIDATION", message: MESSAGES.badLineup });
+    });
+    it("expected lệch: CONFLICT", async () => {
+      const s = await official();
+      await change(s, s.cur, { teamA: [s.x, s.cur.teamA[1]], teamB: s.cur.teamB });
+      await expect(
+        change(s, s.cur, { teamA: s.cur.teamA, teamB: s.cur.teamB }),
+      ).rejects.toMatchObject({ code: "CONFLICT", message: MESSAGES.lineupChanged });
+    });
+    it("scheduleKey sai: CONFLICT scheduleChanged", async () => {
+      const s = await official();
+      await expect(change({ ...s, key: "sai" }, s.cur, s.cur)).rejects.toMatchObject({
+        code: "CONFLICT",
+        message: MESSAGES.scheduleChanged,
+      });
+    });
+    it("mem đã ngưng vẫn chọn được", async () => {
+      const ms = await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+          makeMember(t.db, { role: i === 0 ? "admin" : "member" }),
+        ),
+      );
+      for (const m of ms) {
+        await setAttendance(
+          t.db,
+          as(m),
+          { memberId: m.id, attending: true },
+          vn("2026-10-07T08:00"),
+          { rng: seededRng(1) },
+        );
+      }
+      const admin = as(ms[0]);
+      const past = "2026-10-10";
+      const key = attendeeKey(ms.map((m) => m.id));
+      await enterResult(
+        t.db,
+        admin,
+        { day: past, scheduleKey: key, matchNumber: 1, scoreA: 21, scoreB: 15 },
+        vn("2026-10-10T09:00"),
+      );
+      const [row] = await t.db
+        .select({
+          a1: scheduledMatches.a1,
+          a2: scheduledMatches.a2,
+          b1: scheduledMatches.b1,
+          b2: scheduledMatches.b2,
+        })
+        .from(scheduledMatches)
+        .innerJoin(officialSchedules, eq(officialSchedules.id, scheduledMatches.officialScheduleId))
+        .where(eq(scheduledMatches.number, 1));
+      const cur: Teams = { teamA: [row.a1, row.a2], teamB: [row.b1, row.b2] };
+      const x = ms.map((m) => m.id).find((id) => ![row.a1, row.a2, row.b1, row.b2].includes(id))!;
+      await t.db.update(members).set({ active: false }).where(eq(members.id, x));
+      await changeMatchPlayers(
+        t.db,
+        admin,
+        {
+          day: past,
+          scheduleKey: key,
+          matchNumber: 1,
+          expected: cur,
+          next: { teamA: [x, cur.teamA[1]], teamB: cur.teamB },
+        },
+        SAT("09:00"),
+      );
+      const [after] = await t.db
+        .select({ a1: scheduledMatches.a1 })
+        .from(scheduledMatches)
+        .where(eq(scheduledMatches.number, 1));
+      expect(after.a1).toBe(x);
+    });
   });
 });

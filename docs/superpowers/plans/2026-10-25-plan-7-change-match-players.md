@@ -102,7 +102,7 @@ Thứ tự xử lý:
 
 Thứ tự này cố ý kiểm xung đột trước khi kiểm hợp lệ: khi ai đó vừa đổi trận, client cần được báo tải lại chứ không phải nhận lỗi dữ liệu.
 
-- [ ] **Step 1: Viết test hỏng.** Chốt lịch chính thức bằng `enterResult` trận 1 lúc `SAT("09:00")` (6 người trong `setup()`). Đọc lineup hiện tại bằng `getWeekView(t.db, admin, now)` (`schedule.matches[i].teamA/teamB` → id). Các test:
+- [x] **Step 1: Viết test hỏng.** Chốt lịch chính thức bằng `enterResult` trận 1 lúc `SAT("09:00")` (6 người trong `setup()`). Đọc lineup hiện tại bằng `getWeekView(t.db, admin, now)` (`schedule.matches[i].teamA/teamB` → id). Các test:
   - `"subadmin: FORBIDDEN"`: `changeMatchPlayers` với `sub` → `rejects.toMatchObject({ code: "FORBIDDEN" })`.
   - `"lịch nháp: NOT_FOUND, không chốt lịch"`: chưa nhập kết quả, admin gọi lúc `SAT("09:00")` → `{ code: "NOT_FOUND", message: MESSAGES.noSchedule }`; sau đó `officialSchedules` vẫn rỗng.
   - `"đổi người trận đã có tỷ số: xếp hạng tính lại"`: chọn một người `x` thuộc lịch nhưng không có trong trận 1, thay vào `teamA[0]` của trận 1. Sau đó `getWeekView` trả trận 1 có `teamA[0].id === x` và `result` giữ `{ scoreA: 21, scoreB: 15, version: 1 }`. `getSeasonView(t.db, "2026-10", now)` có dòng của `x` với `wins` tăng 1 so với trước khi đổi; người bị thay ra giảm 1.
@@ -110,10 +110,10 @@ Thứ tự này cố ý kiểm xung đột trước khi kiểm hợp lệ: khi a
   - `"expected lệch: CONFLICT"`: đổi một lần thành công, gọi lại với `expected` cũ → `{ code: "CONFLICT", message: MESSAGES.lineupChanged }`.
   - `"scheduleKey sai: CONFLICT scheduleChanged"`.
   - `"mem đã ngưng vẫn chọn được"`: buổi 2026-10-10 đã qua có lịch chính thức (điểm danh giữa tuần, nhập kết quả ngày 10/10 như `setup()`), rồi ngưng một mem bằng cách cập nhật `members.active = false` trực tiếp. Admin đổi mem đó vào một trận lúc `SAT("09:00")` của 17/10 → thành công.
-- [ ] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test:int`. Expected: các test mới FAIL vì `changeMatchPlayers` chưa có.
-- [ ] **Step 3: Viết `changeMatchPlayers`** trong `src/server/match-days/results.ts` theo thứ tự xử lý ở trên.
-- [ ] **Step 4: Chạy lại.** Run: `pnpm test:int && pnpm typecheck`. Expected: PASS, test cũ không hỏng.
-- [ ] **Step 5: Commit** `feat(plan-7/task-2): changeMatchPlayers service`. Trước commit chạy `graphify update .`; commit cùng việc đánh `[x]` trong file kế hoạch.
+- [x] **Step 2: Chạy và thấy hỏng.** Run: `pnpm test:int`. Expected: các test mới FAIL vì `changeMatchPlayers` chưa có.
+- [x] **Step 3: Viết `changeMatchPlayers`** trong `src/server/match-days/results.ts` theo thứ tự xử lý ở trên.
+- [x] **Step 4: Chạy lại.** Run: `pnpm test:int && pnpm typecheck`. Expected: PASS, test cũ không hỏng.
+- [x] **Step 5: Commit** `feat(plan-7/task-2): changeMatchPlayers service`. Trước commit chạy `graphify update .`; commit cùng việc đánh `[x]` trong file kế hoạch.
 
 ### Task 3: Dữ liệu cho màn: roster và quyền đổi người
 

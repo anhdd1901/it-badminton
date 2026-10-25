@@ -1,4 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
+import { checkLineup } from "@/domain/lineup";
 import { canEditResults } from "@/domain/match-day";
 import { attendeeKey } from "@/domain/schedule";
 import { checkScore } from "@/domain/score";
@@ -8,7 +9,7 @@ import type { Db, Tx } from "../db/client";
 import { lockMatchDay } from "../db/lock";
 import { matchDays, matchResults, officialSchedules, scheduledMatches } from "../db/schema";
 import { AppError, MESSAGES, resultConflict } from "../errors";
-import { parseLocalDate } from "../validation";
+import { parseLocalDate, parseMemberId } from "../validation";
 import {
   activeAttendeeIds,
   finalizeDue,
@@ -74,6 +75,10 @@ async function findMatch(tx: Tx, officialId: string, matchNumber: number) {
   const [row] = await tx
     .select({
       id: scheduledMatches.id,
+      a1: scheduledMatches.a1,
+      a2: scheduledMatches.a2,
+      b1: scheduledMatches.b1,
+      b2: scheduledMatches.b2,
       scoreA: matchResults.scoreA,
       scoreB: matchResults.scoreB,
       version: matchResults.version,
@@ -216,5 +221,59 @@ export async function deleteAllResults(
       .where(eq(scheduledMatches.officialScheduleId, officialId));
     await tx.delete(matchResults).where(inArray(matchResults.scheduledMatchId, matchIds));
     await dropEmptyScheduleIfOpen(tx, matchDay, day, now);
+  });
+}
+
+type Teams = { teamA: [string, string]; teamB: [string, string] };
+export type ChangePlayersInput = {
+  day: string;
+  scheduleKey: string;
+  matchNumber: number;
+  /** The four players the client saw, by position. */
+  expected: Teams;
+  next: Teams;
+};
+
+/** Admin only. Official schedule only (never promotes a draft). Leaves the result untouched. */
+export async function changeMatchPlayers(
+  db: Db,
+  actor: Actor,
+  input: ChangePlayersInput,
+  now: Date,
+): Promise<void> {
+  const day = await prepare(db, actor, input.day, now);
+  if (actor.role !== "admin") throw new AppError("FORBIDDEN", MESSAGES.forbidden);
+  const parse = (t: Teams): Teams => ({
+    teamA: [parseMemberId(t.teamA[0]), parseMemberId(t.teamA[1])],
+    teamB: [parseMemberId(t.teamB[0]), parseMemberId(t.teamB[1])],
+  });
+  const expected = parse(input.expected);
+  const next = parse(input.next);
+  await db.transaction(async (tx) => {
+    await lockMatchDay(tx, day);
+    const officialId = await requireOfficialId(
+      tx,
+      (await requireMatchDay(tx, day)).id,
+      input.scheduleKey,
+    );
+    const match = await findMatch(tx, officialId, input.matchNumber);
+    if (
+      match.a1 !== expected.teamA[0] ||
+      match.a2 !== expected.teamA[1] ||
+      match.b1 !== expected.teamB[0] ||
+      match.b2 !== expected.teamB[1]
+    ) {
+      throw new AppError("CONFLICT", MESSAGES.lineupChanged);
+    }
+    const [schedule] = await tx
+      .select({ assignments: officialSchedules.assignments })
+      .from(officialSchedules)
+      .where(eq(officialSchedules.id, officialId));
+    const roster = new Set(schedule.assignments.map((a) => a.memberId));
+    if (!checkLineup(next, roster)) throw new AppError("VALIDATION", MESSAGES.badLineup);
+    await tx
+      .update(scheduledMatches)
+      .set({ a1: next.teamA[0], a2: next.teamA[1], b1: next.teamB[0], b2: next.teamB[1] })
+      .where(eq(scheduledMatches.id, match.id));
   });
 }
