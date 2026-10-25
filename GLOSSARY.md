@@ -19,6 +19,7 @@ Dùng đúng các thuật ngữ này trong code, test, spec và giao diện. Tê
 - **Lịch chính thức** (`official schedule`): lịch được chốt của buổi, giữ mãi; kết quả gắn vào đây.
 - **Trận** (`scheduled match`): một trận đánh đôi trong lịch chính thức, có số trận.
 - **Kết quả** (`match result`): tỷ số một ván của một trận.
+- **Đổi người trong trận** (`change match players`): admin thay người trong các cặp của một trận thuộc lịch chính thức, chỉ chọn trong những người có tên trong lịch đó; không phải ghi nhận đánh thay.
 - **Mùa** (`season`): một tháng dương lịch, theo ngày thứ 7 của buổi.
 - **Kết thúc mùa**: khi mọi trận của thứ 7 cuối tháng có kết quả, hoặc 12:00 thứ 7 đó, mốc nào sớm hơn.
 - **Bảng xếp hạng mùa** (`season standings`): xếp hạng mem trong một mùa.

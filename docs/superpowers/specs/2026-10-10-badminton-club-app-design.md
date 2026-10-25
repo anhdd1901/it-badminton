@@ -95,6 +95,19 @@ Mỗi khi danh sách điểm danh của buổi đang mở thay đổi:
 - Trận chưa có kết quả không tính cho ai.
 - Nhập trùng: nếu trận đã có kết quả trong lúc người khác đang nhập, lần lưu sau bị từ chối với thông báo "Trận này vừa được nhập a–b, hãy tải lại". Sửa cũng kiểm tra phiên bản để không ghi đè lẫn nhau.
 
+### 4.6a Đổi người trong trận
+
+Admin chỉnh lại người trong từng cặp của một trận cho hợp ý (ví dụ cân lại trình). Đây không phải ghi nhận đánh thay: quy tắc đánh thay ở 4.6 giữ nguyên.
+
+- **Ai, khi nào:** chỉ admin, trong cùng khung thời gian admin được sửa kết quả (4.6): buổi tuần hiện tại từ 00:00 thứ 7, và mọi buổi đã qua.
+- **Chỉ trên lịch chính thức.** Buổi đang dùng lịch nháp (chưa chốt) thì không đổi được; lịch nháp luôn sinh tự động theo 4.4.
+- **Người được chọn:** chỉ người có tên trong lịch chính thức của buổi (những người đã điểm danh lúc chốt, gồm cả mem đã ngưng sau đó). Một trận phải có 4 người khác nhau. Không bắt buộc mỗi người có số trận bằng nhau; admin tự cân.
+- **Trận đã có tỷ số** vẫn đổi được; tỷ số giữ nguyên và tính cho người có tên trong trận sau khi đổi. Bảng xếp hạng mùa, ELO (tính lại từ đầu, 4.9), thống kê mem và cặp, số lần hạng 1–4 tự tính lại. Số trận và thứ tự trận không đổi.
+- Đổi người không làm thay đổi khóa danh sách của lịch chính thức, hạt giống đã chụp, hay trạng thái mở/khóa của buổi.
+- Trước 12:00 thứ 7, nếu xóa hết kết quả thì lịch chính thức bị xóa (4.5) và các lần đổi người mất theo; lịch nháp gốc được dùng lại.
+- Không lưu lịch sử các lần đổi người.
+- **Xung đột:** lần lưu gửi kèm 4 người mà người đổi đã thấy; nếu trận đã bị đổi khác trong lúc đó, lần lưu bị từ chối với thông báo "Trận này vừa được đổi người, hãy tải lại".
+
 ### 4.7 Bảng xếp hạng mùa
 
 - **Mùa** = tháng dương lịch; buổi thuộc mùa theo tháng của ngày thứ 7.
@@ -206,6 +219,7 @@ Mọi vai trò đều là mem thi đấu. Luôn có đúng một admin.
 | Điểm danh hoặc hủy hộ (buổi tuần này) | | ✅ | ✅ |
 | Nhập, sửa, xóa kết quả buổi tuần này | | ✅ | ✅ |
 | Nhập, sửa, xóa kết quả buổi đã qua | | | ✅ |
+| Đổi người trong trận của lịch chính thức (4.6a) | | | ✅ |
 | Thêm mem (tên hiển thị, username, mật khẩu, ELO ban đầu, avatar tùy chọn) | | | ✅ |
 | Ngưng hoặc kích hoạt lại mem | | | ✅ |
 | Đặt lại mật khẩu, đổi username, tên hiển thị, avatar của người khác | | | ✅ |
@@ -426,6 +440,8 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Theo bả
 
 **Thẻ trận có thể sửa tỷ số** (admin, subadmin): thẻ không còn là một nút lớn, vì tên mem bên trong là nút mở popup (không lồng nút trong nút). Thẻ là khối thường; cột tỷ số bên phải là nút "Nhập tỷ số trận N" cao suốt thẻ; tên mem là nút riêng. Thẻ chỉ xem giữ nguyên.
 
+**Đổi người trong popup "Trận N"** (4.6a; chỉ admin, chỉ khi buổi đã có lịch chính thức): dưới phần tỷ số có phần "Người chơi" ngăn bằng đường `--border`, gồm hai nhóm "Cặp A" và "Cặp B", mỗi nhóm 2 `Select` shadcn. Mỗi lựa chọn là một người trong lịch chính thức của buổi kèm số trận hiện có của người đó trong lịch (ví dụ "Minh · 4 trận"); không hiện username. Chọn trùng người thì báo lỗi tại chỗ và khóa nút lưu. Nút "Lưu người chơi" riêng, chỉ bật khi có thay đổi; lưu xong popup đóng và màn tải lại. Tỷ số và người chơi lưu độc lập. Popup của subadmin và của buổi còn lịch nháp không có phần này. Dữ liệu truyền xuống client chỉ gồm `{ id, displayName }` (5.2).
+
 **Bố cục `MonthPicker`:** popover rộng 16rem; hàng đầu là năm với nút ‹ › (dừng ở năm có dữ liệu); lưới 4 cột × 3 hàng, nhãn "T1"…"T12", ô cao 44px; tháng đang chọn là viên thuốc `--accent` chữ `--on-accent`, tháng khác nền `--surface-2`, tháng ngoài khoảng bị vô hiệu và mờ; nút "Xóa" chỉ có ở bộ lọc Thống kê. Ở Xếp hạng, nút mở là chữ tháng/năm kèm chevron xuống nhỏ. Bàn phím: mũi tên di chuyển giữa các tháng, Enter chọn, Esc đóng.
 
 ## 9. Xử lý lỗi
@@ -433,7 +449,8 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Theo bả
 - Lỗi nhập liệu: thông báo cụ thể bằng tiếng Việt ngay tại ô nhập (ví dụ "Tỷ số 23–20 không hợp lệ: từ 22 điểm trở lên phải thắng cách đúng 2"; "Username đã có người dùng").
 - 401: giao diện về màn đăng nhập. 403: "Bạn không có quyền làm việc này".
 - Thao tác trên buổi đã khóa: "Buổi đấu đã khóa, không thể thay đổi điểm danh".
-- Xung đột khi nhập hoặc sửa kết quả: 4.6.
+- Xung đột khi nhập hoặc sửa kết quả: 4.6. Xung đột khi đổi người trong trận: 4.6a.
+- Đổi người sai (trùng người trong trận, người không có tên trong lịch chính thức): "Mỗi trận cần 4 người khác nhau có tên trong lịch của buổi".
 - Database khởi động chậm: hiện khung đang tải, không để màn trắng.
 - Lỗi không lường trước: thông báo chung, ghi log ở server.
 
@@ -442,8 +459,8 @@ Phong cách **sân cầu**: lấy chất liệu từ sân cầu lông. Theo bả
 | Loại | Phạm vi | Công cụ |
 |---|---|---|
 | Đơn vị (TDD, nhiều nhất) | toàn bộ lõi quy tắc: mọi biên tỷ số (21–19, 21–20, 22–20, 23–20, 29–27, 30–28, 30–29, 31–29…); thứ tự xếp hạng, đồng hạng, ít trận xếp trên; hạt giống và phân định bằng ELO; tính hợp lệ của mọi sơ đồ; tạo lịch với bộ sinh ngẫu nhiên cố định, gồm trường hợp 5 người và thiếu sơ đồ; khóa danh sách và dùng lại lịch; mốc tuần, 12:00 thứ 7, kết thúc mùa; ELO theo bảng ví dụ 4.9, làm tròn, mốc điều chỉnh, tính lại sau khi sửa trận cũ; thống kê mem, cặp, số lần hạng 1–4 | Vitest |
-| Tích hợp | lớp nghiệp vụ với PostgreSQL thật: toàn bộ bảng quyền 5.3; vô hiệu phiên; khóa đăng nhập; chốt và hủy chốt lịch; dùng lại lịch qua nhiều lần điểm danh; tạo lịch đồng thời; xung đột nhập kết quả; chuyển quyền admin | Vitest + PostgreSQL test |
-| Đầu cuối | đăng nhập → điểm danh đủ 5 người → có lịch → nhập kết quả → buổi khóa → bảng xếp hạng và ELO cập nhật; quản lý mem cơ bản | Playwright; `agent-browser` để kiểm tra bằng mắt |
+| Tích hợp | lớp nghiệp vụ với PostgreSQL thật: toàn bộ bảng quyền 5.3; vô hiệu phiên; khóa đăng nhập; chốt và hủy chốt lịch; dùng lại lịch qua nhiều lần điểm danh; tạo lịch đồng thời; xung đột nhập kết quả; đổi người trong trận (chỉ admin, chỉ lịch chính thức, người phải có tên trong lịch, xung đột, xếp hạng và ELO tính lại sau khi đổi trận đã có tỷ số); chuyển quyền admin | Vitest + PostgreSQL test |
+| Đầu cuối | đăng nhập → điểm danh đủ 5 người → có lịch → nhập kết quả → buổi khóa → bảng xếp hạng và ELO cập nhật; admin đổi người trong một trận đã có tỷ số → bảng xếp hạng cập nhật; quản lý mem cơ bản | Playwright; `agent-browser` để kiểm tra bằng mắt |
 
 ## 11. Câu hỏi mở
 
