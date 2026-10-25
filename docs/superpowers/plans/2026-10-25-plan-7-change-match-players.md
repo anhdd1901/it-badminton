@@ -28,7 +28,7 @@
 2. Đổi người lúc còn lịch nháp (trước 12:00 thứ 7, chưa có kết quả): bị từ chối, không chốt lịch chính thức ngầm (Task 2, test "lịch nháp: NOT_FOUND, không chốt lịch").
 3. Một người đã ngưng hoạt động sau khi chốt vẫn có tên trong lịch nên vẫn được chọn ở buổi đã qua (Task 2, test "mem đã ngưng vẫn chọn được").
 4. Cùng người xuất hiện hai lần trong một trận, kể cả khác cặp, thì bị từ chối ở cả client lẫn server (Task 1 và Task 4).
-5. Popup "Trận N" của subadmin không có phần "Người chơi" và HTML không chứa `username` (Task 3 kiểm view, Task 5 e2e).
+5. Subadmin không có quyền đổi (`can.changePlayers === false`) và roster không chứa `username` (Task 3); popup lúc còn lịch nháp không có phần "Người chơi" (Task 5 e2e).
 
 ---
 
@@ -82,14 +82,14 @@ git commit -m "feat(plan-7/task-1): checkLineup rule and messages"
 - Produces:
 
 ```ts
-export type PlayersInput = {
+export type ChangePlayersInput = {
   day: string;
   scheduleKey: string;
   matchNumber: number;
   expected: { teamA: [string, string]; teamB: [string, string] }; // 4 người client đã thấy
   next: { teamA: [string, string]; teamB: [string, string] };
 };
-export async function changeMatchPlayers(db: Db, actor: Actor, input: PlayersInput, now: Date): Promise<void>;
+export async function changeMatchPlayers(db: Db, actor: Actor, input: ChangePlayersInput, now: Date): Promise<void>;
 ```
 
 Thứ tự xử lý:
@@ -144,11 +144,11 @@ Thứ tự này cố ý kiểm xung đột trước khi kiểm hợp lệ: khi a
 - Modify: `src/app/_actions/results.ts`, `src/components/match/match-card.tsx`, `src/components/match/match-card.test.tsx`, `src/app/(app)/page.tsx`, `src/components/history/history-days.tsx`
 
 **Interfaces:**
-- Consumes: `PlayerOption` (Task 3, `import type`); `checkLineup`, `LINEUP_INVALID` (Task 1); `PlayersInput` (Task 2).
+- Consumes: `PlayerOption` (Task 3, `import type`); `checkLineup`, `LINEUP_INVALID` (Task 1); `ChangePlayersInput` (Task 2).
 - Produces:
   - `src/ui/lineup.ts`: `function matchCounts(matches: { teamA: readonly { id: string }[]; teamB: readonly { id: string }[] }[]): Map<string, number>`.
-  - `src/app/_actions/results.ts`: `changePlayersAction(input: PlayersInput): Promise<ActionResult>` gọi `changeMatchPlayers` qua `runAction`.
-  - `PlayersInput` component (đặt tên `PlayersInput` cho component, import type service dưới alias nếu trùng tên):
+  - `src/app/_actions/results.ts`: `changePlayersAction(input: ChangePlayersInput): Promise<ActionResult>` gọi `changeMatchPlayers` qua `runAction`.
+  - Component `PlayersInput`:
 
     ```ts
     props: {
@@ -191,7 +191,7 @@ Giao diện theo spec 8.2:
     2. Trong dialog, đổi "Cặp A, người 1" sang người không có trong trận 1 (đọc tên từ option không thuộc 4 tên trận 1), bấm "Lưu người chơi"; dialog đóng.
     3. Thẻ trận 1 `team-a` chứa tên mới.
     4. `/xep-hang` có dòng của người mới khác với trước khi đổi (cách đo như test sửa kết quả có sẵn).
-  - Trong test có sẵn `"subadmin không sửa được buổi đã qua"`, giữ nguyên. Thêm test `"subadmin ở buổi tuần này không thấy Người chơi"` vào `e2e/match-day.spec.ts` ngay sau bước subadmin nhập tỷ số, nếu luồng có sẵn ở đó mở được popup: mở popup trận và `expect(dialog.getByText("Người chơi")).toHaveCount(0)`.
+  - Trong test `"buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi"` của `e2e/match-day.spec.ts` (admin): lần mở popup đầu tiên (lịch nháp) thì `expect(dialog.getByText("Người chơi")).toHaveCount(0)`; sau khi đã lưu tỷ số đầu tiên, mở popup trận khác thì thấy heading "Người chơi". Quyền subadmin đã được Task 2 và Task 3 kiểm ở server.
 - [ ] **Step 2: Chạy.** Run: `pnpm db:up && pnpm test:e2e`. Expected: PASS toàn bộ.
 - [ ] **Step 3: Kiểm tra bằng mắt** với `agent-browser`: popup trận ở điện thoại (375px) và máy tính, cả hai theme. Select không tràn ngang, nhãn đọc được trên `--surface`.
 - [ ] **Step 4: Chạy toàn bộ kiểm tra.** Run: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:int`. Expected: PASS.
