@@ -25,6 +25,7 @@ export default async function HistoryPage({
   const items = days.flatMap((d, i) => {
     const detail = details[i];
     if (!detail) return [];
+    const canChangePlayers = actor.role === "admin" && canEditResults(d.day, at, actor.role);
     return [
       {
         day: d.day,
@@ -33,8 +34,8 @@ export default async function HistoryPage({
         resultCount: d.resultCount,
         scheduleKey: detail.key,
         editable: canEditResults(d.day, at, actor.role),
-        roster: detail.roster,
-        canChangePlayers: actor.role === "admin" && canEditResults(d.day, at, actor.role),
+        roster: canChangePlayers ? detail.roster : [],
+        canChangePlayers,
         matches: detail.matches,
       },
     ];

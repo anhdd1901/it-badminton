@@ -37,6 +37,13 @@ export function PlayersInput({
   onSave: (next: LineupIds) => Promise<ActionResult>;
 }) {
   const [lineup, setLineup] = useState<LineupIds>(initial);
+  // After a refresh brings a new server lineup, drop stale picks so a retry is a deliberate re-entry.
+  const initialKey = flat(initial).join("|");
+  const [seenKey, setSeenKey] = useState(initialKey);
+  if (seenKey !== initialKey) {
+    setSeenKey(initialKey);
+    setLineup(initial);
+  }
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const router = useRouter();

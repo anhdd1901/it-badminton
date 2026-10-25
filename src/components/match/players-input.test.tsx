@@ -87,4 +87,23 @@ describe("PlayersInput", () => {
     );
     expect(refresh).toHaveBeenCalled();
   });
+
+  it("CONFLICT rồi initial đổi: lựa chọn về lịch mới, giữ thông báo, nút Lưu bị vô hiệu", async () => {
+    onSave.mockResolvedValue({ ok: false, code: "CONFLICT", message: "Trận này vừa được đổi" });
+    const { rerender } = render(
+      <PlayersInput roster={roster} counts={counts} initial={initial} onSave={onSave} />,
+    );
+    pick("Cặp A, người 1", /^Em/);
+    fireEvent.click(saveButton());
+    await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
+    const fresh = { teamA: ["b", "a"] as [string, string], teamB: ["d", "e"] as [string, string] };
+    rerender(<PlayersInput roster={roster} counts={counts} initial={fresh} onSave={onSave} />);
+    const text = (l: string) => screen.getByRole("combobox", { name: l }).textContent;
+    expect(text("Cặp A, người 1")).toContain("Bình");
+    expect(text("Cặp A, người 2")).toContain("An");
+    expect(text("Cặp B, người 1")).toContain("Dũng");
+    expect(text("Cặp B, người 2")).toContain("Em");
+    expect(screen.getByRole("alert").textContent).toBe("Trận này vừa được đổi");
+    expect(saveButton().disabled).toBe(true);
+  });
 });
