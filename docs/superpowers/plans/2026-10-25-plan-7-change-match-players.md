@@ -185,14 +185,14 @@ Giao diện theo spec 8.2:
 **Files:**
 - Modify: `e2e/history.spec.ts`, `docs/backlog.md` (nếu có minor deferred)
 
-- [ ] **Step 1: Viết test e2e** trong `e2e/history.spec.ts`. Dùng buổi 10/10 đã seed (5 người, 5 trận, mọi trận 21–15), nên mỗi người đánh 4 trận và đứng ngoài 1 trận.
+- [x] **Step 1: Viết test e2e** trong `e2e/history.spec.ts`. Dùng buổi 10/10 đã seed (5 người, 5 trận, mọi trận 21–15), nên mỗi người đánh 4 trận và đứng ngoài 1 trận.
   - `"admin đổi người trận đã có tỷ số, bảng xếp hạng đổi theo"`:
     1. Admin vào `/lich-su/2026-10-10` và bấm "Nhập tỷ số trận 1".
     2. Trong dialog, đổi "Cặp A, người 1" sang người không có trong trận 1 (đọc tên từ option không thuộc 4 tên trận 1), bấm "Lưu người chơi"; dialog đóng.
     3. Thẻ trận 1 `team-a` chứa tên mới.
     4. `/xep-hang` có dòng của người mới khác với trước khi đổi (cách đo như test sửa kết quả có sẵn).
   - Trong test `"buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi"` của `e2e/match-day.spec.ts` (admin): lần mở popup đầu tiên (lịch nháp) thì `expect(dialog.getByText("Người chơi")).toHaveCount(0)`; sau khi đã lưu tỷ số đầu tiên, mở popup trận khác thì thấy heading "Người chơi". Quyền subadmin đã được Task 2 và Task 3 kiểm ở server.
-- [ ] **Step 2: Chạy.** Run: `pnpm db:up && pnpm test:e2e`. Expected: PASS toàn bộ.
-- [ ] **Step 3: Kiểm tra bằng mắt** với `agent-browser`: popup trận ở điện thoại (375px) và máy tính, cả hai theme. Select không tràn ngang, nhãn đọc được trên `--surface`.
-- [ ] **Step 4: Chạy toàn bộ kiểm tra.** Run: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:int`. Expected: PASS.
-- [ ] **Step 5: Commit** `test(plan-7/task-5): e2e change match players`, ghi các minor deferred của reviewer vào `docs/backlog.md` và đánh `[x]`.
+- [x] **Step 2: Chạy.** Run: `pnpm db:up && pnpm test:e2e`. Expected: PASS toàn bộ.
+- [x] **Step 3: Kiểm tra bằng mắt** với `agent-browser`: popup trận ở điện thoại (375px) và máy tính, cả hai theme. Select không tràn ngang, nhãn đọc được trên `--surface`.
+- [x] **Step 4: Chạy toàn bộ kiểm tra.** Run: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:int`. Expected: PASS.
+- [x] **Step 5: Commit** `test(plan-7/task-5): e2e change match players`, ghi các minor deferred của reviewer vào `docs/backlog.md` và đánh `[x]`.

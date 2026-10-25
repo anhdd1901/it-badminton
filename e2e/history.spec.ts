@@ -73,6 +73,51 @@ test("admin sửa kết quả buổi đã qua, bảng xếp hạng đổi theo",
   await expect(rowOf(firstWinner)).not.toHaveText(before);
 });
 
+test("admin đổi người trận đã có tỷ số, bảng xếp hạng đổi theo", async ({ page }) => {
+  await login(page, "admin");
+  await page.goto("/lich-su/2026-10-10");
+  await expect(page.getByTestId("team-a").first()).toBeVisible();
+  const rowOf = (name: string) =>
+    page
+      .getByRole("table")
+      .getByRole("row")
+      .filter({ has: page.getByRole("rowheader", { name: rankedName(name) }) });
+
+  await page.getByRole("button", { name: "Nhập tỷ số trận 1" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("heading", { name: "Người chơi" })).toBeVisible();
+  const slot = dialog.getByRole("combobox", { name: "Cặp A, người 1" });
+  const oldName = (await slot.innerText()).split(" · ")[0].trim();
+  const others: string[] = [];
+  for (const label of ["Cặp A, người 2", "Cặp B, người 1", "Cặp B, người 2"]) {
+    others.push(
+      (await dialog.getByRole("combobox", { name: label }).innerText()).split(" · ")[0].trim(),
+    );
+  }
+  await slot.click();
+  const options = await page.getByRole("option").allInnerTexts();
+  const names = options.map((o) => o.split(" · ")[0].trim());
+  const newName = names.find((n) => n !== oldName && !others.includes(n));
+  if (!newName) throw new Error("không có người ngoài trận 1");
+  await page.keyboard.press("Escape"); // đóng danh sách chọn
+  await page.keyboard.press("Escape"); // đóng popup
+
+  await page.goto("/xep-hang");
+  const before = await rowOf(newName).innerText();
+
+  await page.goto("/lich-su/2026-10-10");
+  await page.getByRole("button", { name: "Nhập tỷ số trận 1" }).click();
+  await dialog.getByRole("combobox", { name: "Cặp A, người 1" }).click();
+  await page.getByRole("option", { name: new RegExp(`^${newName} · `) }).click();
+  await dialog.getByRole("button", { name: "Lưu người chơi" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  await expect(page.getByTestId("team-a").first()).toContainText(newName);
+
+  await page.goto("/xep-hang");
+  await expect(rowOf(newName)).not.toHaveText(before);
+});
+
 test("subadmin không sửa được buổi đã qua", async ({ page }) => {
   await login(page, "phu");
   // The old per-day link redirects to the month with that day expanded.

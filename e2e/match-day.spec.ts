@@ -64,6 +64,10 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   await expect(
     page.getByRole("alert").filter({ hasText: "Tỷ số 21–20 không hợp lệ" }),
   ).toBeVisible();
+  // Lịch nháp: popup không có phần đổi người.
+  await expect(page.getByRole("dialog").getByRole("heading", { name: "Người chơi" })).toHaveCount(
+    0,
+  );
   await page.keyboard.press("Escape");
   await expect(page.getByText("Đã khóa", { exact: true })).toHaveCount(0);
 
@@ -72,6 +76,12 @@ test("buổi đấu: điểm danh, lịch, nhập tỷ số, khóa buổi", asyn
   await expect(page.getByText("Đã khóa", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Hủy điểm danh", exact: true })).toBeDisabled();
   await expect(page.getByText("Lịch nháp")).toHaveCount(0);
+
+  // Lịch chính thức: admin thấy phần đổi người ở popup trận khác.
+  await page.getByRole("button", { name: "Nhập tỷ số trận 2" }).click();
+  await expect(page.getByRole("dialog").getByRole("heading", { name: "Người chơi" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 
   for (let n = 2; n <= total; n++) {
     await enter(page, n, "22", "20");
